@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<<<<<<< HEAD
+<mapper namespace="com.kh.khtAcademy.mapper.파일명칭작성">
+=======
+
+<mapper namespace="">
+>>>>>>> 028653b99b61cd3f1a487180304c7e4c4bed11e2
+
+</mapper>
