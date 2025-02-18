@@ -1,4 +1,4 @@
 package com.jobjob.albaing.dto;
 
-public class UserDTO {
+public class Company {
 }

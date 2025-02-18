@@ -1,4 +1,4 @@
 package com.jobjob.albaing.dto;
 
-public class CareerHistoriesDTO {
+public class CareerHistory {
 }

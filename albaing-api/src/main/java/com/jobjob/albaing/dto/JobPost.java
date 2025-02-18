@@ -1,4 +1,4 @@
 package com.jobjob.albaing.dto;
 
-public class JobPostsDTO {
+public class JobPost {
 }

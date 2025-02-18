@@ -1,4 +1,4 @@
 package com.jobjob.albaing.dto;
 
-public class JobApplicationsDTO {
+public class Resume {
 }

@@ -1,4 +1,4 @@
 package com.jobjob.albaing.controller;
 
-public class ViewController {
+public class ReviewController {
 }
