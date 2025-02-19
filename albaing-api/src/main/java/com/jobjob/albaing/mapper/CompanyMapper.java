@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.Optional;
 
 @Mapper
-public interface CompaniesMapper {
+public interface CompanyMapper {
 
     // 회사 회원가입 (INSERT)
     void registerCompany(Company company);

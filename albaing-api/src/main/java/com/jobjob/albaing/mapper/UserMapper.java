@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.Optional;
 
 @Mapper
-public interface UsersMapper {
+public interface UserMapper {
 
     // 유저 회원가입 (INSERT)
     void registerUser(User user);
