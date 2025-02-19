@@ -1,4 +1,4 @@
 package com.jobjob.albaing.mapper;
 
-public interface UsersMapper {
+public interface CompanyMapper {
 }

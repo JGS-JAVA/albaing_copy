@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.kh.khtAcademy.mapper.CompaniesMapper">
+<mapper namespace="com.jobjob.albaing.mapper.CompanyMapper">
 
     <!-- 회원가입 -->
     <insert id="registerCompany">
-        INSERT INTO companies (company_name,
+        INSERT INTO company (company_name,
                            company_registration_number,
                            company_owner_name,
                            company_open_date,
@@ -38,7 +38,7 @@
     <!-- 로그인 -->
     <select id="loginCompany">
         SELECT *
-        FROM companies
+        FROM company
         WHERE user_id = #{companyId}
           AND user_password = #{companyPassword}
 
