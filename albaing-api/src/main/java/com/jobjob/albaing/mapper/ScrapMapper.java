@@ -1,4 +1,4 @@
 package com.jobjob.albaing.mapper;
 
-public interface ResumesMapper {
+public interface ScrapMapper {
 }

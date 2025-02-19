@@ -1,4 +1,4 @@
 package com.jobjob.albaing.service;
 
-public interface ResumesService {
+public interface CompanyService {
 }
