@@ -32,20 +32,11 @@
 
     </insert>
 
-    <!--  유저 정보 조회 -->
-    <select id="getUserById">
+    <!-- 이메일을 이용해 사용자 정보 조회 -->
+    <select id="findByEmail" resultType="User">
         SELECT *
         FROM users
-        WHERE user_id = #{userId}
-    </select>
-
-    <!-- 유저 로그인 확인 -->
-    <select id="loginUser">
-        SELECT *
-        FROM users
-        WHERE user_id = #{userId}
-          AND user_password = #{userPassword}
-
+        WHERE user_email = #{userEmail}
     </select>
     
     
