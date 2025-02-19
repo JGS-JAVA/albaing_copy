@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jobjob.albaing.mapper.ReviewMapper">
+
+
+    <!-- 우리 회사 리뷰 상세 조회 -->
+    <select id="selectCompanyReviewDetail">
+        SELECT review_id, company_id, title, content, created_at, updated_at
+        FROM reviews
+        WHERE review_id = #{reviewId}
+          AND company_id = #{companyId}
+    </select>
+
+    <!-- 우리 회사 리뷰 댓글 상세 조회 -->
+    <select id="selectCompanyReviewComments">
+        SELECT comment_id, review_id, content, created_at
+        FROM review_comments
+        WHERE review_id = #{reviewId}
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 우리 회사 리뷰 삭제 -->
+    <delete id="deleteCompanyReview">
+        DELETE
+        FROM reviews
+        WHERE review_id = #{reviewId}
+          AND company_id = #{companyId}
+    </delete>
+
+    <!-- 우리 회사 리뷰 댓글 삭제 -->
+    <delete id="deleteCompanyReviewComment">
+        DELETE rc
+  FROM review_comments rc
+  JOIN reviews r ON rc.review_id = r.review_id
+  WHERE rc.comment_id = #{commentId}
+        AND rc.review_id = #{reviewId}
+        AND r.company_id = #{companyId}
+    </delete>
+
+
+    <!-- 어드민 리뷰 상세 조회 -->
+    <select id="selectReviewDetailAdmin">
+        SELECT review_id, company_id, title, content, created_at, updated_at
+        FROM reviews
+        WHERE review_id = #{reviewId}
+    </select>
+
+    <!-- 어드민 리뷰 댓글 조회 -->
+    <select id="selectReviewCommentsAdmin">
+        SELECT comment_id, review_id, content, created_at
+        FROM review_comments
+        WHERE review_id = #{reviewId}
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 어드민 리뷰 수정 -->
+    <update id="updateReview">
+        UPDATE reviews
+        SET title = #{title},
+            content = #{content},
+            updated_at = NOW()
+        WHERE review_id = #{reviewId}
+    </update>
+
+    <!-- 어드민 리뷰 삭제 -->
+    <delete id="deleteReviewAdmin">
+        DELETE
+        FROM reviews
+        WHERE review_id = #{reviewId}
+    </delete>
+
+
+    <!-- 어드민 리뷰 댓글 삭제 -->
+    <delete id="deleteReviewCommentAdmin">
+        DELETE
+        FROM review_comments
+        WHERE review_id = #{reviewId}
+          AND comment_id = #{commentId}
+    </delete>
+</mapper>
