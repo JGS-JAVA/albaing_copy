@@ -1,47 +1,47 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.jobjob.albaing.mapper.CompanyMapper">
+<mapper namespace="com.kh.khtAcademy.mapper.CompaniesMapper">
 
-    <!-- 회원가입 -->
+    <!-- 회사 회원가입 -->
     <insert id="registerCompany">
-        INSERT INTO company (company_name,
-                           company_registration_number,
-                           company_owner_name,
-                           company_open_date,
-                           company_password,
-                           company_email,
-                           company_phone,
-                           company_local_address,
-                           company_approval_status,
-                           company_created_at,
-                           company_updated_at,
-                           company_logo,
-                           company_description )
-        VALUES (#{companyName},
-                #{companyRegistrationNumber},
-                #{companyOwnerName},
-                #{companyOpenDate},
-                #{companyPassword},
-                #{companyEmail},
-                #{companyPhone},
-                #{companyLocalAddress},
-                #{companyApprovalStatus},
-                #{companyCreatedAt},
-                #{companyUpdatedAt},
-                #{companyLogo});
-                #{companyDescription});
-
-
+        INSERT INTO company (
+            company_name,
+            company_registration_number,
+            company_owner_name,
+            company_open_date,
+            company_password,
+            company_email,
+            company_phone,
+            company_local_address,
+            company_approval_status,
+            company_created_at,
+            company_updated_at,
+            company_logo,
+            company_description
+        ) VALUES (
+                     #{companyName},
+                     #{companyRegistrationNumber},
+                     #{companyOwnerName},
+                     #{companyOpenDate},
+                     #{companyPassword},
+                     #{companyEmail},
+                     #{companyPhone},
+                     #{companyLocalAddress},
+                     #{companyApprovalStatus},
+                     #{companyCreatedAt},
+                     #{companyUpdatedAt},
+                     #{companyLogo},
+                     #{companyDescription}
+                 );
     </insert>
 
-    <!-- 로그인 -->
-    <select id="loginCompany">
+    <!-- 이메일을 이용해 회사 정보 조회 (로그인 시 사용) -->
+    <select id="findByEmail" resultType="Company">
         SELECT *
-        FROM company
-        WHERE user_id = #{companyId}
-          AND user_password = #{companyPassword}
-
+        FROM companies
+        WHERE company_email = #{companyEmail}
     </select>
+
 
 </mapper>
