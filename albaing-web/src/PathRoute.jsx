@@ -52,7 +52,7 @@ function PathRoute() {
                 <Route path="/login" element={<Login/>} />
 
                 {/* 회사 관련 페이지 */}
-                <Route path="/company/add" element={<CompanyMain/>} />
+                <Route path="/company" element={<CompanyMain/>} />
                 <Route path="/company/add" element={<CompanyAdd/>} />
                 <Route path="/company/detail/:id" element={<CompanyDetail/>} />
                 <Route path="/company/review" element={<CompanyReview/>} />
