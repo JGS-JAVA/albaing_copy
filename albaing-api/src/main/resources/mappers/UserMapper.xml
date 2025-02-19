@@ -5,7 +5,7 @@
 
     <!-- 회원가입 -->
     <insert id="registerUser">
-        INSERT INTO user (user_email,
+        INSERT INTO users (user_email,
                            user_password,
                            user_name,
                            user_birthdate,
