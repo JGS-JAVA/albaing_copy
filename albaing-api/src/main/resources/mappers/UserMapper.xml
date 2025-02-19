@@ -1,6 +1,52 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.kh.khtAcademy.mapper.파일명칭작성">
+<mapper namespace="com.kh.khtAcademy.mapper.UsersMapper">
 
+    <!-- 회원가입 -->
+    <insert id="registerUser">
+        INSERT INTO users (user_email,
+                           user_password,
+                           user_name,
+                           user_birthdate,
+                           user_gender,
+                           user_phone,
+                           user_address,
+                           user_profile_image,
+                           user_created_at,
+                           user_updated_at,
+                           user_terms_agrrement,
+                           user_is_admin)
+        VALUES (#{userEmail},
+                #{userPassword},
+                #{userName},
+                #{userBirthdate},
+                #{userGender},
+                #{userPhone},
+                #{userAddress},
+                #{userProfileImage},
+                #{userCreatedAt},
+                #{userUpdatedAt},
+                #{userTermsAgrrement},
+                #{userIsAdmin});
+
+    </insert>
+
+    <!--  유저 정보 조회 -->
+    <select id="getUserById">
+        SELECT *
+        FROM users
+        WHERE user_id = #{userId}
+    </select>
+
+    <!-- 유저 로그인 확인 -->
+    <select id="loginUser">
+        SELECT *
+        FROM users
+        WHERE user_id = #{userId}
+          AND user_password = #{userPassword}
+
+    </select>
+    
+    
 </mapper>
