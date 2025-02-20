@@ -1,8 +1,11 @@
 package com.jobjob.albaing.dto;
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import lombok.*;
+import org.springframework.data.annotation.Id;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -11,17 +14,26 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
+    @Id  // Indicates that this field is the primary key
+    @GeneratedValue(strategy = GenerationType.IDENTITY)  // Auto-generate values for the primary key (e.g., auto-increment)
+    private Long userId;
+
     private String userEmail;
     private String userPassword;
     private String userName;
     private Date userBirthdate;
-    private Enum userGender;
+    private Gender userGender;
     private String userPhone;
     private String userAddress;
     private String userProfileImage;
-    private Timestamp userCreatedAt;
-    private Timestamp userUpdatedAt;
+    private LocalDateTime userCreatedAt;
+    private LocalDateTime userUpdatedAt;
     private Boolean userTermsAgreement;
     private Boolean userIsAdmin;
 
+    public enum Gender {
+        MALE,
+        FEMALE,
+        OTHER
+    }
 }
