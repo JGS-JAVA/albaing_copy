@@ -1,4 +1,4 @@
 package com.jobjob.albaing.service;
 
-public class CompanyServiceImpl {
+public class CompanyServiceImpl implements CompanyService {
 }

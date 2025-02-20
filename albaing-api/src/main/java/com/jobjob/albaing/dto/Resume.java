@@ -1,6 +1,19 @@
 package com.jobjob.albaing.dto;
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.*;
+
+@Getter
+@Setter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+
 public class Resume {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int resumeId;
     private int userId;
     private String resumeTitle;
@@ -12,4 +25,5 @@ public class Resume {
     private String resumeWorkTime;
     private String resumeJobskill;
     private String resumeIntroduction;
+
 }

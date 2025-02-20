@@ -16,42 +16,44 @@ public class ResumeServiceImpl implements ResumeService {
     @Autowired
     private ResumeMapper resumeMapper;
 
+    // 회원가입시 이력서 생성
     @Override
+    public void createResumeForUser(User user){
+        resumeMapper.createResumeForUser(user);
+    }
+
     //user 정보 불러오기 - 사진,이름,생년월일,이메일, 프로필이미지
+    @Override
     public List<User> getUserById(int userId) {
         return resumeMapper.getUserById(userId);
     }
 
-    @Override
     //내 정보 수정
-    public void updateUser(User user) {
-        resumeMapper.updateUser(user);
+    @Override
+    public void updateUser(String userEmail, String userAddress, String userProfileImage) {
+        resumeMapper.updateUser(userEmail, userAddress, userProfileImage);
     }
 
-    @Override
     //이력서 조회
+    @Override
     public Resume resumeDetails(int resumeId) {
         return resumeMapper.resumeDetails(resumeId);
     }
 
-    @Override
     //이력서 post
+    @Override
     public void insertResume(Resume resume, EducationHistory educationHistory, CareerHistory careerHistory) {
         resumeMapper.insertResume(resume, educationHistory, careerHistory);
 
     }
 
-
+    //이력서 수정
     @Override
     public void updateResume(Resume resume, EducationHistory educationHistory, CareerHistory careerHistory) {
         resumeMapper.updateResume(resume, educationHistory, careerHistory);
 
     }
 
-    @Override
-    //이력서 삭제
-    public void deleteResume(int resumeId) {
-        resumeMapper.deleteResume(resumeId);
 
-    }
+
 }

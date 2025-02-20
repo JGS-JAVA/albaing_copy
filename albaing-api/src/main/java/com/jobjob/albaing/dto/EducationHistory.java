@@ -1,6 +1,19 @@
 package com.jobjob.albaing.dto;
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.*;
+
+@Getter
+@Setter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class EducationHistory {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int educationId;
     private int resumeId;
     private String eduDegree;
