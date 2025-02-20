@@ -24,7 +24,7 @@ public class ResumeServiceImpl implements ResumeService {
 
     //user 정보 불러오기 - 사진,이름,생년월일,이메일, 프로필이미지
     @Override
-    public List<User> getUserById(int userId) {
+    public User getUserById(int userId) {
         return resumeMapper.getUserById(userId);
     }
 

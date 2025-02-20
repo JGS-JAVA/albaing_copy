@@ -10,10 +10,10 @@ import java.util.List;
 public interface ResumeService {
 
     //회원가입시 이력서 생성
-    void createResumeForUser(User user);
+    void createResumeForUser(User user); //user user 말고 들어가야할 값 ....?
 
     //user 정보 불러오기 - 사진,이름,생년월일,이메일, 프로필이미지
-    List<User> getUserById(int userId);
+    User getUserById(int userId);
 
     //내 정보 수정
     void updateUser(String userEmail, String userAddress, String userProfileImage);

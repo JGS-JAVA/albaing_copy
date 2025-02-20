@@ -9,7 +9,13 @@
 
 <!--    user 불러오기-->
     <select id="getUserById">
-        SELECT *
+        SELECT user_name,
+               user_email,
+               user_birthdate,
+               user_gender,
+               user_phone,
+               user_address,
+               user_profile_image
         FROM USERS
         WHERE user_id = #{userId}
     </select>

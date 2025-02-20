@@ -12,7 +12,7 @@ import java.util.List;
 public interface ResumeMapper {
 
     //user 정보 불러오기 - 사진,이름,생년월일,이메일, 프로필이미지
-    List<User> getUserById(int userId);
+    User getUserById(int userId);
 
     //내 정보 수정
     void updateUser(String userEmail, String userAddress, String userProfileImage);
