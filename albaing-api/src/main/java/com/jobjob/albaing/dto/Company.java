@@ -14,8 +14,8 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Company {
-    @Id  // Indicates that this field is the primary key
-    @GeneratedValue(strategy = GenerationType.IDENTITY)  // Auto-generate values for the primary key (e.g., auto-increment)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long companyId;
 
     private String companyName;
