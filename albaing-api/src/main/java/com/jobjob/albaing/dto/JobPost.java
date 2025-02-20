@@ -20,7 +20,7 @@ public class JobPost {
     private String jobPostJobCategory;       // 직군 분류
     private String jobPostJobType;           // 근무 형태
     private String jobPostWorkingPeriod;     // 근무 기간
-    private String jobPostWorkSchedule;      // 근무 요일
+    private String jobWorkSchedule;      // 근무 요일
     private String jobPostShiftHours;        // 근무 시간
     private String jobPostSalary;            // 급여
     private String jobPostWorkPlace;         // 근무지
