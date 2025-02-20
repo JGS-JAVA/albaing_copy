@@ -25,13 +25,13 @@ public class LoginController {
     public ResponseEntity<Map<String, Object>> loginPerson(@RequestBody User user,
                                                      HttpSession session) {
         Map<String, Object> loginResult = loginService.loginUser(user.getUserEmail(), user.getUserPassword());
-        // 만약에 서비스에서 무사히 로그인한 결과를 가져왔다면
+
         if ("success".equals(loginResult.get("status"))) {
             User loggedInUser = (User) loginResult.get("user");
-            session.setAttribute("user", loggedInUser); // 로그인한 유저 정보를 세션에 user 라는 명칭으로  저장
+            session.setAttribute("user", loggedInUser);
             return ResponseEntity.ok(loginResult);
-            // ok = 200 = 리액트에서 전달받은 데이터 값이 존재할 때 뜨는 숫자
-        } else { // 무사히 성공하지 못했다면
+
+        } else {
             return ResponseEntity.status(401).body(loginResult);
         }
     }
@@ -41,13 +41,13 @@ public class LoginController {
     public ResponseEntity<Map<String, Object>> loginCompany(@RequestBody Company company,
                                                      HttpSession session) {
         Map<String, Object> loginResult = loginService.loginCompany(company.getCompanyEmail(), company.getCompanyPassword());
-        // 만약에 서비스에서 무사히 로그인한 결과를 가져왔다면
+
         if ("success".equals(loginResult.get("status"))) {
             Company loggedInCompany = (Company) loginResult.get("company");
-            session.setAttribute("company", loggedInCompany); // 로그인한 유저 정보를 세션에 user 라는 명칭으로  저장
+            session.setAttribute("company", loggedInCompany);
             return ResponseEntity.ok(loginResult);
-            // ok = 200 = 리액트에서 전달받은 데이터 값이 존재할 때 뜨는 숫자
-        } else { // 무사히 성공하지 못했다면
+
+        } else {
             return ResponseEntity.status(401).body(loginResult);
         }
     }
@@ -62,10 +62,6 @@ public class LoginController {
     }
 
 
-    // 계정 로그인 상태확인 (세션)
-    // 유저의 데이터를 loginUser 에 담고 loginUser 를 session 에 담는다
-    // 기업의 데이터를 loginCompany 에 담고 loginCompany 를 session 에 담는다
-    // 결국 session 은 하나다.
     @GetMapping("/checkLogin")
     public ResponseEntity<?> checkLogin(HttpSession session) {
         User loginUser = (User) session.getAttribute("user");
