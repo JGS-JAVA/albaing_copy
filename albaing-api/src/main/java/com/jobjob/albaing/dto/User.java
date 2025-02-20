@@ -2,6 +2,9 @@ package com.jobjob.albaing.dto;
 
 import lombok.*;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
 @Getter
 @Setter
 @ToString
@@ -11,14 +14,14 @@ public class User {
     private String userEmail;
     private String userPassword;
     private String userName;
-    private String userBirthdate;
-    private String userGender;
+    private Date userBirthdate;
+    private Enum userGender;
     private String userPhone;
     private String userAddress;
     private String userProfileImage;
-    private String userCreatedAt;
-    private String userUpdatedAt;
-    private String userTermsAgrrement;
-    private String userIsAdmin;
+    private Timestamp userCreatedAt;
+    private Timestamp userUpdatedAt;
+    private Boolean userTermsAgrrement;
+    private Boolean userIsAdmin;
 
 }
