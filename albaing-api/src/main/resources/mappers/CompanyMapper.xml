@@ -37,7 +37,7 @@
     </insert>
 
     <!-- 기업 로그인 -->
-    <select id="loginUser">
+    <select id="loginCompany">
         SELECT *
         FROM companies
         WHERE company_email = #{companyEmail}
