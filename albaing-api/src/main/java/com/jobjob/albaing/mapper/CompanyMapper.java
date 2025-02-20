@@ -1,10 +1,10 @@
 package com.jobjob.albaing.mapper;
 
 import com.jobjob.albaing.dto.Company;
+import com.jobjob.albaing.dto.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.Optional;
 
 @Mapper
 public interface CompanyMapper {
@@ -12,6 +12,6 @@ public interface CompanyMapper {
     // 회사 회원가입 (INSERT)
     void registerCompany(Company company);
 
-    // 회사 정보 조회 (로그인 시 이메일로 검색)
-    Optional<Company> findByEmail(@Param("companyEmail") String companyEmail);
+    // 회사 로그인
+    User loginCompany(@Param("companyEmail") String companyEmail, @Param("companyPassword")String companyPassword);
 }
