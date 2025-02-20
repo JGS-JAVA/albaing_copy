@@ -21,7 +21,7 @@ public class User {
     private String userProfileImage;
     private Timestamp userCreatedAt;
     private Timestamp userUpdatedAt;
-    private Boolean userTermsAgrrement;
+    private Boolean userTermsAgreement;
     private Boolean userIsAdmin;
 
 }

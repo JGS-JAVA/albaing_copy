@@ -15,7 +15,7 @@
                            user_profile_image,
                            user_created_at,
                            user_updated_at,
-                           user_terms_agrrement,
+                           user_terms_agreement,
                            user_is_admin)
         VALUES (#{userEmail},
                 #{userPassword},
@@ -27,7 +27,7 @@
                 #{userProfileImage},
                 #{userCreatedAt},
                 #{userUpdatedAt},
-                #{userTermsAgrrement},
+                #{userTermsAgreement},
                 #{userIsAdmin});
 
     </insert>
