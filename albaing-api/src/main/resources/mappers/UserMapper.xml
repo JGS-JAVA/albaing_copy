@@ -32,7 +32,7 @@
 
     </insert>
 
-    <!-- 로그인 -->
+    <!-- 유저 로그인 -->
     <select id="loginUser">
         SELECT *
         FROM users

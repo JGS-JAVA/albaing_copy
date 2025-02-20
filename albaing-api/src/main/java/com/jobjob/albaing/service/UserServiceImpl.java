@@ -20,19 +20,5 @@ public class UserServiceImpl implements UserService {
         userMapper.registerUser(user);
     }
 
-    @Override
-    public Map<String, Object> loginUser(String userEmail, String userPassword) {
-        User loggedInUser = userMapper.loginUser(userEmail, userPassword);
-        Map<String, Object> result = new HashMap<String, Object>();
 
-        if (loggedInUser != null) {
-            result.put("status", "success");
-            result.put("user", loggedInUser);
-            result.put("redirect", "/");
-        } else {
-            result.put("status", "fail");
-            result.put("message", "이메일 또는 비밀번호가 올바르지 않습니다.");
-        }
-        return result;
-    }
 }
