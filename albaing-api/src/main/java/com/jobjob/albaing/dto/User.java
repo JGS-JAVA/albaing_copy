@@ -32,8 +32,6 @@ public class User {
     private Boolean userIsAdmin;
 
     public enum Gender {
-        MALE,
-        FEMALE,
-        OTHER
+        male, female
     }
 }

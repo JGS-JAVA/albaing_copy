@@ -33,7 +33,7 @@ public class Company {
     private String companyDescription;
 
     public enum ApprovalStatus {
-        APPROVED, APPROVING, HIDDEN
+        approved, approving, hidden
     }
 
 }
