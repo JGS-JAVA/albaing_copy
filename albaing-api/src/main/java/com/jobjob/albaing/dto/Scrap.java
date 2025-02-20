@@ -4,11 +4,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
-public class JobApplication {
-    private int jobApplicationId;
+public class Scrap {
+    private int scrapId;
+    private int userId;
     private int jobPostId;
-    private int resumeId;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date applicationAt;
-    private String approveStatus;
+    private Date scrapCreatedAt;
+    private boolean scrapIs;
+
 }

@@ -2,5 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jobjob.albaing.mapper.ScrapMapper">
-
+    <insert id= "insertScrap">
+    INSERT INTO scraps(scrap_id,user_id, job_post_id, scrap_created_at , scrap_id)
+    VALUES (#{scrapId}, #{userId}, #{jobPostId}, #{scrapCreatedAt}, #{scrapId})
+    </insert>
 </mapper>

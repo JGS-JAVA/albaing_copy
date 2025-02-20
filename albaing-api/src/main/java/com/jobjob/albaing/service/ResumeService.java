@@ -1,4 +1,32 @@
 package com.jobjob.albaing.service;
 
+import com.jobjob.albaing.dto.CareerHistory;
+import com.jobjob.albaing.dto.EducationHistory;
+import com.jobjob.albaing.dto.Resume;
+import com.jobjob.albaing.dto.User;
+
+import java.util.List;
+
 public interface ResumeService {
+
+
+    //user 정보 불러오기 - 사진,이름,생년월일,이메일, 프로필이미지
+    List<User> getUserById(int userId);
+
+    //내 정보 수정
+    void updateUser(User user);
+
+    //이력서 조회
+    Resume resumeDetails(int resumeId);
+
+    //이력서 post
+    void insertResume(Resume resume, EducationHistory educationHistory, CareerHistory careerHistory);
+
+
+    //이력서 수정
+    void updateResume(Resume resume, EducationHistory educationHistory, CareerHistory careerHistory);
+
+    //이력서 삭제
+    void deleteResume(int resumeId);
+
 }

@@ -3,5 +3,11 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jobjob.albaing.mapper.JobApplicationMapper">
 
+    <!--    //user가 지원한 공고 불러오기-->
+    <select id="getJobApplicationsByUserId">
+        SELECT *
+        FROM job_application
+        WHERE job_application_id = #{userId}
+    </select>
 
 </mapper>
