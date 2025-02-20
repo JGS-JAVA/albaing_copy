@@ -1,5 +1,6 @@
 package com.jobjob.albaing.service;
 
+import com.jobjob.albaing.dto.Company;
 import com.jobjob.albaing.dto.User;
 import com.jobjob.albaing.mapper.CompanyMapper;
 import com.jobjob.albaing.mapper.UserMapper;
@@ -10,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class LoginServiceImpl implements LoginService {
+public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private UserMapper userMapper;
@@ -18,6 +19,7 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     private CompanyMapper companyMapper;
 
+    // 유저 로그인
     @Override
     public Map<String, Object> loginUser(String userEmail, String userPassword) {
         User loggedInUser = userMapper.loginUser(userEmail, userPassword);
@@ -34,6 +36,7 @@ public class LoginServiceImpl implements LoginService {
         return result;
     }
 
+    // 기업 로그인
     @Override
     public Map<String, Object> loginCompany(String companyEmail, String companyPassword) {
         User loggedInUser = companyMapper.loginCompany(companyEmail, companyPassword);
@@ -49,4 +52,19 @@ public class LoginServiceImpl implements LoginService {
         }
         return result;
     }
+
+    // 유저 회원가입
+    @Override
+    public void registerUser(User user) {
+        userMapper.registerUser(user);
+    }
+
+    // 기업 회원가입
+    @Override
+    public void registerCompany(Company company) {
+        companyMapper.registerCompany(company);
+    }
+
+
+
 }

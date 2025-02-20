@@ -12,10 +12,7 @@ public class CompanyServiceImpl implements CompanyService {
     @Autowired
     private CompanyMapper companyMapper;
 
-    @Override
-    public void registerCompany(Company company) {
-        companyMapper.registerCompany(company);
-    }
+
 
 
 }

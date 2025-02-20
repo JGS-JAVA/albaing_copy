@@ -4,7 +4,7 @@ import com.jobjob.albaing.dto.Company;
 import com.jobjob.albaing.dto.User;
 import com.jobjob.albaing.model.vo.VerificationRequest;
 import com.jobjob.albaing.service.CompanyServiceImpl;
-import com.jobjob.albaing.service.LoginService;
+import com.jobjob.albaing.service.AuthService;
 import com.jobjob.albaing.service.UserServiceImpl;
 import com.jobjob.albaing.service.VerificationService;
 import jakarta.servlet.http.HttpSession;
@@ -20,7 +20,7 @@ import java.util.Map;
 public class AuthController {
 
     @Autowired
-    private LoginService loginService;
+    private AuthService authService;
 
     @Autowired
     private UserServiceImpl userService;
@@ -32,7 +32,7 @@ public class AuthController {
     @PostMapping("/login-person")
     public ResponseEntity<Map<String, Object>> loginPerson(@RequestBody User user,
                                                      HttpSession session) {
-        Map<String, Object> loginResult = loginService.loginUser(user.getUserEmail(), user.getUserPassword());
+        Map<String, Object> loginResult = authService.loginUser(user.getUserEmail(), user.getUserPassword());
 
         if ("success".equals(loginResult.get("status"))) {
             User loggedInUser = (User) loginResult.get("user");
@@ -48,7 +48,7 @@ public class AuthController {
     @PostMapping("/login-company")
     public ResponseEntity<Map<String, Object>> loginCompany(@RequestBody Company company,
                                                      HttpSession session) {
-        Map<String, Object> loginResult = loginService.loginCompany(company.getCompanyEmail(), company.getCompanyPassword());
+        Map<String, Object> loginResult = authService.loginCompany(company.getCompanyEmail(), company.getCompanyPassword());
 
         if ("success".equals(loginResult.get("status"))) {
             Company loggedInCompany = (Company) loginResult.get("company");
