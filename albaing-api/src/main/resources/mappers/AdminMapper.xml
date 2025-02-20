@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="패키지이름.파일명">
+
+    <!-- 이하 모든 "select *" 구문 수정할 것-->
+    <!-- 구문마다 목적, 개요 주석 달 것-->
+
+
+    <select id="adminSearchUserByName">
+        select *
+        from USERS
+        where user_name = #{userName}
+    </select>
+
+    <select id="adminSearchUserByEmail">
+        select *
+        from USERS
+        where user_email = #{userEmail}
+    </select>
+
+    <select id="adminSearchUserByPhone">
+        select *
+        from USERS
+        where user_phone = #{user_phone}
+    </select>
+
+    <select id="adminSearchCompanyByName">
+        select *
+        from COMPANIES
+        where company_name = #{companyName}
+    </select>
+
+    <select id="adminSearchCompanyByOwnerName">
+        select *
+        from COMPANIES
+        where company_owner_name = #{companyOwnerName}
+    </select>
+
+    <select id="adminSearchCompanyByPhone">
+        select COMPANIES
+        where compa
+    </select>
+</mapper>
