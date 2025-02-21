@@ -1,65 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 
 const JobPostDetail = () => {
     const { id } = useParams();
-    const navigate = useNavigate();
     const [jobPost, setJobPost] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [showApplyForm, setShowApplyForm] = useState(false);
+    const [resumeId, setResumeId] = useState('');
 
     useEffect(() => {
-        const fetchJobPost = async () => {
-            try {
-                const response = await fetch(`/api/job-posts/${id}`);
-                if (!response.ok) throw new Error('공고를 불러오는데 실패했습니다');
-                const data = await response.json();
-                setJobPost(data);
-            } catch (error) {
-                console.error('Error:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchJobPost();
+        axios.get(`http://localhost:8080/api/jobs/${id}`)
+            .then(response => setJobPost(response.data))
+            .catch(error => console.error('Error:', error))
+            .finally(() => setIsLoading(false));
     }, [id]);
 
-    const handleDelete = async () => {
-        if (!window.confirm('정말로 이 채용공고를 삭제하시겠습니까?')) return;
+    const handleApply = (e) => {
+        e.preventDefault();
 
-        try {
-            const response = await fetch(`/api/job-posts/${id}`, {
-                method: 'DELETE',
+        axios.post('http://localhost:8080/api/applications', {
+            jobPostId: id,
+            resumeId: resumeId
+        })
+            .then(() => {
+                alert('지원이 완료되었습니다!');
+                setShowApplyForm(false);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('지원 중 오류가 발생했습니다');
             });
-
-            if (!response.ok) throw new Error('삭제에 실패했습니다');
-            navigate('/job-posts');
-        } catch (error) {
-            console.error('Error:', error);
-            alert('삭제 중 오류가 발생했습니다');
-        }
-    };
-
-    const handleStatusChange = async (status) => {
-        try {
-            const response = await fetch(`/api/job-posts/${id}/status`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ status }),
-            });
-
-            if (!response.ok) throw new Error('상태 변경에 실패했습니다');
-
-            setJobPost(prev => ({
-                ...prev,
-                jobPostStatus: status
-            }));
-        } catch (error) {
-            console.error('Error:', error);
-            alert('상태 변경 중 오류가 발생했습니다');
-        }
     };
 
     if (isLoading) return <div>로딩 중...</div>;
@@ -67,90 +38,53 @@ const JobPostDetail = () => {
 
     return (
         <div style={{ padding: '20px' }}>
-            <h1 style={{ fontSize: '24px', marginBottom: '20px' }}>
-                {jobPost.jobPostTitle}
-            </h1>
+            <h1>{jobPost.jobPostTitle}</h1>
+
+            {jobPost.jobPostOptionalImage && (
+                <img src={jobPost.jobPostOptionalImage} alt="채용공고 이미지" style={{ maxWidth: '100%', marginBottom: '20px' }} />
+            )}
 
             <div style={{ marginBottom: '20px' }}>
                 <button
-                    onClick={() => navigate(`/job-posts/${id}/edit`)}
-                    style={{ marginRight: '10px', padding: '5px 10px' }}
+                    onClick={() => setShowApplyForm(true)}
+                    style={{ padding: '5px 10px', backgroundColor: '#007bff', color: 'white' }}
+                    disabled={!jobPost.jobPostStatus}
                 >
-                    수정
-                </button>
-                <button
-                    onClick={handleDelete}
-                    style={{ marginRight: '10px', padding: '5px 10px' }}
-                >
-                    삭제
-                </button>
-                <button
-                    onClick={() => handleStatusChange(!jobPost.jobPostStatus)}
-                    style={{ padding: '5px 10px' }}
-                >
-                    {jobPost.jobPostStatus ? '공고 마감하기' : '공고 재개하기'}
+                    입사지원
                 </button>
             </div>
 
-            {jobPost.jobPostOptionalImage && (
-                <img
-                    src={jobPost.jobPostOptionalImage}
-                    alt="채용공고 이미지"
-                    style={{ maxWidth: '100%', marginBottom: '20px' }}
-                />
+            {showApplyForm && (
+                <div style={{
+                    position: 'fixed',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    backgroundColor: 'white',
+                    padding: '20px',
+                    border: '1px solid #ccc',
+                    boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+                    zIndex: 1000
+                }}>
+                    <h2>입사지원</h2>
+                    <form onSubmit={handleApply}>
+                        <div>
+                            <label>이력서 ID:</label>
+                            <input
+                                type="number"
+                                value={resumeId}
+                                onChange={(e) => setResumeId(e.target.value)}
+                                required
+                                style={{ margin: '10px 0', padding: '5px' }}
+                            />
+                        </div>
+                        <div style={{ marginTop: '10px' }}>
+                            <button type="submit" style={{ marginRight: '10px' }}>지원하기</button>
+                            <button type="button" onClick={() => setShowApplyForm(false)}>취소</button>
+                        </div>
+                    </form>
+                </div>
             )}
-
-            <div style={{ display: 'grid', gap: '20px' }}>
-                <div>
-                    <h3 style={{ fontWeight: 'bold' }}>연락처</h3>
-                    <p>{jobPost.jobPostContactNumber}</p>
-                </div>
-
-                <div>
-                    <h3 style={{ fontWeight: 'bold' }}>필요 학력</h3>
-                    <p>{jobPost.jobPostRequiredEducations}</p>
-                </div>
-
-                <div>
-                    <h3 style={{ fontWeight: 'bold' }}>직종</h3>
-                    <p>{jobPost.jobPostJobCategory}</p>
-                </div>
-
-                <div>
-                    <h3 style={{ fontWeight: 'bold' }}>고용 형태</h3>
-                    <p>{jobPost.jobPostJobType}</p>
-                </div>
-
-                <div>
-                    <h3 style={{ fontWeight: 'bold' }}>근무 기간</h3>
-                    <p>{jobPost.jobPostWorkingPeriod}</p>
-                </div>
-
-                <div>
-                    <h3 style={{ fontWeight: 'bold' }}>근무 일정</h3>
-                    <p>{jobPost.jobWorkSchedule}</p>
-                </div>
-
-                <div>
-                    <h3 style={{ fontWeight: 'bold' }}>근무 시간</h3>
-                    <p>{jobPost.jobPostShiftHours}</p>
-                </div>
-
-                <div>
-                    <h3 style={{ fontWeight: 'bold' }}>급여</h3>
-                    <p>{jobPost.jobPostSalary}</p>
-                </div>
-
-                <div>
-                    <h3 style={{ fontWeight: 'bold' }}>근무지</h3>
-                    <p>{jobPost.jobPostWorkPlace}</p>
-                </div>
-
-                <div>
-                    <h3 style={{ fontWeight: 'bold' }}>마감일</h3>
-                    <p>{new Date(jobPost.jobPostDueDate).toLocaleDateString()}</p>
-                </div>
-            </div>
 
             <div style={{ marginTop: '20px', fontSize: '14px', color: '#666' }}>
                 <p>작성일: {new Date(jobPost.jobPostCreatedAt).toLocaleDateString()}</p>

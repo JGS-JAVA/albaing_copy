@@ -25,9 +25,9 @@ public class JobPostController {
     }
 
     // 채용공고 상세 조회
-    @GetMapping("/{jobpostid}")
-    public ResponseEntity<JobPost> getJobPost(@PathVariable Long jobpostid) {
-        JobPost jobPost = jobPostService.getJobPost(jobpostid);
+    @GetMapping("/{jobPostId}")
+    public ResponseEntity<JobPost> getJobPost(@PathVariable Long jobPostId) {
+        JobPost jobPost = jobPostService.getJobPost(jobPostId);
         if (jobPost == null) {
             return ResponseEntity.notFound().build();
         }
