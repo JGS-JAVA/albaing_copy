@@ -5,9 +5,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Setter
 @Getter
-@ToSTring
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class Review {

@@ -115,7 +115,7 @@
           INSERT INTO reviews (company_id, user_id, review_title, review_content)
           VALUES (#{companyId},
                   CONCAT('*****',
-                  (SELECT MAX(CAST(SUBSTRING(user_id, 6) AS UNSIGNED)) + 1
+                  (SELECT MAX(CAST(SUBSTRING(CAST(user_id AS CHAR), 6) AS UNSIGNED)) + 1
                    FROM reviews)),
                   #{reviewTitle}, #{reviewContent})
     </select>
@@ -124,7 +124,7 @@
     <select id="reviewCheck">
           SELECT reviews.review_title, reviews.review_content,
                  CONCAT('*****',
-                 (SELECT MAX(CAST(SUBSTRING(reviews.user_id, 6) AS UNSIGNED)) + 1
+                 (SELECT MAX(CAST(SUBSTRING(CAST(user_id AS CHAR), 6) AS UNSIGNED)) + 1
                   FROM reviews)
                   ) AS annonymous_id,
                   reviews.review_created_at,
@@ -139,11 +139,10 @@
 
     <!-- 댓글 작성 + 익명성 부여 + 익명성 ID 자동 증가 -->
     <select id="addComment">
-          INSERT INTO comments(review_id, user_id, review_content)
+          INSERT INTO comments(review_id, user_id, comment_content)
           VALUES (#{reviewId},
-                 CONCAT('*****', (SELECT MAX(CAST(SUBSTRING(user_id, 6) AS UNSIGNED)) + 1 FROM
-                 comments)),
-                 #{reviewContent});
+                 CONCAT('*****', (SELECT MAX(CAST(SUBSTRING(CAST(user_id AS CHAR), 6) AS UNSIGNED)) + 1 FROM comments)),
+                 #{commentContent});
     </select>
 
     <!-- 리뷰 삭제 -->
