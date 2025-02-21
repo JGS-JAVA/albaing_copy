@@ -2,8 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jobjob.albaing.mapper.JobPostMapper">
-    <!-- 채용공고 등록 -->
-    <insert id="insertJobPost" useGeneratedKeys="true" keyProperty="jobPostId">
+    <insert id="insertJobPost">
         INSERT INTO job_posts (
             company_id, job_post_title, job_post_optional_image,
             job_post_contact_number, job_post_required_educations,
@@ -25,14 +24,12 @@
                )
     </insert>
 
-    <!-- 채용공고 상세 조회 -->
     <select id="selectJobPostById">
         SELECT *
         FROM job_posts
         WHERE job_post_id = #{jobPostId}
     </select>
 
-    <!-- 채용공고 목록 조회를 위한 공통 WHERE 절 -->
     <sql id="searchCriteria">
         <where>
             <if test="jobCategory != null and jobCategory != ''">
@@ -54,7 +51,6 @@
         </where>
     </sql>
 
-    <!-- 채용공고 목록 조회 -->
     <select id="selectJobPostList">
         SELECT *
         FROM job_posts
@@ -63,7 +59,6 @@
         LIMIT #{limit} OFFSET #{offset}
     </select>
 
-    <!-- 채용공고 수정 -->
     <update id="updateJobPost">
         UPDATE job_posts
         SET
