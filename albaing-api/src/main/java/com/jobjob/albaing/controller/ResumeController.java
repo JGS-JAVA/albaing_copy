@@ -27,7 +27,7 @@ public class ResumeController {
     public void updateResume(
             @PathVariable int resumeId,
             @RequestBody ResumeUpdateRequest resumeUpdateRequest) {
-                resumeService.updateResume(resumeUpdateRequest);
+        resumeService.updateResume(resumeUpdateRequest);
     }
 
     // 3. 이력서 조회

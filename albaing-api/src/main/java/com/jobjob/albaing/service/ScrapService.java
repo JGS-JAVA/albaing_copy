@@ -1,12 +1,18 @@
 package com.jobjob.albaing.service;
 
+import com.jobjob.albaing.dto.Scrap;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
 public interface ScrapService {
 
-    //스크랩한 공고 저장
+    //scrap한 공고 insert
+    void insertScrap(int userId, int jobPostId);
 
-    //스크랩 공고 저장해제(삭제)
+    //scrap 공고 삭제
+    void deleteScrap(int ScrapId);
 
-    //스크랩 공고 조회
-
-    //
+    //scrap 공고 조회
+    List<Scrap> getScrapsByUser(int userId);
 }
