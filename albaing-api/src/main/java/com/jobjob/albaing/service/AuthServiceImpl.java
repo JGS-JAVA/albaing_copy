@@ -67,14 +67,39 @@ public class AuthServiceImpl implements AuthService {
     // 유저 회원가입
     @Override
     public void registerUser(User user) {
+        user.setUserEmail(user.getUserEmail());
         user.setUserPassword(user.getUserPassword());
+        user.setUserName(user.getUserName());
+        user.setUserBirthdate(user.getUserBirthdate());
+        user.setUserGender(user.getUserGender());
+        user.setUserPhone(user.getUserPhone());
+        user.setUserAddress(user.getUserAddress());
+        user.setUserProfileImage(user.getUserProfileImage());
+        user.setUserCreatedAt(user.getUserCreatedAt());
+        user.setUserUpdatedAt(user.getUserUpdatedAt());
+        user.setUserTermsAgreement(user.getUserTermsAgreement());
+        user.setUserIsAdmin(user.getUserIsAdmin());
+
         userMapper.registerUser(user);
     }
 
     // 기업 회원가입
     @Override
     public void registerCompany(Company company) {
+        company.setCompanyName(company.getCompanyName());
+        company.setCompanyRegistrationNumber(company.getCompanyRegistrationNumber());
+        company.setCompanyOwnerName(company.getCompanyOwnerName());
+        company.setCompanyOpenDate(company.getCompanyOpenDate());
         company.setCompanyPassword(company.getCompanyPassword());
+        company.setCompanyEmail(company.getCompanyEmail());
+        company.setCompanyPhone(company.getCompanyPhone());
+        company.setCompanyLocalAddress(company.getCompanyLocalAddress());
+        company.setCompanyApprovalStatus(company.getCompanyApprovalStatus());
+        company.setCompanyCreatedAt(company.getCompanyCreatedAt());
+        company.setCompanyUpdatedAt(company.getCompanyUpdatedAt());
+        company.setCompanyLogo(company.getCompanyLogo());
+        company.setCompanyDescription(company.getCompanyDescription());
+
         companyMapper.registerCompany(company);
     }
 }
