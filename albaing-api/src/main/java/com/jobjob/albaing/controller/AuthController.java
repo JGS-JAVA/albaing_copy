@@ -36,7 +36,7 @@ public class AuthController {
 
         if ("success".equals(loginResult.get("status"))) {
             User loggedInUser = (User) loginResult.get("user");
-            session.setAttribute("user", loggedInUser);
+            session.setAttribute("userSession", loggedInUser);
             return ResponseEntity.ok(loginResult);
 
         } else {
@@ -52,7 +52,7 @@ public class AuthController {
 
         if ("success".equals(loginResult.get("status"))) {
             Company loggedInCompany = (Company) loginResult.get("company");
-            session.setAttribute("company", loggedInCompany);
+            session.setAttribute("companySession", loggedInCompany);
             return ResponseEntity.ok(loginResult);
 
         } else {
@@ -73,8 +73,8 @@ public class AuthController {
     // 계정 로그인 상태확인 (세션)
     @GetMapping("/checkLogin")
     public ResponseEntity<?> checkLogin(HttpSession session) {
-        User loginUser = (User) session.getAttribute("user");
-        Company loginCompany = (Company) session.getAttribute("company");
+        User loginUser = (User) session.getAttribute("userSession");
+        Company loginCompany = (Company) session.getAttribute("companySession");
         if (loginUser != null) {
             return ResponseEntity.ok(loginUser);
         } else if (loginCompany != null) {
@@ -89,14 +89,14 @@ public class AuthController {
     // 유저 회원가입
     @PostMapping("/register-person")
     public void registerUser(@RequestBody User user) {
-        userService.registerUser(user);
+        authService.registerUser(user);
     }
 
 
     // 기업 회원가입
     @PostMapping("/register-company")
     public void registerCompany(@RequestBody Company company) {
-        companyService.registerCompany(company);
+        authService.registerCompany(company);
     }
 
 
