@@ -3,9 +3,7 @@ package com.jobjob.albaing.controller;
 import com.jobjob.albaing.dto.Company;
 import com.jobjob.albaing.dto.User;
 import com.jobjob.albaing.model.vo.VerificationRequest;
-import com.jobjob.albaing.service.CompanyServiceImpl;
 import com.jobjob.albaing.service.AuthService;
-import com.jobjob.albaing.service.UserServiceImpl;
 import com.jobjob.albaing.service.VerificationService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +19,6 @@ public class AuthController {
 
     @Autowired
     private AuthService authService;
-
-    @Autowired
-    private UserServiceImpl userService;
-
-    @Autowired
-    private CompanyServiceImpl companyService;
 
     // 유저 로그인
     @PostMapping("/login-person")
