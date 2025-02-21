@@ -26,9 +26,6 @@ public interface ResumeMapper {
     //이력서 수정
     void updateResume(Resume resume, EducationHistory educationHistory, CareerHistory careerHistory);
 
-    //이력서 삭제
-    void deleteResume(int resumeId);
-
     //사용자 회원가입시 이력서 자동 생성
     void createResumeForUser(User user);
 

@@ -9,13 +9,7 @@
 
 <!--    user 불러오기-->
     <select id="getUserById">
-        SELECT user_name,
-               user_email,
-               user_birthdate,
-               user_gender,
-               user_phone,
-               user_address,
-               user_profile_image
+        SELECT *
         FROM USERS
         WHERE user_id = #{userId}
     </select>
@@ -24,11 +18,10 @@
     <update id="updateUser">
         UPDATE USERS
         SET
-            user_id = #{userId},
             user_email = #{userEmail},
             user_profile_image = #{userProfileImage},
             user_address = #{userAddress}
-        WHERE id = #{id}
+        WHERE user_id = #{userId}
     </update>
 
 <!--    //이력서 조회-->
@@ -119,6 +112,10 @@
         WHERE resume_id = #{resumeId}
     </update>
 
+<!--    학력 삭제 -->
+
+
+<!--    경력 삭제 -->
 
 
 </mapper>
