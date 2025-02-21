@@ -2,7 +2,8 @@ package com.jobjob.albaing.mapper;
 
 import com.jobjob.albaing.dto.Company;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
+
+import java.util.Map;
 
 
 @Mapper
@@ -12,5 +13,5 @@ public interface CompanyMapper {
     void registerCompany(Company company);
 
     // 회사 로그인
-    Company loginCompany(@Param("companyEmail") String companyEmail, @Param("companyPassword")String companyPassword);
+    Company loginCompany(Map<String, Object> param);
 }

@@ -5,7 +5,6 @@ import com.jobjob.albaing.dto.User;
 import com.jobjob.albaing.mapper.CompanyMapper;
 import com.jobjob.albaing.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -20,16 +19,17 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private CompanyMapper companyMapper;
 
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
-
     // 유저 로그인
     @Override
     public Map<String, Object> loginUser(String userEmail, String userPassword) {
-        User loggedInUser = userMapper.loginUser(userEmail, userPassword);
+        Map<String, Object> param = new HashMap<>();
+        param.put("userEmail", userEmail);
+        param.put("userPassword", userPassword);
+
+        User loggedInUser = userMapper.loginUser(param); // 변경된 부분
         Map<String, Object> result = new HashMap<>();
 
-        if (loggedInUser != null && passwordEncoder.matches(userPassword, loggedInUser.getUserPassword())) {
+        if (loggedInUser != null) {
             result.put("status", "success");
             result.put("user", loggedInUser);
             result.put("redirect", "/");
@@ -44,10 +44,14 @@ public class AuthServiceImpl implements AuthService {
     // 기업 로그인
     @Override
     public Map<String, Object> loginCompany(String companyEmail, String companyPassword) {
-        Company loggedInCompany = companyMapper.loginCompany(companyEmail, companyPassword);
+        Map<String, Object> param = new HashMap<>();
+        param.put("companyEmail", companyEmail);
+        param.put("companyPassword", companyPassword);
+
+        Company loggedInCompany = companyMapper.loginCompany(param); // 변경된 부분
         Map<String, Object> result = new HashMap<>();
 
-        if (loggedInCompany != null && passwordEncoder.matches(companyPassword, loggedInCompany.getCompanyPassword())) {
+        if (loggedInCompany != null) {
             result.put("status", "success");
             result.put("company", loggedInCompany);
             result.put("redirect", "/");
@@ -59,17 +63,18 @@ public class AuthServiceImpl implements AuthService {
         return result;
     }
 
+
     // 유저 회원가입
     @Override
     public void registerUser(User user) {
-        user.setUserPassword(passwordEncoder.encode(user.getUserPassword()));
+        user.setUserPassword(user.getUserPassword());
         userMapper.registerUser(user);
     }
 
     // 기업 회원가입
     @Override
     public void registerCompany(Company company) {
-        company.setCompanyPassword(passwordEncoder.encode(company.getCompanyPassword()));
+        company.setCompanyPassword(company.getCompanyPassword());
         companyMapper.registerCompany(company);
     }
 }
