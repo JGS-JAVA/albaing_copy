@@ -1,9 +1,6 @@
 package com.jobjob.albaing.controller;
 
-import com.jobjob.albaing.dto.CareerHistory;
-import com.jobjob.albaing.dto.EducationHistory;
-import com.jobjob.albaing.dto.Resume;
-import com.jobjob.albaing.dto.User;
+import com.jobjob.albaing.dto.*;
 import com.jobjob.albaing.service.ResumeService;
 import com.jobjob.albaing.service.ResumeServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +26,8 @@ public class ResumeController {
     @PutMapping("/resume/update/{resumeId}")
     public void updateResume(
             @PathVariable int resumeId,
-            @RequestBody Resume resume,
-            @RequestBody EducationHistory educationHistory,
-            @RequestBody CareerHistory careerHistory) {
-        // 이력서 수정
-        resumeService.updateResume(resume, educationHistory, careerHistory);
+            @RequestBody ResumeUpdateRequest resumeUpdateRequest) {
+                resumeService.updateResume(resumeUpdateRequest);
     }
 
     // 3. 이력서 조회
@@ -49,11 +43,11 @@ public class ResumeController {
     }
 
     // 5. 사용자 정보 수정
-    @PutMapping("/user/update")
+    @PutMapping("/user/update/{userId}")
     public void updateUser(@PathVariable int userId, @RequestParam("userEmail") String userEmail,
                            @RequestParam("userAddress") String userAddress,
                            @RequestParam("userProfileImage") String userProfileImage) {
-        resumeService.updateUser(userEmail, userAddress, userProfileImage);
+        resumeService.updateUser(userId,userEmail, userAddress, userProfileImage);
     }
 }
 

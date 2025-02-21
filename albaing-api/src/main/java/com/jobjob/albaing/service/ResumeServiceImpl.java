@@ -1,9 +1,6 @@
 package com.jobjob.albaing.service;
 
-import com.jobjob.albaing.dto.CareerHistory;
-import com.jobjob.albaing.dto.EducationHistory;
-import com.jobjob.albaing.dto.Resume;
-import com.jobjob.albaing.dto.User;
+import com.jobjob.albaing.dto.*;
 import com.jobjob.albaing.mapper.ResumeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,8 +27,8 @@ public class ResumeServiceImpl implements ResumeService {
 
     //내 정보 수정
     @Override
-    public void updateUser(String userEmail, String userAddress, String userProfileImage) {
-        resumeMapper.updateUser(userEmail, userAddress, userProfileImage);
+    public void updateUser(int userId,String userEmail, String userAddress, String userProfileImage) {
+        resumeMapper.updateUser(userId, userEmail, userAddress, userProfileImage);
     }
 
     //이력서 조회
@@ -49,8 +46,8 @@ public class ResumeServiceImpl implements ResumeService {
 
     //이력서 수정
     @Override
-    public void updateResume(Resume resume, EducationHistory educationHistory, CareerHistory careerHistory) {
-        resumeMapper.updateResume(resume, educationHistory, careerHistory);
+    public void updateResume(ResumeUpdateRequest resumeUpdateRequest) {
+        resumeMapper.updateResume(resumeUpdateRequest);
 
     }
 

@@ -60,19 +60,19 @@
 
 <!--    //이력서 insert-->
     <insert id="insertResume">
-        INSERT INTO RESUMES (user_id, resume_id, resume_title, resume_location,
+        INSERT INTO RESUMES (user_id,resume_title, resume_location,
                             resume_job_category, resume_job_type, resume_job_duration,
                             resume_work_schedule, resume_work_time, resume_job_skill,
                             resume_introduction)
 
-        VALUES (#{userId}, #{resumeId}, #{resumeTitle}, #{resumeLocation},
+        VALUES (#{userId},#{resumeTitle}, #{resumeLocation},
                 #{resumeJobCategory}, #{resumeJobType}, #{resumeJobDuration},
                 #{resumeWorkSchedule}, #{resumeWorkTime}, #{resumeJobSkill},
                 #{resumeIntroduction})
     </insert>
 
 
-<!--    //이력서 수정-->
+<!--    //이력서 수정 -->
 <update id="updateResume">
     UPDATE RESUMES
     SET
@@ -83,7 +83,7 @@
         resume_job_duration = #{resumeJobDuration},
         resume_work_schedule = #{resumeWorkSchedule},
         resume_work_time= #{resumeWorkTime},
-        resume_introduction = #{resumeIntroduction},
+        resume_introduction = #{resumeIntroduction}
     WHERE resume_id = #{resumeId}
 </update>
 
