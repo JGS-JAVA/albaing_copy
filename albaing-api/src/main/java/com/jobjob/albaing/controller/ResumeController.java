@@ -44,10 +44,11 @@ public class ResumeController {
 
     // 5. 사용자 정보 수정
     @PutMapping("/user/update/{userId}")
-    public void updateUser(@PathVariable int userId, @RequestParam("userEmail") String userEmail,
+    public void updateUser(@PathVariable int userId,
+                           @RequestParam("userEmail") String userEmail,
                            @RequestParam("userAddress") String userAddress,
                            @RequestParam("userProfileImage") String userProfileImage) {
-        resumeService.updateUser(userId,userEmail, userAddress, userProfileImage);
+        resumeService.updateUser(userId,userEmail,userAddress,userProfileImage);
     }
 }
 
