@@ -3,8 +3,8 @@ package com.jobjob.albaing.controller;
 import com.jobjob.albaing.dto.Company;
 import com.jobjob.albaing.dto.User;
 import com.jobjob.albaing.model.vo.VerificationRequest;
-import com.jobjob.albaing.service.AuthService;
-import com.jobjob.albaing.service.VerificationService;
+import com.jobjob.albaing.service.AuthServiceImpl;
+import com.jobjob.albaing.service.VerificationServiceImpl;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,7 @@ import java.util.Map;
 public class AuthController {
 
     @Autowired
-    private AuthService authService;
+    private AuthServiceImpl authService;
 
     // 유저 로그인
     @PostMapping("/login-person")
@@ -94,7 +94,7 @@ public class AuthController {
 
     /**************************** 이메일 인증 ***********************************/
     @Autowired
-    private VerificationService verificationService;
+    private VerificationServiceImpl verificationServiceImpl;
 
     @PostMapping("/sendCode")
     public String sendCode(@RequestBody VerificationRequest vr) {
@@ -103,13 +103,13 @@ public class AuthController {
         String email = vr.getEmail();
         System.out.println("컨트롤러- 이메일:" + email);
 
-        String code = verificationService.randomCode();
+        String code = verificationServiceImpl.randomCode();
         System.out.println("컨트롤러- 코드:" + code);
 
-        verificationService.saveEmailCode(email, code);
+        verificationServiceImpl.saveEmailCode(email, code);
         System.out.println("컨트롤러- 세이브 메서드:" + email + code);
 
-        verificationService.sendEmail(email, code);
+        verificationServiceImpl.sendEmail(email, code);
         System.out.println("컨트롤러- 이메일 전송 성공:" + code);
 
         return "이메일을 성공적으로 보냈습니다." + email;
@@ -118,7 +118,7 @@ public class AuthController {
     // 인증번호 일치여부 확인
     @PostMapping("/checkCode")
     public String checkCode(@RequestBody VerificationRequest vr) {
-        boolean isValid = verificationService.verifyCodeWithVO(vr);
+        boolean isValid = verificationServiceImpl.verifyCodeWithVO(vr);
         System.out.println(isValid);
 
         if (isValid) {
