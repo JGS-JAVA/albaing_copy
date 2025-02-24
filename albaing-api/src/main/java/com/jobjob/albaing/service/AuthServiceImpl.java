@@ -20,7 +20,7 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private CompanyMapper companyMapper;
 
-    // 유저 로그인
+    // 유저로그인
     @Override
     public Map<String, Object> loginUser(String userEmail, String userPassword) {
         Map<String, Object> param = new HashMap<>();
