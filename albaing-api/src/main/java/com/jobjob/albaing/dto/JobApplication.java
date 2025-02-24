@@ -16,6 +16,4 @@ public class JobApplication {
     private int resumeId;
     private LocalDateTime applicationAt;
     private String approveStatus;
-
-    // getters, setters 생략
 }
