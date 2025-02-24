@@ -5,7 +5,9 @@
 
 
 <!--    이력서 자동 생성-->
+    <insert id="createResumeForUser">
 
+    </insert>
 
 <!--    user 불러오기-->
     <select id="getUserById">
@@ -23,12 +25,6 @@
             user_address = #{userAddress}
         WHERE user_id = #{userId}
     </update>
-
-<!--    //이력서 조회-->
-<!--    <select id="resumeDetails">-->
-<!--        SELECT *-->
-<!--        FROM RESUMES-->
-<!--    </select>-->
 
     <select id="resumeDetails">
         SELECT
@@ -76,6 +72,7 @@
 <update id="updateResume">
     UPDATE RESUMES
     SET
+
         resume_title = #{resume.resumeTitle},
         resume_location = #{resume.resumeLocation},
         resume_job_category = #{resume.resumeJobCategory},
@@ -83,6 +80,7 @@
         resume_job_duration = #{resume.resumeJobDuration},
         resume_work_schedule = #{resume.resumeWorkSchedule},
         resume_work_time= #{resume.resumeWorkTime},
+        resume_job_skill= #{resume.resumeJobSkill},
         resume_introduction = #{resume.resumeIntroduction}
     WHERE resume_id = #{resume.resumeId}
 </update>
@@ -108,7 +106,8 @@
             career_company_name = #{careerCompanyName},
             career_join_date = #{careerJoinDate},
             career_quit_date = #{careerQuitDate},
-            career_job_description = #{careerJobDescription}
+            career_job_description = #{careerJobDescription},
+            career_is_career = #{careerIsCareer}
         WHERE resume_id = #{resumeId}
     </update>
 

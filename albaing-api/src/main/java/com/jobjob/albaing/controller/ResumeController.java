@@ -50,6 +50,12 @@ public class ResumeController {
                            @RequestParam("userProfileImage") String userProfileImage) {
         resumeService.updateUser(userId,userEmail,userAddress,userProfileImage);
     }
+
+    //6. 이력서 최종 저장
+    @PostMapping("/resume/save")
+    public void saveResume(@RequestBody Resume resume,EducationHistory educationHistory,CareerHistory careerHistory) {
+        resumeService.insertResume(resume,educationHistory,careerHistory);
+    }
 }
 
 
