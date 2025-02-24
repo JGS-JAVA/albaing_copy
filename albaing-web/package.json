@@ -15,8 +15,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "tailwindcss -i ./src/assets/styles/index.css -o ./dist/output.css --watch",
-    "build": "tailwindcss -i ./src/assets/styles/index.css -o ./dist/output.css",
+    "start": "tailwindcss -i ./src/assets/styles/index.css -o ./dist/output.css --watch & react-scripts start",
+    "build": "tailwindcss -i ./src/assets/styles/index.css -o ./dist/output.css & react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

@@ -4,8 +4,13 @@ module.exports = {
     './src/**/*.jsx',
   ],
   theme: {
-    extend: {},
+    extend: {
+        colors: {
+          "brand-blue" : '#0066FF',
+        }
+    }
   },
+
   plugins: [
     require('@tailwindcss/typography'),
     require('@tailwindcss/forms'),
