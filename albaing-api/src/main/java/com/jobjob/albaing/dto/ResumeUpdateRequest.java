@@ -7,6 +7,7 @@ import lombok.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
+
 public class ResumeUpdateRequest {
     private Resume resume;
     private EducationHistory educationHistory;

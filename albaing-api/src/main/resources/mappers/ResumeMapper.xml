@@ -76,15 +76,15 @@
 <update id="updateResume">
     UPDATE RESUMES
     SET
-        resume_title = #{resumeTitle},
-        resume_location = #{resumeLocation},
-        resume_job_category = #{resumeJobCategory},
-        resume_job_type = #{resumeJobType},
-        resume_job_duration = #{resumeJobDuration},
-        resume_work_schedule = #{resumeWorkSchedule},
-        resume_work_time= #{resumeWorkTime},
-        resume_introduction = #{resumeIntroduction}
-    WHERE resume_id = #{resumeId}
+        resume_title = #{resume.resumeTitle},
+        resume_location = #{resume.resumeLocation},
+        resume_job_category = #{resume.resumeJobCategory},
+        resume_job_type = #{resume.resumeJobType},
+        resume_job_duration = #{resume.resumeJobDuration},
+        resume_work_schedule = #{resume.resumeWorkSchedule},
+        resume_work_time= #{resume.resumeWorkTime},
+        resume_introduction = #{resume.resumeIntroduction}
+    WHERE resume_id = #{resume.resumeId}
 </update>
 
     <!-- 이력서 수정 (학력) -->
