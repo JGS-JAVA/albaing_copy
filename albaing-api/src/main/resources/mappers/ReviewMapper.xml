@@ -102,7 +102,7 @@
     <!-- 상세 페이지 기업 리뷰 글 출력 -->
     <select id="showReviews">
           SELECT review_title,
-                 CONCAT('*****', SUBSTRING(user_id, 6)) AS anonymous_id,
+                 review_id,
                  review_created_at
           FROM reviews
           WHERE review_id = #{reviewId}
@@ -110,23 +110,16 @@
           LIMIT 5
 </select>
 
-    <!-- 유저 리뷰 작성 + 익명성 부여 + 익명성 ID 자동 증가 -->
+    <!-- 유저 리뷰 작성 -->
     <select id="addReview">
           INSERT INTO reviews (company_id, user_id, review_title, review_content)
-          VALUES (#{companyId},
-                  CONCAT('*****',
-                  (SELECT MAX(CAST(SUBSTRING(CAST(user_id AS CHAR), 6) AS UNSIGNED)) + 1
-                   FROM reviews)),
-                  #{reviewTitle}, #{reviewContent})
+          VALUES (#{companyId}, #{userId}, #{reviewTitle}, #{reviewContent})
     </select>
 
-    <!-- 리뷰 조회 + 작성자 익명 ID로 출력 + 작성된 댓글 출력 + 총 댓글 개수 표시 -->
+    <!-- 리뷰 조회 + 작성된 댓글 출력 + 총 댓글 개수 표시 -->
     <select id="reviewCheck">
           SELECT reviews.review_title, reviews.review_content,
-                 CONCAT('*****',
-                 (SELECT MAX(CAST(SUBSTRING(CAST(user_id AS CHAR), 6) AS UNSIGNED)) + 1
-                  FROM reviews)
-                  ) AS annonymous_id,
+                 reviews.user_id,
                   reviews.review_created_at,
                   COUNT(comments.comment_id) AS comment_count, comments.comment_id,
                   comments.comment_content, comments.comment_created_at
@@ -137,11 +130,11 @@
           ORDER BY comments.comment_created_at IS NULL, comments.comment_created_at ASC
     </select>
 
-    <!-- 댓글 작성 + 익명성 부여 + 익명성 ID 자동 증가 -->
+    <!-- 댓글 작성 -->
     <select id="addComment">
           INSERT INTO comments(review_id, user_id, comment_content)
           VALUES (#{reviewId},
-                 CONCAT('*****', (SELECT MAX(CAST(SUBSTRING(CAST(user_id AS CHAR), 6) AS UNSIGNED)) + 1 FROM comments)),
+                 #{userId},
                  #{commentContent});
     </select>
 
