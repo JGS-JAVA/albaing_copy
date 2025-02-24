@@ -1,16 +1,13 @@
-package com.jobjob.albaing.mapper;
+package com.jobjob.albaing.service;
 
 import com.jobjob.albaing.dto.Comment;
 import com.jobjob.albaing.dto.Company;
 import com.jobjob.albaing.dto.JobPost;
 import com.jobjob.albaing.dto.Review;
-import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
-@Mapper
-
-public interface ReviewMapper {
+public interface ReviewService {
 
     // 회사 상세 정보 불러오기
     Company companyDetail(long companyId);
