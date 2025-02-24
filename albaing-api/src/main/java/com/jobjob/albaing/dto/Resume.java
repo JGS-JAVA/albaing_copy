@@ -19,11 +19,11 @@ public class Resume {
     private String resumeTitle;
     private String resumeLocation;
     private String resumeJobCategory;
-    private String resumeJobtype;
+    private String resumeJobType;
     private String resumeJobDuration;
     private String resumeWorkSchedule;
     private String resumeWorkTime;
-    private String resumeJobskill;
+    private String resumeJobSkill;
     private String resumeIntroduction;
 
 }
