@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="패키지이름.파일명">
+<mapper namespace="com.jobjob.albaing.mapper.AdminMapper">
 
     <!-- 이하 모든 "select *" 구문 수정할 것-->
     <!-- 구문마다 목적, 개요 주석 달 것-->
 
 
     <!-- 개인 회원 조회 -->
-    <!-- 개인 회원 전체 조회 -->
+    <!-- 개인 회원 전체 조회-->
+    <!-- 개인 이력서 목록 전체를 List<RESUME>로 반환-->
+
+    <select id="adminSearchUserAll">
+        select *
+        from USERS
+    </select>
+
     <!-- 개인 회원 조회 : 이름으로 검색 -->
     <!-- String userName(사용자명 전체 혹은 부분) 을 받아 조건에 부합하는 계정을 찾고, List<User>(조건을 만족하는 사용자 리스트)로 반환 -->
     <select id="adminSearchUserByName">
@@ -30,13 +37,54 @@
     <select id="adminSearchUserByPhone">
         select *
         from USERS
-        where user_phone = #{user_phone}
+        where user_phone = #{userPhone}
     </select>
 
+
     <!-- 개인 이력서 조회 -->
+    <!-- 개인 이력서 전체 조회 -->
+    <!-- 개인 이력서 목록 전체를 List<RESUME>로 반환-->
+    <select id="adminSearchResumeAll">
+        select *
+        from RESUMES
+    </select>
+
+    <!-- 개인 회원 조회 : 이름으로 검색 -->
+    <!-- String userName(사용자명 전체 혹은 부분) 을 받아 조건에 부합하는 계정을 찾고, List<RESUME>(조건을 만족하는 이력서 리스트)로 반환 -->
+    <select id="adminSearchResumeByName">
+        select *
+        from RESUMES
+                 join USERS on USERS.user_id = RESUME.user_id
+        where USERS.user_name = #{userName};
+    </select>
+
+    <!-- 개인 회원 조회 : 이메일으로 검색 -->
+    <!-- String userEmail(이메일 전체 혹은 부분) 을 받아 조건에 부합하는 계정을 찾고, List<RESUME>(조건을 만족하는 이력서 리스트)로 반환 -->
+    <select id="adminSearchResumeByEmail">
+        select *
+        from RESUMES
+                 join USERS on USERS.user_id = RESUME.user_id
+        WHERE USERS.user_email = #{userEmail};
+    </select>
+
+    <!-- 개인 회원 조회 : 전화번호로 검색 -->
+    <!-- String userPhone(전화번호 전체 혹은 부분) 을 받아 조건에 부합하는 계정을 찾고, List<RESUME>(조건을 만족하는 이력서 리스트)로 반환 -->
+    <select id="adminSearchResumeByPhone">
+        select *
+        from RESUMES
+                 join USERS on USERS.user_id = RESUME.user_id
+        WHERE USERS.user_phone = #{userPhone};
+    </select>
 
 
     <!-- 기업 회원 조회 -->
+    <!-- 기업 회원 전체 조회 -->
+    <!-- 기업 회원 목록 전체를 List<Company>로 반환-->
+
+    <select id="adminSearchCompanyAll">
+        select *
+        from COMPANIES
+    </select>
 
     <!-- 기업 회원 조회 : 기업명으로 검색 -->
     <!-- String companyName(기업명 전체 혹은 부분) 을 받아 조건에 부합하는 계정을 찾고, List<Company>(조건을 만족하는 회사 리스트)로 반환-->
@@ -61,4 +109,34 @@
         from COMPANIES
         where company_phone = #{companyPhone}
     </select>
+
+
+    <!-- 기업 공고 조회 -->
+    <!-- 기업 공고 전체 조회 -->
+    <!-- 기업 공고 목록 전체를 List<JobPost>로 반환-->
+    <select id="adminSearchPostAll">
+        select *
+        from JOB_POSTS
+    </select>
+
+    <!-- 기업 공고 조회 : 기업명으로 검색 -->
+    <!-- String companyName(기업명 전체 혹은 부분) 을 받아 조건에 부합하는 계정을 찾고, List<JobPost>(조건을 만족하는 회사 리스트)로 반환-->
+    <select id="adminSearchPostByName">
+        select *
+        from JOB_POSTS
+                 join COMPANIES on COMPANIES.company_id = JOB_POSTS.company_id
+        where company_name = #{companyName}
+    </select>
+
+    <!-- 기업 공고 조회 : 공고 제목으로 검색 -->
+    <!-- String job_post_title(기업명 전체 혹은 부분) 을 받아 조건에 부합하는 계정을 찾고, List<JobPost>(조건을 만족하는 회사 리스트)로 반환-->
+    <select id="adminSearchPostByTitle">
+        select *
+        from JOB_POSTS
+                 join COMPANIES on COMPANIES.company_id = JOB_POSTS.company_id
+        where company_name = #{companyName}
+    </select>
+
+    <!--
+
 </mapper>
