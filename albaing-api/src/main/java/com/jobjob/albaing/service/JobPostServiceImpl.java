@@ -2,7 +2,7 @@ package com.jobjob.albaing.service;
 
 import com.jobjob.albaing.dto.JobPost;
 import com.jobjob.albaing.mapper.JobPostMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class JobPostServiceImpl implements JobPostService {
 
-    @Autowired
-    private JobPostMapper jobPostMapper;
+    private final JobPostMapper jobPostMapper;
 
     @Override
     public JobPost createJobPost(JobPost jobPost) {
@@ -23,7 +23,7 @@ public class JobPostServiceImpl implements JobPostService {
     }
 
     @Override
-    public JobPost getJobPost(int jobPostId) {
+    public JobPost getJobPost(Long jobPostId) {
         return jobPostMapper.selectJobPostById(jobPostId);
     }
 
@@ -48,7 +48,8 @@ public class JobPostServiceImpl implements JobPostService {
     }
 
     @Override
-    public void updateJobPostStatus(int jobPostId, boolean status) {
+
+    public void updateJobPostStatus(Long jobPostId, boolean status) {
         jobPostMapper.updateJobPostStatus(jobPostId, status);
     }
 
@@ -62,6 +63,4 @@ public class JobPostServiceImpl implements JobPostService {
 
         return jobPostMapper.countJobPost(params);
     }
-
-
 }
