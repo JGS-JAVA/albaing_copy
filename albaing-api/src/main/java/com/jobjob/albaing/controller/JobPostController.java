@@ -35,8 +35,11 @@ public class JobPostController {
     @PatchMapping("/{jobPostId}/status")
     public ResponseEntity<Void> updateJobPostStatus(
             @PathVariable int jobPostId,
-            @RequestParam boolean status
+            @RequestParam Boolean status
     ) {
+        if (status == null) {
+            return ResponseEntity.badRequest().build();
+        }
         jobPostService.updateJobPostStatus(jobPostId, status);
         return ResponseEntity.ok().build();
     }

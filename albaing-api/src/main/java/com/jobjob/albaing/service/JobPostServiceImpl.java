@@ -62,4 +62,6 @@ public class JobPostServiceImpl implements JobPostService {
 
         return jobPostMapper.countJobPost(params);
     }
+
+
 }

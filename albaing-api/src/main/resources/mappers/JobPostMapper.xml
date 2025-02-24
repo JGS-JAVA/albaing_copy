@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jobjob.albaing.mapper.JobPostMapper">
 
-    <insert id="insertJobPost">
+    <insert id="insertJobPost" useGeneratedKeys="true" keyProperty="jobPostId">
         INSERT INTO job_posts (
             company_id,
             job_post_title,
@@ -60,6 +60,7 @@
                 AND (
                 job_post_title LIKE CONCAT('%', #{keyword}, '%')
                 OR job_post_work_place LIKE CONCAT('%', #{keyword}, '%')
+                OR company_id IN (SELECT company_id FROM companies WHERE company_name LIKE CONCAT('%', #{keyword}, '%'))
                 )
             </if>
             <if test="onlyActive">
