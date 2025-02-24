@@ -6,12 +6,10 @@ import Footer from './components/Footer';
 
 import AdminMain from './pages/admin/AdminMain';
 
-import CompanyAdd from './pages/company/CompanyAdd';
 import CompanyDetail from './pages/company/CompanyDetail';
 import CompanyMain from './pages/company/CompanyMain';
 import CompanyReview from './pages/company/CompanyReview';
 import CompanyReviewPost from './pages/company/CompanyReviewPost';
-import Reviews from './pages/company/Reviews';
 
 import FindId from './pages/find/FindId';
 import FindIdResult from './pages/find/FindIdResult';
@@ -53,7 +51,6 @@ function PathRoute() {
 
                 {/* 회사 관련 페이지 */}
                 <Route path="/company" element={<CompanyMain/>} />
-                <Route path="/company/add" element={<CompanyAdd/>} />
                 <Route path="/company/detail/:id" element={<CompanyDetail/>} />
                 <Route path="/company/review" element={<CompanyReview/>} />
                 <Route path="/company/review/post" element={<CompanyReviewPost/>} />
