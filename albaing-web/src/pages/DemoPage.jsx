@@ -5,6 +5,7 @@ function DemoPage() {
         <div>
             <header>
                 <h1>Demo Page</h1>
+                <img src="../assets/svg/albaing_logo.svg" alt="Logo"  />
             </header>
             <main>
                 <section>
