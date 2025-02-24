@@ -6,10 +6,10 @@ import java.util.List;
 
 public interface JobPostService {
     JobPost createJobPost(JobPost jobPost);
-    JobPost getJobPost(Long jobPostId);
+    JobPost getJobPost(int jobPostId);
     List<JobPost> getJobPostList(String jobCategory, String jobType,
-                                    String keyword, int page, int size, boolean onlyActive);
+                                 String keyword, int page, int size, boolean onlyActive);
     JobPost updateJobPost(JobPost jobPost);
-    void updateJobPostStatus(Long jobPostId, boolean status);
+    void updateJobPostStatus(int jobPostId, boolean status);
     int getTotalCount(String jobCategory, String jobType, String keyword, boolean onlyActive);
 }

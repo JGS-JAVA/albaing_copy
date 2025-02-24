@@ -2,7 +2,6 @@ package com.jobjob.albaing.service;
 
 import com.jobjob.albaing.dto.JobApplication;
 import com.jobjob.albaing.mapper.JobApplicationMapper;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

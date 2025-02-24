@@ -23,7 +23,7 @@ public class JobPostServiceImpl implements JobPostService {
     }
 
     @Override
-    public JobPost getJobPost(Long jobPostId) {
+    public JobPost getJobPost(int jobPostId) {
         return jobPostMapper.selectJobPostById(jobPostId);
     }
 
@@ -48,7 +48,7 @@ public class JobPostServiceImpl implements JobPostService {
     }
 
     @Override
-    public void updateJobPostStatus(Long jobPostId, boolean status) {
+    public void updateJobPostStatus(int jobPostId, boolean status) {
         jobPostMapper.updateJobPostStatus(jobPostId, status);
     }
 
