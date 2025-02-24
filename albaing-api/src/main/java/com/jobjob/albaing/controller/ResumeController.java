@@ -53,8 +53,8 @@ public class ResumeController {
 
     //6. 이력서 최종 저장
     @PostMapping("/resume/save")
-    public void saveResume(@RequestBody Resume resume,EducationHistory educationHistory,CareerHistory careerHistory) {
-        resumeService.insertResume(resume,educationHistory,careerHistory);
+    public void insertResume(@RequestBody ResumeUpdateRequest resumeUpdateRequest) {
+        resumeService.insertResume(resumeUpdateRequest);
     }
 }
 

@@ -18,7 +18,7 @@ public interface ResumeMapper {
     Resume resumeDetails(int resumeId);
 
     //이력서 post
-    void insertResume(Resume resume , EducationHistory educationHistory, CareerHistory careerHistory);
+    void insertResume(ResumeUpdateRequest resumeUpdateRequest);
 
     //이력서 수정
     void updateResume(ResumeUpdateRequest resumeUpdateRequest);

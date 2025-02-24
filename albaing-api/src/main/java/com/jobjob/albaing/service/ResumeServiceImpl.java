@@ -39,8 +39,8 @@ public class ResumeServiceImpl implements ResumeService {
 
     //이력서 post
     @Override
-    public void insertResume(Resume resume, EducationHistory educationHistory, CareerHistory careerHistory) {
-        resumeMapper.insertResume(resume, educationHistory, careerHistory);
+    public void insertResume(ResumeUpdateRequest resumeUpdateRequest) {
+        resumeMapper.insertResume(resumeUpdateRequest);
 
     }
 
