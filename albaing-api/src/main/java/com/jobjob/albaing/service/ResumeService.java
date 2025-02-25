@@ -25,4 +25,6 @@ public interface ResumeService {
     void updateResume(ResumeUpdateRequest resumeUpdateRequest);
 
 
+
+
 }

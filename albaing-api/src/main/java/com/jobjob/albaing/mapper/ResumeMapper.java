@@ -24,6 +24,15 @@ public interface ResumeMapper {
     void updateResume(ResumeUpdateRequest resumeUpdateRequest);
 
     //사용자 회원가입시 이력서 자동 생성
-    void createResumeForUser(User user);
+    void createResumeForUser(Resume resume);
+
+    // 기본 학력 정보 생성
+    void createDefaultEducation(EducationHistory educationHistory);
+
+    // 기본 경력 정보 생성
+    void createDefaultCareer(CareerHistory careerHistory);
+
+
+
 
 }
