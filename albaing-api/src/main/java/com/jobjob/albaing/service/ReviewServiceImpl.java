@@ -15,41 +15,37 @@ public class ReviewServiceImpl implements ReviewService {
     @Autowired
     private ReviewMapper reviewMapper;
 
-    @Override
-    public Company companyDetail(long companyId) {
-        return reviewMapper.companyDetail(companyId);
-    }
-
-    @Override
-    public List<JobPost> showPosts(long companyId) {
-        return reviewMapper.showPosts(companyId);
-    }
-
+    //특정 회사 전체 리뷰 보여주기
     @Override
     public List<Review> showReviews(long companyId) {
         return reviewMapper.showReviews(companyId);
     }
 
+    //회사 리뷰 등록
     @Override
     public void addReview(Review review) {
         reviewMapper.addReview(review);
     }
 
+    //회사 리뷰 조회
     @Override
     public Review reviewCheck(long reviewId) {
         return reviewMapper.reviewCheck(reviewId);
     }
 
+    //회사 리뷰 삭제
     @Override
     public void deleteReview(long reviewId, long userId) {
         reviewMapper.deleteReview(reviewId, userId);
     }
 
+    //리뷰 댓글 등록
     @Override
     public void addComment(Comment comment) {
         reviewMapper.addComment(comment);
     }
 
+    //리뷰 댓글 삭제
     @Override
     public void deleteComment(long commentId, long userId) {
         reviewMapper.deleteComment(commentId, userId);

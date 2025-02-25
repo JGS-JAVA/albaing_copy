@@ -9,27 +9,21 @@ import java.util.List;
 
 public interface ReviewService {
 
-    // 회사 상세 정보 불러오기
-    Company companyDetail(long companyId);
-
-    //회사 전체 공고 출력
-    List<JobPost> showPosts(long companyId);
-
-    //전체 리뷰 보여주기
+    //특정 회사 전체 리뷰 보여주기
     List<Review> showReviews(long companyId);
 
-    //리뷰 등록
+    //회사 리뷰 등록
     void addReview(Review review);
 
-    //리뷰 조회
+    //회사 리뷰 조회
     Review reviewCheck(long reviewId);
 
-    //리뷰 삭제
+    //회사 리뷰 삭제
     void deleteReview(long reviewId, long userId);
 
-    //댓글 등록
+    //리뷰 댓글 등록
     void addComment(Comment comment);
 
-    //댓글 삭제
+    //리뷰 댓글 삭제
     void deleteComment(long commentId, long userId);
 }

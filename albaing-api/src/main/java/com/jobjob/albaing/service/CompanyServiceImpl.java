@@ -20,5 +20,9 @@ public class CompanyServiceImpl implements CompanyService {
         companyMapper.registerCompany(company);
     }
 
-
+    // 회사 상세 정보 불러오기
+    @Override
+    public Company companyDetail(long companyId) {
+        return companyMapper.companyDetail(companyId);
+    }
 }

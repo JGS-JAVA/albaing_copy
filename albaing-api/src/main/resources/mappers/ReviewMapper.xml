@@ -108,7 +108,7 @@
           WHERE company_id = #{companyId}
           ORDER BY review_created_at DESC
           LIMIT 5
-</select>
+    </select>
 
     <!-- 유저 리뷰 작성 -->
     <insert id="addReview">

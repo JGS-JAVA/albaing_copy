@@ -63,4 +63,10 @@ public class JobPostServiceImpl implements JobPostService {
 
         return jobPostMapper.countJobPost(params);
     }
+
+    //특정 회사 전체 공고 출력
+    @Override
+    public List<JobPost> showPosts(long companyId) {
+        return jobPostMapper.showPosts(companyId);
+    }
 }
