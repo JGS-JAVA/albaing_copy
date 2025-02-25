@@ -31,7 +31,10 @@ public class AuthServiceImpl implements AuthService {
         Map<String, Object> param = new HashMap<>();
         param.put("userEmail", userEmail);
 
+        System.out.println("로그인 요청 이메일: " + userEmail);
         User loggedInUser = userMapper.loginUser(param); // 변경된 부분
+        System.out.println("로그인 결과: " + loggedInUser);
+
         Map<String, Object> result = new HashMap<>();
 
         if (loggedInUser != null && passwordEncoder.matches(userPassword, loggedInUser.getUserPassword())) {
@@ -42,6 +45,9 @@ public class AuthServiceImpl implements AuthService {
             result.put("status", "fail");
             result.put("message", "아이디 또는 비밀번호가 올바르지 않습니다.");
         }
+
+        System.out.println("DB 저장된 비밀번호: " + loggedInUser.getUserPassword());
+        System.out.println("입력한 비밀번호: " + userPassword);
 
         return result;
     }
