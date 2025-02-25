@@ -12,4 +12,7 @@ public interface JobPostService {
     JobPost updateJobPost(JobPost jobPost);
     void updateJobPostStatus(int jobPostId, boolean status);
     int getTotalCount(String jobCategory, String jobType, String keyword, boolean onlyActive);
+
+    //특정 회사 전체 공고 출력
+    List<JobPost> showPosts(long companyId);
 }

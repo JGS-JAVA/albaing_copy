@@ -43,4 +43,14 @@ public class JobPostController {
         jobPostService.updateJobPostStatus(jobPostId, status);
         return ResponseEntity.ok().build();
     }
+  
+      //상세 페이지 기업 채용 공고 출력
+    @GetMapping("페이지네이션")
+    public String showPosts(@PathVariable("companyId") long companyId, Model model) {
+        List<JobPost> jobPosts = jobPostService.showPosts(companyId);
+
+        model.addAttribute("jobPosts", jobPosts);
+
+        return "company/companyDetail";
+    }
 }

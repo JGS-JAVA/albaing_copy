@@ -14,4 +14,7 @@ public interface JobPostMapper {
     void updateJobPost(JobPost jobPost);
     void updateJobPostStatus(int jobPostId, boolean status);
     int countJobPost(Map<String, Object> params);
+
+    //특정 회사 전체 공고 출력
+    List<JobPost> showPosts(long companyId);
 }
