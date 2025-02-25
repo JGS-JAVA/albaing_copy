@@ -4,10 +4,8 @@
 <mapper namespace="com.jobjob.albaing.mapper.ResumeMapper">
 
 
-<!--    이력서 자동 생성-->
-    <insert id="createResumeForUser">
+    <!--이력서 자동 생성-->
 
-    </insert>
 
 <!--    user 불러오기-->
     <select id="getUserById">
@@ -26,6 +24,7 @@
         WHERE user_id = #{userId}
     </update>
 
+<!--    이력서 상세조회-->
     <select id="resumeDetails">
         SELECT
             r.resume_id,
@@ -55,24 +54,90 @@
     </select>
 
 <!--    //이력서 insert-->
-    <insert id="insertResume">
+    <insert id="insertResume" parameterType="com.jobjob.albaing.dto.ResumeUpdateRequest">
         INSERT INTO RESUMES (user_id,resume_title, resume_location,
                             resume_job_category, resume_job_type, resume_job_duration,
                             resume_work_schedule, resume_work_time, resume_job_skill,
                             resume_introduction)
-
-        VALUES (#{userId},#{resumeTitle}, #{resumeLocation},
-                #{resumeJobCategory}, #{resumeJobType}, #{resumeJobDuration},
-                #{resumeWorkSchedule}, #{resumeWorkTime}, #{resumeJobSkill},
-                #{resumeIntroduction})
+        VALUES (#{resume.userId},#{resume.resumeTitle}, #{resume.resumeLocation},
+                #{resume.resumeJobCategory}, #{resume.resumeJobType}, #{resume.resumeJobDuration},
+                #{resume.resumeWorkSchedule}, #{resume.resumeWorkTime}, #{resume.resumeJobSkill},
+                #{resume.resumeIntroduction})
     </insert>
+
+<!--    -->
+    <insert id="createResumeForUser" useGeneratedKeys="true" keyProperty="resumeId">
+        INSERT INTO RESUMES (
+            user_id,
+            resume_title,
+            resume_location,
+            resume_job_category,
+            resume_job_type,
+            resume_job_duration,
+            resume_work_schedule,
+            resume_work_time,
+            resume_job_skill,
+            resume_introduction
+        ) VALUES (
+                     #{userId},
+                     #{resumeTitle},
+                     #{resumeLocation},
+                     #{resumeJobCategory},
+                     #{resumeJobType},
+                     #{resumeJobDuration},
+                     #{resumeWorkSchedule},
+                     #{resumeWorkTime},
+                     #{resumeJobSkill},
+                     #{resumeIntroduction}
+                 )
+    </insert>
+
+    <!-- 기본 학력 정보 생성 -->
+    <insert id="createDefaultEducation">
+        INSERT INTO EDUCATION_HISTORIES (
+            resume_id,
+            edu_degree,
+            edu_status,
+            edu_school,
+            edu_major,
+            edu_admission_year,
+            edu_graduation_year
+        ) VALUES (
+                     #{resumeId},
+                     #{eduDegree},
+                     #{eduStatus},
+                     #{eduSchool},
+                     #{eduMajor},
+                     #{eduAdmissionYear},
+                     #{eduGraduationYear}
+                 )
+    </insert>
+
+    <!-- 기본 경력 정보 생성 -->
+    <insert id="createDefaultCareer">
+        INSERT INTO CAREER_HISTORIES (
+            resume_id,
+            career_company_name,
+            career_join_date,
+            career_quit_date,
+            career_job_description,
+            career_is_career
+        ) VALUES (
+                     #{resumeId},
+                     #{careerCompanyName},
+                     #{careerJoinDate},
+                     #{careerQuitDate},
+                     #{careerJobDescription},
+                     #{careerIsCareer}
+                 )
+    </insert>
+
 
 
 <!--    //이력서 수정 -->
 <update id="updateResume">
     UPDATE RESUMES
     SET
-
         resume_title = #{resume.resumeTitle},
         resume_location = #{resume.resumeLocation},
         resume_job_category = #{resume.resumeJobCategory},
@@ -84,6 +149,7 @@
         resume_introduction = #{resume.resumeIntroduction}
     WHERE resume_id = #{resume.resumeId}
 </update>
+
 
     <!-- 이력서 수정 (학력) -->
     <update id="updateEducation">

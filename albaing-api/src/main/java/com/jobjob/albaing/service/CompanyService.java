@@ -6,6 +6,5 @@ import com.jobjob.albaing.dto.Company;
 public interface CompanyService {
 
 
-
-
+    void registerCompany(Company company);
 }

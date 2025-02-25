@@ -13,4 +13,5 @@ public class ResumeUpdateRequest {
     private EducationHistory educationHistory;
     private CareerHistory careerHistory;
 
+
 }
