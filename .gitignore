@@ -60,3 +60,4 @@ yarn-debug.log*
 yarn-error.log*
 
 
+/albaing-web/dist/

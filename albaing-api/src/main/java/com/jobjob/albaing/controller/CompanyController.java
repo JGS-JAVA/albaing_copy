@@ -10,9 +10,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/account/auth")
 public class CompanyController {
 
-    @Autowired
-    private CompanyServiceImpl companyService;
-
     // 기업 회원가입
     @PostMapping("/register-company")
     public void registerCompany(@RequestBody Company company) {
