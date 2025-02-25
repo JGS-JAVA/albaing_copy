@@ -3,7 +3,6 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jobjob.albaing.mapper.ReviewMapper">
 
-
     <!-- 우리 회사 리뷰 상세 조회 -->
     <select id="selectCompanyReviewDetail">
         SELECT review_id, company_id, review_title, review_content, review_created_at, review_updated_at
@@ -77,5 +76,77 @@
         FROM review_comments
         WHERE review_id = #{reviewId}
           AND comment_id = #{commentId}
+    </delete>
+
+    <!-- 기업 상세 정보 불러오기 -->
+    <select id="companyDetail">
+         SELECT company_owner_name, company_open_date,
+                company_email, company_phone,
+                company_local_address, company_description
+         FROM companies
+         WHERE company_id = #{companyId}
+      </select>
+
+    <!-- 상세 페이지 기업 채용 공고 출력 -->
+    <select id="showPosts">
+         SELECT job_post_title, job_post_job_category,
+                job_post_job_type, job_post_work_place,
+                job_post_due_date, company_id
+         FROM job_posts
+         WHERE company_id = #{companyId}
+         AND job_post_due_date > CURRENT_DATE
+         ORDER BY job_post_due_date ASC
+         LIMIT 4
+    </select>
+
+    <!-- 상세 페이지 기업 리뷰 글 출력 -->
+    <select id="showReviews">
+          SELECT review_title,
+                 review_id,
+                 review_created_at,company_id
+          FROM reviews
+          WHERE company_id = #{companyId}
+          ORDER BY review_created_at DESC
+          LIMIT 5
+</select>
+
+    <!-- 유저 리뷰 작성 -->
+    <insert id="addReview">
+          INSERT INTO reviews (company_id, user_id, review_title, review_content)
+          VALUES (#{companyId}, #{userId}, #{reviewTitle}, #{reviewContent})
+    </insert>
+
+    <!-- 리뷰 조회 + 작성된 댓글 출력 + 총 댓글 개수 표시 -->
+    <select id="reviewCheck">
+          SELECT reviews.review_title, reviews.review_content,
+                 reviews.user_id,
+                  reviews.review_created_at,
+                  COUNT(comments.comment_id) AS comment_count, comments.comment_id,
+                  comments.comment_content, comments.comment_created_at
+          FROM reviews
+          JOIN users ON reviews.user_id = users.user_id
+          LEFT JOIN comments ON reviews.review_id = comments.review_id
+          GROUP BY reviews.review_id
+          ORDER BY comments.comment_created_at IS NULL, comments.comment_created_at ASC
+    </select>
+
+    <!-- 댓글 작성 -->
+    <insert id="addComment">
+          INSERT INTO comments(review_id, user_id, comment_content)
+          VALUES (#{reviewId},
+                 #{userId},
+                 #{commentContent});
+    </insert>
+
+    <!-- 리뷰 삭제 -->
+    <delete id="deleteReview">
+           DELETE FROM REVIEWS
+           WHERE review_id = #{reviewId} AND user_id = #{userId}
+    </delete>
+
+    <!-- 댓글 삭제 -->
+    <delete id="deleteComment">
+           DELETE FROM COMMENTS
+           WHERE comment_id = #{commentId} AND user_id = #{userId}
     </delete>
 </mapper>

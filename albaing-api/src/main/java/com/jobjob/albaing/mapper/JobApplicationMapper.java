@@ -1,9 +1,12 @@
 package com.jobjob.albaing.mapper;
 
+
+import com.jobjob.albaing.dto.JobApplication;
+import org.apache.ibatis.annotations.Mapper;
+import java.util.List;
+
+@Mapper
 public interface JobApplicationMapper {
-
-    //지원한 공고 목록
-//    List<JobApplication> getJobApplicationsByUserId(@Param("userId") int userId);
-
-//공고 상세보기
+    List<JobApplication> findByJobPostId(int jobPostId);
+    void updateStatus(int applicationId, String status);
 }

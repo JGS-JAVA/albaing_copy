@@ -1,10 +1,11 @@
 package com.jobjob.albaing.service;
 
+import com.jobjob.albaing.dto.JobApplication;
+
+import java.util.List;
+
 public interface JobApplicationService {
 
-    // 지원현황 get (가져올 값 지원회사, 지원한공고, 승인상태)
-
-    //
-
-
+    List<JobApplication> getApplicationsByJobPost(int jobPostId);
+    void updateApplicationStatus(int applicationId, String status);
 }

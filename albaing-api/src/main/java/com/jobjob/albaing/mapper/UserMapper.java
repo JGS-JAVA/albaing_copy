@@ -2,9 +2,9 @@ package com.jobjob.albaing.mapper;
 
 import com.jobjob.albaing.dto.User;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
-import java.util.Optional;
+import java.util.Map;
+
 
 @Mapper
 public interface UserMapper {
@@ -13,7 +13,7 @@ public interface UserMapper {
     void registerUser(User user);
 
     // 유저 로그인
-    User loginUser(@Param("userEmail") String userEmail, @Param("userPassword")String userPassword);
+    User loginUser(Map<String, Object> param);
 
 
 }
