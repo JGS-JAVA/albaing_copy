@@ -12,14 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/account/auth")
 public class UserController {
 
-    @Autowired
-    private UserServiceImpl userService;
 
-    // 유저 회원가입
-    @PostMapping("/register-person")
-    public void registerUser(@RequestBody User user) {
-        userService.registerUser(user);
-    }
 
 
 
