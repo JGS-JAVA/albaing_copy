@@ -40,7 +40,7 @@
         SELECT *
         FROM companies
         WHERE company_email = #{companyEmail}
-          AND company_password = #{companyPassword}
+
     </select>
 
 

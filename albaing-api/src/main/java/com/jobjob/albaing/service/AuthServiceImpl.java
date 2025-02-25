@@ -5,8 +5,10 @@ import com.jobjob.albaing.dto.User;
 import com.jobjob.albaing.mapper.CompanyMapper;
 import com.jobjob.albaing.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,17 +22,22 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private CompanyMapper companyMapper;
 
-    // 유저 로그인
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder; // 비밀번호 인코더 주입
+
+    // 유저  로그인
     @Override
     public Map<String, Object> loginUser(String userEmail, String userPassword) {
         Map<String, Object> param = new HashMap<>();
         param.put("userEmail", userEmail);
-        param.put("userPassword", userPassword);
 
+        System.out.println("로그인 요청 이메일: " + userEmail);
         User loggedInUser = userMapper.loginUser(param); // 변경된 부분
+        System.out.println("로그인 결과: " + loggedInUser);
+
         Map<String, Object> result = new HashMap<>();
 
-        if (loggedInUser != null) {
+        if (loggedInUser != null && passwordEncoder.matches(userPassword, loggedInUser.getUserPassword())) {
             result.put("status", "success");
             result.put("user", loggedInUser);
             result.put("redirect", "/");
@@ -39,20 +46,22 @@ public class AuthServiceImpl implements AuthService {
             result.put("message", "아이디 또는 비밀번호가 올바르지 않습니다.");
         }
 
+        System.out.println("DB 저장된 비밀번호: " + loggedInUser.getUserPassword());
+        System.out.println("입력한 비밀번호: " + userPassword);
+
         return result;
     }
 
-    // 기업 로그인
+    // 기업  로그인
     @Override
     public Map<String, Object> loginCompany(String companyEmail, String companyPassword) {
         Map<String, Object> param = new HashMap<>();
         param.put("companyEmail", companyEmail);
-        param.put("companyPassword", companyPassword);
 
         Company loggedInCompany = companyMapper.loginCompany(param); // 변경된 부분
         Map<String, Object> result = new HashMap<>();
 
-        if (loggedInCompany != null) {
+        if (loggedInCompany != null && passwordEncoder.matches(companyPassword, loggedInCompany.getCompanyPassword())) {
             result.put("status", "success");
             result.put("company", loggedInCompany);
             result.put("redirect", "/");
@@ -107,6 +116,18 @@ public class AuthServiceImpl implements AuthService {
         String phoneRegex = "^01[016789]-?\\d{3,4}-?\\d{4,}$";
         if (!user.getUserPhone().matches(phoneRegex)) {
             throw new IllegalArgumentException("유효하지 않은 전화번호 형식입니다.");
+        }
+
+        // 비밀번호 암호화
+        user.setUserPassword(passwordEncoder.encode(user.getUserPassword()));
+
+        // 회원가입 날짜 설정
+        user.setUserCreatedAt(LocalDateTime.now());
+        user.setUserUpdatedAt(LocalDateTime.now());
+
+        // 기본값 설정
+        if (user.getUserIsAdmin() == null) {
+            user.setUserIsAdmin(false);
         }
 
         // 모든 검증 통과 후, 등록 처리
@@ -172,6 +193,18 @@ public class AuthServiceImpl implements AuthService {
         String phoneRegex = "^\\d{2,3}-\\d{3,4}-\\d{4}$";
         if (!company.getCompanyPhone().matches(phoneRegex)) {
             throw new IllegalArgumentException("유효하지 않은 전화번호 형식입니다. (예: 02-1234-5678)");
+        }
+
+        // 비밀번호 암호화
+        company.setCompanyPassword(passwordEncoder.encode(company.getCompanyPassword()));
+
+        // 회원가입 날짜 설정
+        company.setCompanyCreatedAt(LocalDateTime.now());
+        company.setCompanyUpdatedAt(LocalDateTime.now());
+
+        // 기본값 설정
+        if (company.getCompanyApprovalStatus() == null) {
+            company.setCompanyApprovalStatus(Company.ApprovalStatus.approving);
         }
 
         // 모든 검증 통과 후, 등록 처리
