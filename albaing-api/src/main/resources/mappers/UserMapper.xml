@@ -37,7 +37,7 @@
         SELECT *
         FROM users
         WHERE user_email = #{userEmail}
-          AND user_password = #{userPassword}
+
     </select>
     
     
