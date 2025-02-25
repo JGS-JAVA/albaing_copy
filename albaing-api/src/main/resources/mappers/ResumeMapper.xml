@@ -5,31 +5,6 @@
 
 
     <!--이력서 자동 생성-->
-    <insert id="createResumeForUser">
-        INSERT INTO RESUMES (
-        user_id,
-        resume_title,
-        resume_location,
-        resume_job_category,
-        resume_job_type,
-        resume_job_duration,
-        resume_work_schedule,
-        resume_work_time,
-        resume_job_skill,
-        resume_introduction
-        ) VALUES (
-        #{userId},
-        #{userName},
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL
-        );
-    </insert>
 
 
 <!--    user 불러오기-->
@@ -79,15 +54,15 @@
     </select>
 
 <!--    //이력서 insert-->
-    <insert id="insertResume">
+    <insert id="insertResume" parameterType="com.jobjob.albaing.dto.ResumeUpdateRequest">
         INSERT INTO RESUMES (user_id,resume_title, resume_location,
                             resume_job_category, resume_job_type, resume_job_duration,
                             resume_work_schedule, resume_work_time, resume_job_skill,
                             resume_introduction)
-        VALUES (#{userId},#{resumeTitle}, #{resumeLocation},
-                #{resumeJobCategory}, #{resumeJobType}, #{resumeJobDuration},
-                #{resumeWorkSchedule}, #{resumeWorkTime}, #{resumeJobSkill},
-                #{resumeIntroduction})
+        VALUES (#{resume.userId},#{resume.resumeTitle}, #{resume.resumeLocation},
+                #{resume.resumeJobCategory}, #{resume.resumeJobType}, #{resume.resumeJobDuration},
+                #{resume.resumeWorkSchedule}, #{resume.resumeWorkTime}, #{resume.resumeJobSkill},
+                #{resume.resumeIntroduction})
     </insert>
 
 <!--    -->
