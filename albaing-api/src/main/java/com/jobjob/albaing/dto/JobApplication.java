@@ -15,7 +15,6 @@ public class JobApplication {
     private int jobApplicationId;
     private int jobPostId;
     private int resumeId;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime applicationAt;
     private String approveStatus;
 }

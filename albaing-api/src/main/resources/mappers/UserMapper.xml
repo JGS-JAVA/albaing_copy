@@ -33,7 +33,7 @@
     </insert>
 
     <!-- 유저 로그인 -->
-    <select id="loginUser" parameterType="map" resultType="com.jobjob.albaing.dto.User">
+    <select id="loginUser" parameterType="map">
         SELECT *
         FROM users
         WHERE user_email = #{userEmail}
