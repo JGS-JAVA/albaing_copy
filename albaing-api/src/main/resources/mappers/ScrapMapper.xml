@@ -3,4 +3,25 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jobjob.albaing.mapper.ScrapMapper">
 
+    <!-- 스크랩 추가 -->
+    <insert id="insertScrap">
+        INSERT INTO scraps (user_id, job_post_id, scrap_created_at, scrap_is)
+        VALUES (#{userId}, #{jobPostId}, NOW(), true)
+    </insert>
+
+    <!-- 스크랩 삭제 -->
+    <delete id="deleteScrap">
+        UPDATE scraps
+        SET is_active = FALSE
+        WHERE scrap_id = #{scrapId}
+    </delete>
+
+    <!-- 특정 사용자의 스크랩 목록 조회 -->
+    <select id="getScrapsByUser">
+        SELECT s.scrap_id, s.user_id, s.job_post_id, s.scrap_created_at, s.scrap_is
+        FROM scraps s
+        WHERE s.user_id = #{userId}
+          AND s.scrap_is = TRUE
+    </select>
+
 </mapper>

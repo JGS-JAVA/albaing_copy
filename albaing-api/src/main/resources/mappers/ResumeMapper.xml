@@ -3,4 +3,118 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jobjob.albaing.mapper.ResumeMapper">
 
+
+<!--    이력서 자동 생성-->
+    <insert id="createResumeForUser">
+
+    </insert>
+
+<!--    user 불러오기-->
+    <select id="getUserById">
+        SELECT *
+        FROM USERS
+        WHERE user_id = #{userId}
+    </select>
+
+<!--    //내 정보 수정-->
+    <update id="updateUser">
+        UPDATE USERS
+        SET
+            user_email = #{userEmail},
+            user_profile_image = #{userProfileImage},
+            user_address = #{userAddress}
+        WHERE user_id = #{userId}
+    </update>
+
+    <select id="resumeDetails">
+        SELECT
+            r.resume_id,
+            r.resume_title,
+            r.resume_location,
+            r.resume_job_category,
+            r.resume_job_type,
+            r.resume_job_duration,
+            r.resume_work_schedule,
+            r.resume_work_time,
+            r.resume_job_skill,
+            r.resume_introduction,
+            e.edu_degree,
+            e.edu_status,
+            e.edu_school,
+            e.edu_major,
+            e.edu_admission_year,
+            e.edu_graduation_year,
+            c.career_company_name,
+            c.career_join_date,
+            c.career_quit_date,
+            c.career_job_description
+        FROM RESUMES r
+                 LEFT JOIN EDUCATION_HISTORIES e ON r.resume_id = e.resume_id
+                 LEFT JOIN CAREER_HISTORIES c ON r.resume_id = c.resume_id
+        WHERE r.resume_id = #{resumeId}
+    </select>
+
+<!--    //이력서 insert-->
+    <insert id="insertResume">
+        INSERT INTO RESUMES (user_id,resume_title, resume_location,
+                            resume_job_category, resume_job_type, resume_job_duration,
+                            resume_work_schedule, resume_work_time, resume_job_skill,
+                            resume_introduction)
+
+        VALUES (#{userId},#{resumeTitle}, #{resumeLocation},
+                #{resumeJobCategory}, #{resumeJobType}, #{resumeJobDuration},
+                #{resumeWorkSchedule}, #{resumeWorkTime}, #{resumeJobSkill},
+                #{resumeIntroduction})
+    </insert>
+
+
+<!--    //이력서 수정 -->
+<update id="updateResume">
+    UPDATE RESUMES
+    SET
+
+        resume_title = #{resume.resumeTitle},
+        resume_location = #{resume.resumeLocation},
+        resume_job_category = #{resume.resumeJobCategory},
+        resume_job_type = #{resume.resumeJobType},
+        resume_job_duration = #{resume.resumeJobDuration},
+        resume_work_schedule = #{resume.resumeWorkSchedule},
+        resume_work_time= #{resume.resumeWorkTime},
+        resume_job_skill= #{resume.resumeJobSkill},
+        resume_introduction = #{resume.resumeIntroduction}
+    WHERE resume_id = #{resume.resumeId}
+</update>
+
+    <!-- 이력서 수정 (학력) -->
+    <update id="updateEducation">
+        UPDATE EDUCATION_HISTORIES
+        SET
+            edu_degree = #{eduDegree},
+            edu_status = #{eduStatus},
+            edu_school = #{eduSchool},
+            edu_major = #{eduMajor},
+            edu_admission_year = #{eduAdmissionYear},
+            edu_graduation_year = #{eduGraduationYear}
+        WHERE resume_id = #{resumeId}
+    </update>
+
+
+<!--    이력서 수정 ( 경력) -->
+    <update id="updateCareer">
+        UPDATE CAREER_HISTORIES
+        SET
+            career_company_name = #{careerCompanyName},
+            career_join_date = #{careerJoinDate},
+            career_quit_date = #{careerQuitDate},
+            career_job_description = #{careerJobDescription},
+            career_is_career = #{careerIsCareer}
+        WHERE resume_id = #{resumeId}
+    </update>
+
+<!--    학력 삭제 -->
+
+
+<!--    경력 삭제 -->
+
+
 </mapper>
