@@ -25,7 +25,7 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder; // 비밀번호 인코더 주입
 
-    // 유저 로그인
+    // 유저  로그인
     @Override
     public Map<String, Object> loginUser(String userEmail, String userPassword) {
         Map<String, Object> param = new HashMap<>();
@@ -46,7 +46,7 @@ public class AuthServiceImpl implements AuthService {
         return result;
     }
 
-    // 기업 로그인
+    // 기업  로그인
     @Override
     public Map<String, Object> loginCompany(String companyEmail, String companyPassword) {
         Map<String, Object> param = new HashMap<>();
