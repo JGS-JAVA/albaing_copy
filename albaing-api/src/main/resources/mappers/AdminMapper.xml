@@ -8,10 +8,10 @@
 
     <!-- 개인 회원 조회 : 이름, 이메일, 전화번호로 검색 -->
     <!-- String userName, userEmail, userPhone 을 받아 해당 항목과 부분 이상 일치하는 항목 찾기 -->
-    <!-- sortOrderBy (이름, 이메일, 전화번호, 가입일) 를 받아 정렬 기준을 정함 -->
+    <!-- sortOrderBy (이름, 전화번호, 가입일) 를 받아 정렬 기준을 정함 -->
     <!-- isDESC 받아 오름차순, 내림차순을 정함 -->
     <!-- List<User>(조건을 만족하는 사용자 리스트)로 반환 -->
-    <select id="adminSearchUser">
+    <select id="adminSearchUsers">
         SELECT *
         FROM USERS
         <WHERE>
@@ -31,9 +31,6 @@
             <if test="sortOrderBy == '이름'">
                 user_name
             </if>
-            <if test="sortOrderBy == '이메일'">
-                user_email
-            </if>
             <if test="sortOrderBy == '전화번호'">
                 user_phone
             </if>
@@ -49,35 +46,38 @@
 
     <!-- 개인 이력서 조회 : 제목, 직업 분류, 근무 형태로 검색 -->
     <!-- String resumeTitle, resumeJobCategory, resumeJobType 을 받아 해당 항목과 부분 이상 일치하는 항목 찾기-->
+    <!-- sortOrderBy (이름, 전화번호, 제목) 를 받아 정렬 기준을 정함 -->
+    <!-- isDESC 받아 오름차순, 내림차순을 정함 -->
     <!-- 개인 이력서 목록 전체를 List<RESUME>로 반환-->
     <select id="adminSearchResumes">
         SELECT *
         FROM RESUMES
+        JOIN USERS on RESUMES.user_id = RESUMES.user_id
         <WHERE>
             <trim prefixOverrides="AND">
+                <if test="userName != null and userName != ''">
+                    AND USERS.user_name LIKE CONCAT('%', #{userName}, '%')
+                </if>
                 <if test="resumeTitle != null and resumeTitle != ''">
-                    AND user_name LIKE CONCAT('%', #{resumeTitle}, '%')
+                    AND RESUMES.resume_title LIKE CONCAT('%', #{resumeTitle}, '%')
                 </if>
                 <if test="resumeJobCategory != null and resumeJobCategory != ''">
-                    AND resume_job_category LIKE CONCAT('%', #{resumeJobCategory}, '%')
+                    AND RESUMES.resume_job_category LIKE CONCAT('%', #{resumeJobCategory}, '%')
                 </if>
                 <if test="resumeJobType != null and resumeJobType != ''">
-                    AND resume_job_type LIKE CONCAT('%', #{resumeJobType}, '%')
+                    AND RESUMES.resume_job_type LIKE CONCAT('%', #{resumeJobType}, '%')
                 </if>
             </trim>
         </WHERE>
         <trim prefix="ORDER BY">
             <if test="sortOrderBy == '이름'">
-                user_name
-            </if>
-            <if test="sortOrderBy == '이메일'">
-                user_email
+                USERS.user_name
             </if>
             <if test="sortOrderBy == '전화번호'">
-                user_phone
+                USERS.user_phone
             </if>
-            <if test="sortOrderBy == '가입일'">
-                user_created_at
+            <if test="sortOrderBy == '제목'">
+                RESUMES.resume_title
             </if>
             <if test="isDESC == true">
                 DESC
@@ -85,47 +85,87 @@
         </trim>
     </select>
 
-    <!-- 공고 지원 조회 -->
-    <!-- String userName, companyName, jobPostTitle 을 받아 해당 항목과 부분 이상 일치하는 항목 찾기 -->
-    <!-- 공고 지원 목록 전체를 List<JobApplication>로 반환-->
-    <select id="adminSearchResumes">
+    <!-- 공고 지원 조회 : 지원자명, 법인명, 공고 제목 으로 검색 -->
+    <!-- String userName, companyName, jobPostTitle 을 받아 해당 항목과 부분 이상 일치하는 항목 찾기-->
+    <!-- sortOrderBy (지원자명, 법인명, 지원일) 를 받아 정렬 기준을 정함 -->
+    <!-- isDESC 받아 오름차순, 내림차순을 정함 -->
+    <!-- 개인 이력서 목록 전체를 List<JobApplication>로 반환-->
+    <!-- JOIN 지나치게 많은 관계로 DB 정리 필요할 것 같아 보임 -->
+    <select id="adminSearchJobApplications">
         SELECT *
         FROM JOB_APPLICATIONS
-
+        JOIN USERS on USERS.user_id = JOB_APPLICATIONS.user_id
+        JOIN JOB_POSTS on JOB_POSTS.job_post_id = JOB_APPLICATIONS.job_post_id
+        JOIN COMPANIES on COMPANIES.company_id = JOB_POSTS.company_id
         <WHERE>
             <trim prefixOverrides="AND">
-                <if test="resumeTitle != null and resumeTitle != ''">
-                    AND user_name LIKE CONCAT('%', #{resumeTitle}, '%')
+                <if test="userName != null and userName != ''">
+                    AND USERS.user_name LIKE CONCAT('%', #{userName}, '%')
                 </if>
-                <if test="resumeJobCategory != null and resumeJobCategory != ''">
-                    AND resume_job_category LIKE CONCAT('%', #{resumeJobCategory}, '%')
+                <if test="companyName != null and companyName != ''">
+                    AND COMPANIES.company_name LIKE CONCAT('%', #{companyName}, '%')
                 </if>
-                <if test="resumeJobType != null and resumeJobType != ''">
-                    AND resume_job_type LIKE CONCAT('%', #{resumeJobType}, '%')
+                <if test="jobPostTitle != null and jobPostTitle != ''">
+                    AND JOB_POSTS.job_post_title LIKE CONCAT('%', #{jobPostTitle}, '%')
                 </if>
             </trim>
         </WHERE>
+        <trim prefix="ORDER BY">
+            <if test="sortOrderBy == '지원자명'">
+                USERS.user_name
+            </if>
+            <if test="sortOrderBy == '법인명'">
+                COMPANIES.company_name
+            </if>
+            <if test="sortOrderBy == '지원일'">
+                JOB_APPLICATIONS.application_at
+            </if>
+            <if test="isDESC == true">
+                DESC
+            </if>
+        </trim>
     </select>
 
-    <!-- 기업 회원 조회 -->
-    <!-- 기업 회원 조회 -->
-    <!-- 기업 회원 목록 전체를 List<Company>로 반환-->
-
-
-    <!-- 기업 회원 조회 : 기업명으로 검색 -->
-    <!-- String companyName(기업명 전체 혹은 부분) 을 받아 조건에 부합하는 계정을 찾고, List<Company>(조건을 만족하는 회사 리스트)로 반환-->
-
-
-    <!-- 기업 회원 조회 : 대표자명의로 검색 -->
-    <!-- String companyOwnerName(대표자 명의 전체 혹은 부분) 을 받아 조건에 부합하는 계정을 찾고, List<Company>(조건을 만족하는 회사 리스트)로 반환-->
-
-    <!-- 기업 회원 조회 : 전화번호로 검색 -->
-    <!-- String companyPhone(기업 전화번호 전체 혹은 부분) 을 받아 조건에 부합하는 계정을 찾고, List<Company>(조건을 만족하는 회사 리스트)로 반환-->
-
-
-    <!-- 기업 회원 조회 : 사업자등록번호로 검색 -->
-    <!-- String companyRegistrationNumber(사업자등록번호 전체 혹은 부분) 을 받아 조건에 부합하는 계정을 찾고, List<Company>(조건을 만족하는 회사 리스트)로 반환-->
-
+    <!-- 기업 회원 조회 : 법인명, 대표자명, 전화번호, 사업자등록번호 로 검색 -->
+    <!-- String companyName, companyOwnerName, companyPhone, companyRegistrationNumber 을 받아 해당 항목과 부분 이상 일치하는 항목 찾기-->
+    <!-- sortOrderBy (법인명, 대표자명, 사업자등록번호) 를 받아 정렬 기준을 정함 -->
+    <!-- isDESC 받아 오름차순, 내림차순을 정함 -->
+    <!-- 개인 이력서 목록 전체를 List<COMPANIES>로 반환-->
+    <!-- JOIN 지나치게 많은 관계로 DB 정리 필요할 것 같아 보임 -->
+    <select id="adminSearchCompanies">
+        SELECT *
+        FROM COMPANIES
+        <WHERE>
+            <trim prefixOverrides="AND">
+                <if test="companyName != null and companyName != ''">
+                    AND company_name LIKE CONCAT('%', #{companyName}, '%')
+                </if>
+                <if test="companyOwnerName != null and companyOwnerName != ''">
+                    AND company_owner_name LIKE CONCAT('%', #{companyOwnerName}, '%')
+                </if>
+                <if test="companyPhone != null and companyPhone != ''">
+                    AND company_phone LIKE CONCAT('%', #{companyPhone}, '%')
+                </if>
+                <if test="companyRegistrationNumber != null and companyRegistrationNumber != ''">
+                    AND company_registration_number LIKE CONCAT('%', #{companyRegistrationNumber}, '%')
+                </if>
+            </trim>
+        </WHERE>
+        <trim prefix="ORDER BY">
+            <if test="sortOrderBy == '법인명'">
+                company_name
+            </if>
+            <if test="sortOrderBy == '대표자명'">
+                company_owner_name
+            </if>
+            <if test="sortOrderBy == '사업자등록번호'">
+                company_registration_number
+            </if>
+            <if test="isDESC == true">
+                DESC
+            </if>
+        </trim>
+    </select>
 
     <!-- 기업 공고 조회 -->
     <!-- 기업 공고 전체 조회 -->
