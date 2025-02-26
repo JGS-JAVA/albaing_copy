@@ -7,23 +7,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/account/auth")
+@RequestMapping("/api/company")
 public class CompanyController {
 
-    // 기업 회원가입
-    @PostMapping("/register-company")
-    public void registerCompany(@RequestBody Company company) {
-        companyService.registerCompany(company);
-    }
+    @Autowired
+    private CompanyServiceImpl companyService;
 
     //회사 상세 정보 불러오기
-    @GetMapping("/company_name/detail/${company_id}")
+    @GetMapping("/{companyId}")
     public String companyDetail(@PathVariable("companyId") long companyId, Model model) {
         Company company = companyService.companyDetail(companyId);
-
         model.addAttribute("company", company);
-
         return "company/companyDetail";
-        }
-
+    }
 }

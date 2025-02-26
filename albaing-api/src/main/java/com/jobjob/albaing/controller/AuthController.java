@@ -61,7 +61,6 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-
     // 계정 로그인 상태확인 (세션)
     @GetMapping("/checkLogin")
     public ResponseEntity<?> checkLogin(HttpSession session) {
@@ -74,9 +73,7 @@ public class AuthController {
         } else {
             return ResponseEntity.status(401).body(Map.of("message", "로그인 상태가 아닙니다."));
         }
-
     }
-
 
     // 유저 회원가입
     @PostMapping("/register-person")
