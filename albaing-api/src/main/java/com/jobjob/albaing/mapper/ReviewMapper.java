@@ -7,6 +7,7 @@ import com.jobjob.albaing.dto.Review;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 
@@ -29,4 +30,26 @@ public interface ReviewMapper {
 
     //리뷰 댓글 삭제
     void deleteComment(long commentId, long userId);
+
+    // 어드민 회사 전체 리스트
+    List<Map<String, Object>> getAllReviewsForAdmin();
+
+    // 어드민 리뷰 수정
+    int updateReviewByAdmin(Review review);
+
+    // 어드민 리뷰 삭제
+    void deleteReviewByAdmin(long reviewId);
+
+    // 어드민 댓글 삭제
+    void deleteCommentByAdmin(long commentId);
+
+    // 자회사 리뷰 가져오기
+    Review getReviewById(long reviewId);
+
+    // 자회사 리뷰 삭제
+    int deleteReviewByCompany(long reviewId, long companyId);
+
+    // 자회사 댓글 삭제
+    Integer checkCommentBelongsToCompany(Map<String, Object> params);
+    int deleteCommentByCompany(Map<String, Object> params);
 }
