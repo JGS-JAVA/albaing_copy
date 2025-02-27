@@ -4,7 +4,7 @@
 <mapper namespace="com.jobjob.albaing.mapper.ResumeMapper">
 
     <!-- 사용자 정보 조회 -->
-    <select id="getUserById" resultType="User">
+    <select id="getUserById">
         SELECT *
         FROM USERS
         WHERE user_id = #{userId}
@@ -21,7 +21,7 @@
     </update>
 
     <!-- 사용자 ID로 이력서 조회 -->
-    <select id="getResumeByUserId" resultType="Resume">
+    <select id="getResumeByUserId">
         SELECT *
         FROM RESUMES
         WHERE user_id = #{userId}
@@ -78,7 +78,7 @@
     </resultMap>
 
     <!-- 이력서 저장 (회원가입 시 자동 생성용) -->
-    <insert id="createResumeForUser" useGeneratedKeys="true" keyProperty="resumeId">
+    <insert id="createResumeForUser">
         INSERT INTO RESUMES (
             user_id,
             resume_title,
