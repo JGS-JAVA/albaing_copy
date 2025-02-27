@@ -11,10 +11,14 @@ public interface ScrapMapper {
     void insertScrap(int userId, int jobPostId);
 
     //scrap 공고 삭제
-    void deleteScrap(int scrapId);
+    void deleteScrap(int userId, int jobPostId);
 
     //scrap 공고 조회
     List<Scrap> getScrapsByUser(int userId);
+
+    //이미 스크랩 한 공고인지 확인
+    boolean checkScrap(int userId, int jobPostId);
+
 
 }
 

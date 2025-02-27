@@ -16,6 +16,7 @@ import java.util.Date;
 public class Scrap {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private int scrapId;
     private int userId;
     private int jobPostId;
