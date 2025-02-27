@@ -10,7 +10,6 @@ import lombok.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class Resume {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,4 +25,6 @@ public class Resume {
     private String resumeJobSkill;
     private String resumeIntroduction;
 
+    private EducationHistory educationHistory;
+    private CareerHistory careerHistory;
 }
