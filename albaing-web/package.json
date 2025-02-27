@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@craco/craco": "^7.1.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
@@ -15,9 +16,9 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "concurrently \"tailwindcss -i ./src/assets/styles/index.css -o ./dist/output.css --watch\" \"react-scripts start\"",
-    "build": "tailwindcss -i ./src/assets/styles/index.css -o ./dist/output.css && react-scripts build",
-    "test": "react-scripts test",
+    "start": "concurrently \"tailwindcss -i ./src/assets/styles/index.css -o ./dist/output.css --watch\" \"craco start\"",
+    "build": "tailwindcss -i ./src/assets/styles/index.css -o ./dist/output.css && craco build",
+    "test": "craco test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
