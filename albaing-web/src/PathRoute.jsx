@@ -85,7 +85,9 @@ function PathRoute() {
                 {/* 어드민 관련 페이지 */}
                 <Route path="/admin" element={<AdminMain/>} />
             </Routes>
-            <Footer/>
+            <div className="mt-20">
+                <Footer />
+            </div>
         </BrowserRouter>
     )
 }

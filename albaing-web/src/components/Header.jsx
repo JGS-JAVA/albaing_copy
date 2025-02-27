@@ -21,7 +21,7 @@ import {
 } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, PhoneIcon, PlayCircleIcon } from '@heroicons/react/20/solid'
 
-const products = [
+const myPages = [
     { name: 'Analytics', description: 'Get a better understanding of your traffic', href: '#', icon: ChartPieIcon },
     { name: 'Engagement', description: 'Speak directly to your customers', href: '#', icon: CursorArrowRaysIcon },
     { name: 'Security', description: 'Your customers’ data will be safe and secure', href: '#', icon: FingerPrintIcon },
@@ -71,7 +71,7 @@ export default function Header() {
                             className="absolute top-full -left-8 z-10 mt-3 w-screen max-w-md overflow-hidden rounded-3xl bg-white ring-1 shadow-lg ring-gray-900/5 transition data-closed:translate-y-1 data-closed:opacity-0 data-enter:duration-200 data-enter:ease-out data-leave:duration-150 data-leave:ease-in"
                         >
                             <div className="p-4">
-                                {products.map((item) => (
+                                {myPages.map((item) => (
                                     <div
                                         key={item.name}
                                         className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm/6 hover:bg-gray-50"
@@ -150,7 +150,7 @@ export default function Header() {
                                         <ChevronDownIcon aria-hidden="true" className="size-5 flex-none group-data-open:rotate-180" />
                                     </DisclosureButton>
                                     <DisclosurePanel className="mt-2 space-y-2">
-                                        {[...products, ...callsToAction].map((item) => (
+                                        {[...myPages, ...callsToAction].map((item) => (
                                             <DisclosureButton
                                                 key={item.name}
                                                 as="a"
