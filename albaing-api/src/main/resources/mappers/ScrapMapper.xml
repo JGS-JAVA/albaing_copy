@@ -9,11 +9,22 @@
         VALUES (#{userId}, #{jobPostId}, NOW(), true)
     </insert>
 
+
+    <!--이미 스크랩한 공고인지 확인-->
+    <select id="checkScrap">
+        SELECT COUNT(*) > 0
+        FROM scraps
+        WHERE user_id = #{userId}
+          AND job_post_id = #{jobPostId}
+          AND scrap_is = TRUE
+    </select>
+
     <!-- 스크랩 삭제 -->
     <delete id="deleteScrap">
         UPDATE scraps
-        SET is_active = FALSE
-        WHERE scrap_id = #{scrapId}
+        SET scrap_is = FALSE
+        WHERE user_id = #{userId}
+          AND job_post_id = #{jobPostId}
     </delete>
 
     <!-- 특정 사용자의 스크랩 목록 조회 -->

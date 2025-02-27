@@ -15,16 +15,19 @@ public class ScrapServiceImpl implements ScrapService {
     //스크랩 추가
     @Override
     public void insertScrap(int userId, int jobPostId) {
-//        Scrap scrap = new Scrap();
-//        scrap.setUserId(userId);
-//        scrap.setJobPostId(jobPostId);
+        boolean isAlreadyScraped = scrapMapper.checkScrap(userId, jobPostId);
+        if (isAlreadyScraped) {
+            return;
+        }
         scrapMapper.insertScrap(userId, jobPostId);
     }
+
     //스크랩 삭제
     @Override
-    public void deleteScrap(int scrapId) {
-        scrapMapper.deleteScrap(scrapId);
+    public void deleteScrap(int userId, int jobPostId) {
+        scrapMapper.deleteScrap(userId, jobPostId);
     }
+
     //특정 사용자 스크랩 목록 조회
     @Override
     public List<Scrap> getScrapsByUser(int userId) {

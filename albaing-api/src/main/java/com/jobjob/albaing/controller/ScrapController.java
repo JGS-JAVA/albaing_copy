@@ -16,15 +16,15 @@ public class ScrapController {
     private ScrapServiceImpl scrapService;
 
     // 스크랩 추가
-    @PostMapping("/add")
-    public void insertScrap(@RequestParam int userId, @RequestParam int jobPostId) {
+    @PostMapping("/add/{userId}/{jobPostId}")
+    public void insertScrap(@PathVariable int userId, @PathVariable int jobPostId) {
         scrapService.insertScrap(userId, jobPostId);
     }
 
     // 스크랩 삭제
-    @DeleteMapping("/remove/{scrapId}")
-    public void deleteScrap(@PathVariable int scrapId) {
-        scrapService.deleteScrap(scrapId);
+    @DeleteMapping("/remove/{userId}/{jobPostId}")
+    public void deleteScrap(@PathVariable int userId, @PathVariable int jobPostId) {
+        scrapService.deleteScrap(userId,jobPostId);
     }
 
     // 특정 사용자의 스크랩 목록 조회
