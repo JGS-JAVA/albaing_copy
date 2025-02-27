@@ -1,16 +1,13 @@
+
 package com.jobjob.albaing.controller;
 
 import com.jobjob.albaing.dto.*;
-import com.jobjob.albaing.service.ResumeService;
 import com.jobjob.albaing.service.ResumeServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-@RequestMapping("/api")
 @RestController
+@RequestMapping("/api")
 public class ResumeController {
 
     @Autowired
@@ -25,8 +22,11 @@ public class ResumeController {
     // 2. 이력서 수정
     @PutMapping("/resume/update/{resumeId}")
     public void updateResume(
-            @PathVariable int resumeId,
-            @RequestBody ResumeUpdateRequest resumeUpdateRequest) {
+        @PathVariable int resumeId,
+        @RequestBody ResumeUpdateRequest resumeUpdateRequest) {
+        if (resumeUpdateRequest.getResume() != null) {
+            resumeUpdateRequest.getResume().setResumeId(resumeId);
+        }
         resumeService.updateResume(resumeUpdateRequest);
     }
 
@@ -48,16 +48,6 @@ public class ResumeController {
                            @RequestParam("userEmail") String userEmail,
                            @RequestParam("userAddress") String userAddress,
                            @RequestParam("userProfileImage") String userProfileImage) {
-        resumeService.updateUser(userId,userEmail,userAddress,userProfileImage);
-    }
-
-    //6. 이력서 최종 저장
-    @PostMapping("/resume/save")
-    public void insertResume(@RequestBody ResumeUpdateRequest resumeUpdateRequest) {
-        resumeService.insertResume(resumeUpdateRequest);
+        resumeService.updateUser(userId, userEmail, userAddress, userProfileImage);
     }
 }
-
-
-
-
