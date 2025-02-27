@@ -1,17 +1,14 @@
 import React from 'react';
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
 
-import Header from './components/Header';
 import Footer from './components/Footer';
 
 import AdminMain from './pages/admin/AdminMain';
 
-import CompanyAdd from './pages/company/CompanyAdd';
 import CompanyDetail from './pages/company/CompanyDetail';
 import CompanyMain from './pages/company/CompanyMain';
 import CompanyReview from './pages/company/CompanyReview';
 import CompanyReviewPost from './pages/company/CompanyReviewPost';
-import Reviews from './pages/company/Reviews';
 
 import FindId from './pages/find/FindId';
 import FindIdResult from './pages/find/FindIdResult';
@@ -36,8 +33,9 @@ import RegisterPerson from './pages/register/RegisterPerson';
 
 import Resume from './pages/resume/Resume';
 import ResumeEdit from './pages/resume/ResumeEdit';
+import Home from "./pages/home/Home";
+import Header from './components/Header'
 
-import Home from '/pages/home/Home';
 
 function PathRoute() {
 
@@ -53,7 +51,6 @@ function PathRoute() {
 
                 {/* 회사 관련 페이지 */}
                 <Route path="/company" element={<CompanyMain/>} />
-                <Route path="/company/add" element={<CompanyAdd/>} />
                 <Route path="/company/detail/:id" element={<CompanyDetail/>} />
                 <Route path="/company/review" element={<CompanyReview/>} />
                 <Route path="/company/review/post" element={<CompanyReviewPost/>} />
@@ -88,7 +85,9 @@ function PathRoute() {
                 {/* 어드민 관련 페이지 */}
                 <Route path="/admin" element={<AdminMain/>} />
             </Routes>
-            <Footer/>
+            <div className="mt-20">
+                <Footer />
+            </div>
         </BrowserRouter>
     )
 }
