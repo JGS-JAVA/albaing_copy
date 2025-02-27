@@ -11,7 +11,7 @@ public interface ScrapService {
     void insertScrap(int userId, int jobPostId);
 
     //scrap 공고 삭제
-    void deleteScrap(int ScrapId);
+    void deleteScrap(int userId, int jobPostId);
 
     //scrap 공고 조회
     List<Scrap> getScrapsByUser(int userId);
