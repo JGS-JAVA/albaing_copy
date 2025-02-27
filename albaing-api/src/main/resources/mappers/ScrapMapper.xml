@@ -21,8 +21,8 @@
 
     <!-- 스크랩 삭제 -->
     <delete id="deleteScrap">
-        UPDATE scraps
-        SET scrap_is = FALSE
+        DELETE
+        FROM scraps
         WHERE user_id = #{userId}
           AND job_post_id = #{jobPostId}
     </delete>
