@@ -1,7 +1,6 @@
 import React from 'react';
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
 
-import Header from './components/Header';
 import Footer from './components/Footer';
 
 import AdminMain from './pages/admin/AdminMain';
@@ -34,8 +33,9 @@ import RegisterPerson from './pages/register/RegisterPerson';
 
 import Resume from './pages/resume/Resume';
 import ResumeEdit from './pages/resume/ResumeEdit';
+import Home from "./pages/home/Home";
+import Header from './components/Header'
 
-import Home from '/pages/home/Home';
 
 function PathRoute() {
 
