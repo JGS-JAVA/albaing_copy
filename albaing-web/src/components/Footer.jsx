@@ -1,22 +1,62 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import albaingLogo from '../assets/svg/albaing_logo.svg';
 
-export default function Footer()  {
+export default function Footer() {
     return (
-        <div className="border-t pb-14 text-14 ">
-            <div className="mx-auto grid grid-cols-1 space-y-4 px-10 md:grid-cols-2 md:px-20">
+        <footer className="border-t border-gray-200 text-sm bg-white mt-auto w-screen">
+            <div className="max-w-[1200px] mx-auto py-8 px-4">
+                <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
+                    <div>
+                        <Link to="/">
+                            <img src={albaingLogo} alt="알바잉 로고" className="h-28 w-auto mb-4" />
+                        </Link>
+                        <p className="text-gray-800 font-semibold">(주) 잡잡</p>
+                        <p className="mt-2 text-gray-500">
+                            사업자등록번호: 123-456-12345 <br />
+                            서울특별시 강남구 테헤란로14길 6<br />
+                            남도빌딩 2층, 3층, 4층
+                        </p>
+                        <p className="mt-2 text-gray-500">
+                            © 2025 jobjob. All rights reserved.
+                        </p>
+                    </div>
 
-                <div>
-                    <p className="mt-5 text-gray-800">(주) 잡잡</p>
-                    <p className="mt-2 w-full text-gray-500">
-                        사업자등록번호 : 123-456-12345 <br />
-                        서울특별시 강남구 테헤란로14길 6
-                        남도빌딩 2층, 3층, 4층
-                    </p>
-                    <p className="mt-2 text-gray-500">
-                        © 2025 jobjob. All rights reserved.
-                    </p>
+                    <div>
+                        <h3 className="font-semibold mb-4 text-gray-900">서비스</h3>
+                        <ul className="space-y-2 text-gray-600">
+                            <li><Link to="/jobpost/list" className="hover:text-blue-600">채용정보</Link></li>
+                            <li><Link to="/company" className="hover:text-blue-600">기업정보</Link></li>
+                            <li><Link to="/resume" className="hover:text-blue-600">인재정보</Link></li>
+                            <li><Link to="/community" className="hover:text-blue-600">커뮤니티</Link></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 className="font-semibold mb-4 text-gray-900">고객지원</h3>
+                        <ul className="space-y-2 text-gray-600">
+                            <li><Link to="/customer/faq" className="hover:text-blue-600">자주 묻는 질문</Link></li>
+                            <li><Link to="/customer/notice" className="hover:text-blue-600">공지사항</Link></li>
+                            <li><Link to="/customer/contact" className="hover:text-blue-600">문의하기</Link></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 className="font-semibold mb-4 text-gray-900">회사 정보</h3>
+                        <ul className="space-y-2 text-gray-600">
+                            <li><Link to="/company/about" className="hover:text-blue-600">회사 소개</Link></li>
+                            <li><Link to="/company/terms" className="hover:text-blue-600">이용약관</Link></li>
+                            <li><Link to="/company/privacy" className="hover:text-blue-600">개인정보처리방침</Link></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </div>
+
+            <div className="border-t border-gray-200 py-4 text-center text-gray-500 text-xs w-full">
+                <div className="max-w-[1200px] mx-auto px-4">
+                    <p>본 사이트는 구직자와 기업을 연결해주는 플랫폼으로 잡잡(주)는 통신판매중개자이며 통신판매의 당사자가 아닙니다.</p>
+                </div>
+            </div>
+        </footer>
     );
-};
+}
