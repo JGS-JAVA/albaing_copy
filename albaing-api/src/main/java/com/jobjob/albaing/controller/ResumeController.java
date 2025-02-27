@@ -33,14 +33,12 @@ public class ResumeController {
     public ResponseEntity<?> updateResume(
         @PathVariable int resumeId,
         @RequestBody ResumeUpdateRequest resumeUpdateRequest) {
-        log.info("이력서 수정 요청: 이력서 ID = {}", resumeId);
         try {
             // 요청 데이터 유효성 검사
             if (resumeUpdateRequest.getResume() == null ||
                 resumeUpdateRequest.getResume().getResumeId() != resumeId) {
                 return ResponseEntity.badRequest().body("요청 데이터가 유효하지 않습니다.");
             }
-
             resumeService.updateResume(resumeUpdateRequest);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
@@ -52,7 +50,6 @@ public class ResumeController {
     // 3. 이력서 조회
     @GetMapping("/resume/{resumeId}")
     public ResponseEntity<?> resumeDetails(@PathVariable int resumeId) {
-        log.info("이력서 조회 요청: 이력서 ID = {}", resumeId);
         try {
             Resume resume = resumeService.resumeDetails(resumeId);
             if (resume == null) {
