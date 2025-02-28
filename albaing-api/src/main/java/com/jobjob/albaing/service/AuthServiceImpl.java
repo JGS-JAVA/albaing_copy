@@ -25,7 +25,10 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder; // 비밀번호 인코더 주입
 
-    // 유저  로그인
+    @Autowired
+    private VerificationServiceImpl verificationService;
+
+    // 유저 로그인
     @Override
     public Map<String, Object> loginUser(String userEmail, String userPassword) {
         Map<String, Object> param = new HashMap<>();
@@ -52,7 +55,7 @@ public class AuthServiceImpl implements AuthService {
         return result;
     }
 
-    // 기업  로그인
+    // 기업 로그인
     @Override
     public Map<String, Object> loginCompany(String companyEmail, String companyPassword) {
         Map<String, Object> param = new HashMap<>();
@@ -77,6 +80,10 @@ public class AuthServiceImpl implements AuthService {
     // 유저 회원가입
     @Override
     public void registerUser(User user) {
+        // 이메일 인증 확인
+        if (!verificationService.isEmailVerified(user.getUserEmail())) {
+            throw new IllegalArgumentException("이메일 인증이 완료되지 않았습니다.");
+        }
 
         // 필수 값 검증: 이메일, 비밀번호, 이름
         if (user.getUserEmail() == null || user.getUserEmail().trim().isEmpty()) {
@@ -136,6 +143,11 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void registerCompany(Company company) {
+        // 이메일 인증 확인
+        if (!verificationService.isEmailVerified(company.getCompanyEmail())) {
+            throw new IllegalArgumentException("이메일 인증이 완료되지 않았습니다.");
+        }
+
         // 필수 값 검증
         if (company.getCompanyRegistrationNumber() == null || company.getCompanyRegistrationNumber().trim().isEmpty()) {
             throw new IllegalArgumentException("사업자 등록번호는 필수 입력 사항입니다.");
