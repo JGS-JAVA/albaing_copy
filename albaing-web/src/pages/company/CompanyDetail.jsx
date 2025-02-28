@@ -47,7 +47,7 @@ const CompanyDetail = () => {
         }
     }, [activeTab, companyId]);
 
-    const paginatedJobs = jobPost.slice((page - 1) * jobPostPerPage, page * jobPostPerPage);
+    
 
     return (
         <div className="companydetail-container">
