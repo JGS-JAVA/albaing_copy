@@ -51,7 +51,6 @@
     <update id="updateUser">
         UPDATE USERS
         SET
-            user_email = #{userEmail},
             user_gender = #{userGender},
             user_birthdate = #{userBirthdate},
             user_address = #{userAddress},

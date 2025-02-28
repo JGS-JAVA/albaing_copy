@@ -29,6 +29,7 @@ import RegisterPerson from './register/RegisterPerson';
 import Resume from './resume/Resume';
 import ResumeEdit from './resume/ResumeEdit';
 import UserEdit from "./mypage/UserEdit";
+import NotFound from "../components/ NotFound";
 
 // 메인 레이아웃 컴포넌트
 const MainLayout = ({ children }) => (
@@ -87,6 +88,10 @@ function PathRoute() {
 
                 {/* 관리자만 접근 가능 */}
                 {/*<Route path="/admin" element={<MainLayout><AdminMain /></MainLayout>} /> /!* 관리자 대시보드 페이지 *!/*/}
+
+
+                {/* 모든 정의되지 않은 경로 */}
+                <Route path="*" element={<NotFound />} /> {/* 404 Not Found 페이지 */}
             </Routes>
         </BrowserRouter>
     );
