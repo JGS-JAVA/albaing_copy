@@ -47,7 +47,7 @@ const CompanyDetail = () => {
         }
     }, [activeTab, companyId]);
 
-    
+
 
     return (
         <div className="companydetail-container">
@@ -97,16 +97,7 @@ const CompanyDetail = () => {
                 {activeTab === "jobs" && (
                     <div>
                         <h2>현재 해당 기업이 채용 중인 공고</h2>
-                        <div>
-                            {paginatedJobs.map((job) => (
-                                <div key={job.jobPostId}>
-                                    <h3>{job.jobPostTitle}</h3>
-                                    <p>{job.jobPostWorkPlace}</p>
-                                    <p>마감일: {job.jobPostDueDate}</p>
-                                    <button>지원하기</button>
-                                </div>
-                            ))}
-                        </div>
+                   
 
                         {/* 페이지네이션 */}
 
