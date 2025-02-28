@@ -28,6 +28,7 @@ import RegisterCompany from './register/RegisterCompany';
 import RegisterPerson from './register/RegisterPerson';
 import Resume from './resume/Resume';
 import ResumeEdit from './resume/ResumeEdit';
+import UserEdit from "./mypage/UserEdit";
 
 // 메인 레이아웃 컴포넌트
 const MainLayout = ({ children }) => (
@@ -66,6 +67,7 @@ function PathRoute() {
                 <Route path="/mypage/applications" element={<MainLayout><MyApplication /></MainLayout>} /> {/* 일반 사용자 지원 내역 페이지 */}
                 <Route path="/mypage/scraps" element={<MainLayout><MyScrap /></MainLayout>} /> {/* 일반 사용자 스크랩 목록 페이지 */}
                 <Route path="/mypage/reviews" element={<MainLayout><MyReviews /></MainLayout>} /> {/* 일반 사용자 작성 리뷰 목록 페이지 */}
+                <Route path="/mypage/user/edit" element={<MainLayout><UserEdit /></MainLayout>} /> {/* 사용자 정보 수정 페이지*/}
                 <Route path="/resumes" element={<MainLayout><Resume /></MainLayout>} /> {/* 이력서 조회 페이지 */}
                 <Route path="/resumes/edit" element={<MainLayout><ResumeEdit /></MainLayout>} /> {/* 이력서 편집 페이지 */}
                 <Route path="/companies/reviews/new" element={<MainLayout><CompanyReviewPost /></MainLayout>} /> {/* 회사 리뷰 작성 페이지 */}
