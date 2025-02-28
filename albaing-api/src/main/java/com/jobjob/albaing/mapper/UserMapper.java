@@ -15,5 +15,11 @@ public interface UserMapper {
     // 유저 로그인
     User loginUser(Map<String, Object> param);
 
+    // 마이페이지- 사용자 정보 조회
+    User getUserById(int userId);
+
+    // 마이페이지 - 사용자 정보 수정
+    void updateUser(int userId, String userEmail, String userAddress, String userProfileImage);
+
 
 }

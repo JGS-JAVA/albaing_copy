@@ -3,18 +3,18 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jobjob.albaing.mapper.AdminMapper">
 
-    <!-- 이하 모든 "select *" 구문 수정할 것-->
-    <!-- 구문마다 목적, 개요 주석 달 것-->
+    <!-- TODO: 이하 모든 "select *" 구문 수정할 것-->
+    <!-- TODO: 구문마다 목적, 개요 주석 달 것-->
 
-    <!-- 개인 회원 조회 : 이름, 이메일, 전화번호로 검색 -->
-    <!-- String userName, userEmail, userPhone 을 받아 해당 항목과 부분 이상 일치하는 항목 찾기 -->
-    <!-- sortOrderBy (이름, 전화번호, 가입일) 를 받아 정렬 기준을 정함 -->
-    <!-- isDESC 받아 오름차순, 내림차순을 정함 -->
-    <!-- List<User>(조건을 만족하는 사용자 리스트)로 반환 -->
+    <!-- TODO: 개인 회원 조회 : 이름, 이메일, 전화번호로 검색 -->
+    <!-- TODO: String userName, userEmail, userPhone 을 받아 해당 항목과 부분 이상 일치하는 항목 찾기 -->
+    <!-- TODO: sortOrderBy (이름, 전화번호, 가입일) 를 받아 정렬 기준을 정함 -->
+    <!-- TODO: isDESC 받아 오름차순, 내림차순을 정함 -->
+    <!-- TODO: List<User>(조건을 만족하는 사용자 리스트)로 반환 -->
     <select id="adminSearchUsers">
         SELECT *
         FROM USERS
-        <WHERE>
+        <where>
             <trim prefixOverrides="AND">
                 <if test="userName != null and userName != ''">
                     AND user_name LIKE CONCAT('%', #{userName}, '%')
@@ -26,7 +26,7 @@
                     AND user_phone LIKE CONCAT('%', #{userPhone}, '%')
                 </if>
             </trim>
-        </WHERE>
+        </where>
         <trim prefix="ORDER BY">
             <if test="sortOrderBy == '이름'">
                 user_name
@@ -44,16 +44,16 @@
     </select>
 
 
-    <!-- 개인 이력서 조회 : 제목, 직업 분류, 근무 형태로 검색 -->
-    <!-- String resumeTitle, resumeJobCategory, resumeJobType 을 받아 해당 항목과 부분 이상 일치하는 항목 찾기-->
-    <!-- sortOrderBy (이름, 전화번호, 제목) 를 받아 정렬 기준을 정함 -->
-    <!-- isDESC 받아 오름차순, 내림차순을 정함 -->
-    <!-- 개인 이력서 목록 전체를 List<RESUME>로 반환-->
+    <!-- TODO: 개인 이력서 조회 : 제목, 직업 분류, 근무 형태로 검색 -->
+    <!-- TODO: String resumeTitle, resumeJobCategory, resumeJobType 을 받아 해당 항목과 부분 이상 일치하는 항목 찾기-->
+    <!-- TODO: sortOrderBy (이름, 전화번호, 제목) 를 받아 정렬 기준을 정함 -->
+    <!-- TODO: isDESC 받아 오름차순, 내림차순을 정함 -->
+    <!-- TODO: 개인 이력서 목록 전체를 List<RESUME>로 반환-->
     <select id="adminSearchResumes">
         SELECT *
         FROM RESUMES
         JOIN USERS on RESUMES.user_id = RESUMES.user_id
-        <WHERE>
+        <where>
             <trim prefixOverrides="AND">
                 <if test="userName != null and userName != ''">
                     AND USERS.user_name LIKE CONCAT('%', #{userName}, '%')
@@ -68,7 +68,7 @@
                     AND RESUMES.resume_job_type LIKE CONCAT('%', #{resumeJobType}, '%')
                 </if>
             </trim>
-        </WHERE>
+        </where>
         <trim prefix="ORDER BY">
             <if test="sortOrderBy == '이름'">
                 USERS.user_name
@@ -85,19 +85,19 @@
         </trim>
     </select>
 
-    <!-- 공고 지원 조회 : 지원자명, 법인명, 공고 제목 으로 검색 -->
-    <!-- String userName, companyName, jobPostTitle 을 받아 해당 항목과 부분 이상 일치하는 항목 찾기-->
-    <!-- sortOrderBy (지원자명, 법인명, 지원일) 를 받아 정렬 기준을 정함 -->
-    <!-- isDESC 받아 오름차순, 내림차순을 정함 -->
-    <!-- 개인 이력서 목록 전체를 List<JobApplication>로 반환-->
-    <!-- JOIN 지나치게 많은 관계로 DB 정리 필요할 것 같아 보임 -->
+    <!-- TODO: 공고 지원 조회 : 지원자명, 법인명, 공고 제목 으로 검색 -->
+    <!-- TODO: String userName, companyName, jobPostTitle 을 받아 해당 항목과 부분 이상 일치하는 항목 찾기-->
+    <!-- TODO: sortOrderBy (지원자명, 법인명, 지원일) 를 받아 정렬 기준을 정함 -->
+    <!-- TODO: isDESC 받아 오름차순, 내림차순을 정함 -->
+    <!-- TODO: 개인 이력서 목록 전체를 List<JobApplication>로 반환-->
+    <!-- TODO: JOIN 지나치게 많은 관계로 DB 정리 필요할 것 같아 보임 -->
     <select id="adminSearchJobApplications">
         SELECT *
         FROM JOB_APPLICATIONS
         JOIN USERS on USERS.user_id = JOB_APPLICATIONS.user_id
         JOIN JOB_POSTS on JOB_POSTS.job_post_id = JOB_APPLICATIONS.job_post_id
         JOIN COMPANIES on COMPANIES.company_id = JOB_POSTS.company_id
-        <WHERE>
+        <where>
             <trim prefixOverrides="AND">
                 <if test="userName != null and userName != ''">
                     AND USERS.user_name LIKE CONCAT('%', #{userName}, '%')
@@ -109,7 +109,7 @@
                     AND JOB_POSTS.job_post_title LIKE CONCAT('%', #{jobPostTitle}, '%')
                 </if>
             </trim>
-        </WHERE>
+        </where>
         <trim prefix="ORDER BY">
             <if test="sortOrderBy == '지원자명'">
                 USERS.user_name
@@ -126,16 +126,16 @@
         </trim>
     </select>
 
-    <!-- 기업 회원 조회 : 법인명, 대표자명, 전화번호, 사업자등록번호 로 검색, 가입 승인 대기중인 기업 회원 조회에서도 사용 -->
-    <!-- String companyName, companyOwnerName, companyPhone, companyRegistrationNumber 을 받아 해당 항목과 부분 이상 일치하는 항목 찾기-->
-    <!-- sortOrderBy (법인명, 대표자명, 사업자등록번호) 를 받아 정렬 기준을 정함 -->
-    <!-- isDESC 받아 오름차순, 내림차순을 정함 -->
-    <!-- 개인 이력서 목록 전체를 List<COMPANIES>로 반환-->
-    <!-- JOIN 지나치게 많은 관계로 DB 정리 필요할 것 같아 보임 -->
+    <!-- TODO: 기업 회원 조회 : 법인명, 대표자명, 전화번호, 사업자등록번호 로 검색, 가입 승인 대기중인 기업 회원 조회에서도 사용 -->
+    <!-- TODO: String companyName, companyOwnerName, companyPhone, companyRegistrationNumber 을 받아 해당 항목과 부분 이상 일치하는 항목 찾기-->
+    <!-- TODO: sortOrderBy (법인명, 대표자명, 사업자등록번호) 를 받아 정렬 기준을 정함 -->
+    <!-- TODO: isDESC 받아 오름차순, 내림차순을 정함 -->
+    <!-- TODO: 개인 이력서 목록 전체를 List<COMPANIES>로 반환-->
+    <!-- TODO: JOIN 지나치게 많은 관계로 DB 정리 필요할 것 같아 보임 -->
     <select id="adminSearchCompanies">
         SELECT *
         FROM COMPANIES
-        <WHERE>
+        <where>
             <trim prefixOverrides="AND">
                 <if test="companyName != null and companyName != ''">
                     AND company_name LIKE CONCAT('%', #{companyName}, '%')
@@ -150,7 +150,7 @@
                     AND company_registration_number LIKE CONCAT('%', #{companyRegistrationNumber}, '%')
                 </if>
             </trim>
-        </WHERE>
+        </where>
         <trim prefix="ORDER BY">
             <if test="sortOrderBy == '법인명'">
                 company_name
@@ -167,16 +167,16 @@
         </trim>
     </select>
 
-    <!-- 공고 조회 : 법인명, 공고 제목, 공고 상태 로 검색 -->
-    <!-- String companyName, jobPostTitle, jobPostStatus 을 받아 해당 항목과 부분 이상 일치하는 항목 찾기-->
-    <!-- sortOrderBy (법인명, 공고 제목, 공고 마감일) 를 받아 정렬 기준을 정함 -->
-    <!-- isDESC 받아 오름차순, 내림차순을 정함 -->
-    <!-- 개인 이력서 목록 전체를 List<JobPost>로 반환-->
-    <select id="adminSearchCompanies">
+    <!-- TODO: 공고 조회 : 법인명, 공고 제목, 공고 상태 로 검색 -->
+    <!-- TODO: String companyName, jobPostTitle, jobPostStatus 을 받아 해당 항목과 부분 이상 일치하는 항목 찾기-->
+    <!-- TODO: sortOrderBy (법인명, 공고 제목, 공고 마감일) 를 받아 정렬 기준을 정함 -->
+    <!-- TODO: isDESC 받아 오름차순, 내림차순을 정함 -->
+    <!-- TODO: 개인 이력서 목록 전체를 List<JobPost>로 반환-->
+    <select id="adminSearchJobPosts">
         SELECT *
         FROM JOB_POSTS
         JOIN COMPANIES on COMPANIES.company_id = JOB_POSTS.company_id
-        <WHERE>
+        <where>
             <trim prefixOverrides="AND">
                 <if test="companyName != null and companyName != ''">
                     AND company_name LIKE CONCAT('%', #{companyName}, '%')
@@ -188,7 +188,7 @@
                     AND job_post_status LIKE CONCAT('%', #{jobPostStatus}, '%')
                 </if>
             </trim>
-        </WHERE>
+        </where>
         <trim prefix="ORDER BY">
             <if test="sortOrderBy == '법인명'">
                 COMPANIES.company_name

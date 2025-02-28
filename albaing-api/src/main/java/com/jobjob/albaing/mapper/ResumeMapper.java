@@ -10,12 +10,6 @@ public interface ResumeMapper {
         // 회원가입 시 이력서 자동 생성
         void createResumeForUser(Resume resume);
 
-        // 사용자 정보 조회
-        User getUserById(int userId);
-
-        // 사용자 정보 수정
-        void updateUser(int userId, String userEmail, String userAddress, String userProfileImage);
-
         // 사용자 ID로 이력서 조회 (중복 생성 방지용)
         Resume getResumeByUserId(int userId);
 
