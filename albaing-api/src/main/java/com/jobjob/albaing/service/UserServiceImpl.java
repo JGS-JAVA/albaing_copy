@@ -5,6 +5,8 @@ import com.jobjob.albaing.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -20,8 +22,8 @@ public class UserServiceImpl implements UserService {
 
     // 사용자 정보 수정
     @Override
-    public void updateUser(int userId, String userEmail, String userAddress, String userProfileImage) {
-        userMapper.updateUser(userId, userEmail, userAddress, userProfileImage);
+    public void updateUser(int userId, User.Gender userGender, Date userBirthdate, String userAddress, String userProfileImage) {
+        userMapper.updateUser(userId,userGender,userBirthdate,userAddress,userProfileImage);
     }
 
 
