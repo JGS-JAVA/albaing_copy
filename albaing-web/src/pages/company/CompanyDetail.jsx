@@ -11,7 +11,7 @@ const CompanyDetail = () => {
     const [activeTab, setActiveTab] = useState("info");
 
     useEffect(() => {
-            axios.get(`http://localhost:8080/api/company/${companyId}`)
+            axios.get(`http://localhost:8080/api/companies/${companyId}`)
                 .then((res) => {
                     setCompany(res.data)
                 })
@@ -47,11 +47,11 @@ const CompanyDetail = () => {
         }
     }, [activeTab, companyId]);
 
-
+    if (!company) return <p>로딩 중...</p>;
 
     return (
         <div className="companydetail-container">
-            <h1>{company.companyName}</h1>
+            <h1>{company?.companyName}</h1>
 
             {/* 탭 기능 작동 */}
             <div>
@@ -68,27 +68,27 @@ const CompanyDetail = () => {
                     <div>
                         <div>
                             <span>대표자</span>
-                            <span>{company.companyOwnerName}</span>
+                            <span>{company?.companyOwnerName}</span>
                         </div>
                         <div>
                             <span>설립일</span>
-                            <span>{company.companyOpenDate}</span>
+                            <span>{company?.companyOpenDate}</span>
                         </div>
                         <div>
                             <span>이메일</span>
-                            <span>{company.companyEmail}</span>
+                            <span>{company?.companyEmail}</span>
                         </div>
                         <div>
                             <span>전화번호</span>
-                            <span>{company.companyPhone}</span>
+                            <span>{company?.companyPhone}</span>
                         </div>
                         <div>
                             <span>주소</span>
-                            <span>{company.companyLocalAddress}</span>
+                            <span>{company?.companyLocalAddress}</span>
                         </div>
                         <div>
                             <span>기업 소개</span>
-                            <span>{company.companyDescription}</span>
+                            <span>{company?.companyDescription}</span>
                         </div>
                     </div>
                 )}
@@ -97,7 +97,7 @@ const CompanyDetail = () => {
                 {activeTab === "jobs" && (
                     <div>
                         <h2>현재 해당 기업이 채용 중인 공고</h2>
-                   
+
 
                         {/* 페이지네이션 */}
 
