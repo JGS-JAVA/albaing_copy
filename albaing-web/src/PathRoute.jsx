@@ -42,6 +42,10 @@ const MainLayout = ({ children }) => (
     </div>
 );
 
+function AdminMain() {
+    return null;
+}
+
 function PathRoute() {
     return (
         <BrowserRouter>
