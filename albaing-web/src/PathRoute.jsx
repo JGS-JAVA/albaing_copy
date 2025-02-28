@@ -1,13 +1,11 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
-// 컴포넌트 임포트
 import Header from './components/Header';
 import Footer from './components/Footer';
 
-// 페이지 임포트
+
 import Home from './pages/home/Home';
-import AdminMain from './pages/admin/AdminMain';
 import CompanyDetail from './pages/company/CompanyDetail';
 import CompanyMain from './pages/company/CompanyMain';
 import CompanyReview from './pages/company/CompanyReview';
@@ -48,143 +46,39 @@ function PathRoute() {
     return (
         <BrowserRouter>
             <Routes>
-                {/* 메인페이지 */}
-                <Route path="/" element={
-                    <MainLayout>
-                        <Home />
-                    </MainLayout>
-                } />
+                {/* 모든 사용자 접근 가능 */}
+                <Route path="/" element={<MainLayout><Home /></MainLayout>} /> {/* 메인 홈페이지 */}
+                <Route path="/login" element={<MainLayout><Login /></MainLayout>} /> {/* 로그인 페이지 */}
+                <Route path="/register/success" element={<MainLayout><RegistrationSuccess /></MainLayout>} /> {/* 회원가입 성공 페이지 */}
+                <Route path="/register/person" element={<MainLayout><RegisterPerson /></MainLayout>} /> {/* 개인 회원가입 페이지 */}
+                <Route path="/register/company" element={<MainLayout><RegisterCompany /></MainLayout>} /> {/* 기업 회원가입 페이지 */}
+                <Route path="/find/id" element={<MainLayout><FindId /></MainLayout>} /> {/* 아이디 찾기 페이지 */}
+                <Route path="/find/id/result" element={<MainLayout><FindIdResult /></MainLayout>} /> {/* 아이디 찾기 결과 페이지 */}
+                <Route path="/find/password" element={<MainLayout><FindPassword /></MainLayout>} /> {/* 비밀번호 찾기 페이지 */}
+                <Route path="/find/password/result" element={<MainLayout><FindPasswordResult /></MainLayout>} /> {/* 비밀번호 찾기 결과 페이지 */}
+                <Route path="/companies" element={<MainLayout><CompanyMain /></MainLayout>} /> {/* 회사 목록 페이지 */}
+                <Route path="/companies/:id" element={<MainLayout><CompanyDetail /></MainLayout>} /> {/* 회사 상세 정보 페이지 */}
+                <Route path="/jobs" element={<MainLayout><JobpostList /></MainLayout>} /> {/* 채용공고 목록 페이지 */}
+                <Route path="/jobs/:id" element={<MainLayout><JobpostDetail /></MainLayout>} /> {/* 채용공고 상세 페이지 */}
 
-                {/* 로그인 관련 페이지 */}
-                <Route path="/login" element={
-                    <MainLayout>
-                        <Login />
-                    </MainLayout>
-                } />
+                {/* 일반 사용자만 접근 가능 */}
+                <Route path="/mypage" element={<MainLayout><MyPage /></MainLayout>} /> {/* 일반 사용자 마이페이지 메인 */}
+                <Route path="/mypage/applications" element={<MainLayout><MyApplication /></MainLayout>} /> {/* 일반 사용자 지원 내역 페이지 */}
+                <Route path="/mypage/scraps" element={<MainLayout><MyScrap /></MainLayout>} /> {/* 일반 사용자 스크랩 목록 페이지 */}
+                <Route path="/mypage/reviews" element={<MainLayout><MyReviews /></MainLayout>} /> {/* 일반 사용자 작성 리뷰 목록 페이지 */}
+                <Route path="/resumes" element={<MainLayout><Resume /></MainLayout>} /> {/* 이력서 조회 페이지 */}
+                <Route path="/resumes/edit" element={<MainLayout><ResumeEdit /></MainLayout>} /> {/* 이력서 편집 페이지 */}
+                <Route path="/companies/reviews/new" element={<MainLayout><CompanyReviewPost /></MainLayout>} /> {/* 회사 리뷰 작성 페이지 */}
 
-                {/* 회사 관련 페이지 */}
-                <Route path="/company" element={
-                    <MainLayout>
-                        <CompanyMain />
-                    </MainLayout>
-                } />
-                <Route path="/company/detail/:id" element={
-                    <MainLayout>
-                        <CompanyDetail />
-                    </MainLayout>
-                } />
-                <Route path="/company/review" element={
-                    <MainLayout>
-                        <CompanyReview />
-                    </MainLayout>
-                } />
-                <Route path="/company/review/post" element={
-                    <MainLayout>
-                        <CompanyReviewPost />
-                    </MainLayout>
-                } />
+                {/* 기업 사용자만 접근 가능 */}
+                <Route path="/jobs/new" element={<MainLayout><JobpostAdd /></MainLayout>} /> {/* 채용공고 등록 페이지 */}
+                <Route path="/jobs/:id/edit" element={<MainLayout><JobpostEdit /></MainLayout>} /> {/* 채용공고 편집 페이지 */}
 
-                {/* 채용 공고 관련 페이지 */}
-                <Route path="/jobpost/add" element={
-                    <MainLayout>
-                        <JobpostAdd />
-                    </MainLayout>
-                } />
-                <Route path="/jobpost/detail/:id" element={
-                    <MainLayout>
-                        <JobpostDetail />
-                    </MainLayout>
-                } />
-                <Route path="/jobpost/edit/:id" element={
-                    <MainLayout>
-                        <JobpostEdit />
-                    </MainLayout>
-                } />
-                <Route path="/jobpost/list" element={
-                    <MainLayout>
-                        <JobpostList />
-                    </MainLayout>
-                } />
+                {/* 로그인한 모든 사용자 접근 가능 */}
+                <Route path="/companies/reviews" element={<MainLayout><CompanyReview /></MainLayout>} /> {/* 회사 리뷰 목록 페이지 */}
 
-                {/* 마이페이지 관련 페이지 */}
-                <Route path="/mypage" element={
-                    <MainLayout>
-                        <MyPage />
-                    </MainLayout>
-                } />
-                <Route path="/mypage/my-application" element={
-                    <MainLayout>
-                        <MyApplication />
-                    </MainLayout>
-                } />
-                <Route path="/mypage/my-scrap" element={
-                    <MainLayout>
-                        <MyScrap />
-                    </MainLayout>
-                } />
-                <Route path="/mypage/my-reviews" element={
-                    <MainLayout>
-                        <MyReviews />
-                    </MainLayout>
-                } />
-
-                {/* 회원가입 관련 페이지 */}
-                <Route path="/register/success" element={
-                    <MainLayout>
-                        <RegistrationSuccess />
-                    </MainLayout>
-                } />
-                <Route path="/register/company" element={
-                    <MainLayout>
-                        <RegisterCompany />
-                    </MainLayout>
-                } />
-                <Route path="/register/person" element={
-                    <MainLayout>
-                        <RegisterPerson />
-                    </MainLayout>
-                } />
-
-                {/* 비밀번호/아이디 찾기 페이지 */}
-                <Route path="/find/id" element={
-                    <MainLayout>
-                        <FindId />
-                    </MainLayout>
-                } />
-                <Route path="/find/id/result" element={
-                    <MainLayout>
-                        <FindIdResult />
-                    </MainLayout>
-                } />
-                <Route path="/find/password" element={
-                    <MainLayout>
-                        <FindPassword />
-                    </MainLayout>
-                } />
-                <Route path="/find/password/result" element={
-                    <MainLayout>
-                        <FindPasswordResult />
-                    </MainLayout>
-                } />
-
-                {/* 이력서 관련 페이지 */}
-                <Route path="/resume" element={
-                    <MainLayout>
-                        <Resume />
-                    </MainLayout>
-                } />
-                <Route path="/resume/edit" element={
-                    <MainLayout>
-                        <ResumeEdit />
-                    </MainLayout>
-                } />
-
-                {/* 어드민 관련 페이지 */}
-                <Route path="/admin" element={
-                    <MainLayout>
-                        <AdminMain />
-                    </MainLayout>
-                } />
+                {/* 관리자만 접근 가능 */}
+                <Route path="/admin" element={<MainLayout><AdminMain /></MainLayout>} /> {/* 관리자 대시보드 페이지 */}
             </Routes>
         </BrowserRouter>
     );
