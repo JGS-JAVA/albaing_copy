@@ -9,7 +9,7 @@ export default function NotFound() {
                 <div className="flex justify-center mb-6">
                     <img src={albaingLogo} alt="알바잉 로고" className="h-24 w-auto" />
                 </div>
-                <p className="text-base font-semibold text-blue-600">404</p>
+                <p className="text-4xl font-extrabold text-blue-600">404</p>
                 <h1 className="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">
                     페이지를 찾을 수 없습니다
                 </h1>
