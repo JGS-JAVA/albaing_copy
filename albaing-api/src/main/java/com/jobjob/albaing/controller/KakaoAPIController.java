@@ -15,6 +15,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+
 @Controller
 @RequestMapping("/oauth/kakao")
 public class KakaoAPIController {
@@ -36,7 +37,7 @@ public class KakaoAPIController {
     }
 
     @GetMapping("/callback")
-    public String handleCallback(@RequestParam String code) {
+    public ResponseEntity<Map<String, String>> handleCallback(@RequestParam String code) {
         String tokenUrl = "https://kauth.kakao.com/oauth/token";
         RestTemplate restTemplate = new RestTemplate();
 
@@ -53,8 +54,8 @@ public class KakaoAPIController {
         }
 
         HttpEntity<LinkedMultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
-        ResponseEntity<Map> response = restTemplate.postForEntity(tokenUrl, request, Map.class);
-        String accessToken = (String) response.getBody().get("access_token");
+        ResponseEntity<Map> responseEntity = restTemplate.postForEntity(tokenUrl, request, Map.class);
+        String accessToken = (String) responseEntity.getBody().get("access_token");
 
         String userInfoUrl = "https://kapi.kakao.com/v2/user/me";
         HttpHeaders userHeaders = new HttpHeaders();
@@ -63,12 +64,9 @@ public class KakaoAPIController {
         HttpEntity<String> userRequest = new HttpEntity<>(userHeaders);
         ResponseEntity<Map> userResponse = restTemplate.postForEntity(userInfoUrl, userRequest, Map.class);
 
-        Map userInfo = userResponse.getBody();
-        System.out.println("카카오톡에서 인증받아 가져온 사용자 정보 보기 : " + userInfo);
-
+        Map<String, Object> userInfo = userResponse.getBody();
         Map<String, Object> properties = (Map<String, Object>) userInfo.get("properties");
         String nickname = (String) properties.get("nickname");
-        String encodedNickname = URLEncoder.encode(nickname, StandardCharsets.UTF_8);
         String profileImg = (String) properties.get("profile_image");
 
         Map<String, Object> kakaoAccount = (Map<String, Object>) userInfo.get("kakao_account");
@@ -76,8 +74,17 @@ public class KakaoAPIController {
         String gender = (String) kakaoAccount.get("gender");
         String birthday = (String) kakaoAccount.get("birthday");
 
-        return "redirect:/register/person?nickname=" + encodedNickname + "&email=" + email +"&gender=" +gender +"&birthday=" +birthday + "&profileImg=" + profileImg;
+        // 프론트엔드에서 이 URL을 받아서 리다이렉트 처리하도록 함
+        String frontendRedirectUri = "http://localhost:3000/register/person"
+                + "?nickname=" + URLEncoder.encode(nickname, StandardCharsets.UTF_8)
+                + "&email=" + email
+                + "&gender=" + gender
+                + "&birthday=" + birthday
+                + "&profileImg=" + profileImg;
+
+        Map<String, String> response = Map.of("redirectUrl", frontendRedirectUri);
+        return ResponseEntity.ok(response);
     }
+
+
 }
-
-
