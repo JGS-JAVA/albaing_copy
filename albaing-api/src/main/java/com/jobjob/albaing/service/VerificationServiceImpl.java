@@ -17,6 +17,8 @@ public class VerificationServiceImpl implements VerificationService {
     private JavaMailSender mailSender;
 
     private Map<String, String> verificationCodes = new HashMap<>();
+    // 인증된 이메일 저장소
+    private Map<String, Boolean> verifiedEmails = new HashMap<>();
 
     @Override
     public String randomCode() {
@@ -62,5 +64,24 @@ public class VerificationServiceImpl implements VerificationService {
 
         sendEmail(email, code);
         saveEmailCode(email, code);
+    }
+
+    // 추가된 메소드: 이메일을 인증 완료 상태로 표시
+    public void markEmailAsVerified(String email) {
+        verifiedEmails.put(email.toLowerCase(), true);
+        System.out.println("Email marked as verified: " + email.toLowerCase());
+    }
+
+    // 추가된 메소드: 이메일이 인증되었는지 확인
+    public boolean isEmailVerified(String email) {
+        Boolean verified = verifiedEmails.get(email.toLowerCase());
+        return Boolean.TRUE.equals(verified);
+    }
+
+    // 추가된 메소드: 이메일 인증 정보 삭제 (회원가입 완료 후)
+    public void removeEmailVerification(String email) {
+        verificationCodes.remove(email.toLowerCase());
+        verifiedEmails.remove(email.toLowerCase());
+        System.out.println("Email verification data removed: " + email.toLowerCase());
     }
 }
