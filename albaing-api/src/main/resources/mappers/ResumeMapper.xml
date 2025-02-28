@@ -3,22 +3,6 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jobjob.albaing.mapper.ResumeMapper">
 
-    <!-- 사용자 정보 조회 -->
-    <select id="getUserById">
-        SELECT *
-        FROM USERS
-        WHERE user_id = #{userId}
-    </select>
-
-    <!-- 사용자 정보 수정 -->
-    <update id="updateUser">
-        UPDATE USERS
-        SET
-            user_email = #{userEmail},
-            user_profile_image = #{userProfileImage},
-            user_address = #{userAddress}
-        WHERE user_id = #{userId}
-    </update>
 
     <!-- 사용자 ID로 이력서 조회 -->
     <select id="getResumeByUserId">
