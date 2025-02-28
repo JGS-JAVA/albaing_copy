@@ -3,6 +3,7 @@ package com.jobjob.albaing.mapper;
 import com.jobjob.albaing.dto.User;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.Date;
 import java.util.Map;
 
 
@@ -19,7 +20,7 @@ public interface UserMapper {
     User getUserById(int userId);
 
     // 마이페이지 - 사용자 정보 수정
-    void updateUser(int userId, String userEmail, String userAddress, String userProfileImage);
+    void updateUser(int userId, User.Gender userGender, Date userBirthdate, String userAddress, String userProfileImage);
 
 
 }

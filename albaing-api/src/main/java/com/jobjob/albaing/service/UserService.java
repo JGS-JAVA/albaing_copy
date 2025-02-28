@@ -2,6 +2,7 @@ package com.jobjob.albaing.service;
 
 import com.jobjob.albaing.dto.User;
 
+import java.util.Date;
 import java.util.Map;
 
 public interface UserService {
@@ -10,6 +11,6 @@ public interface UserService {
     User getUserById(int userId);
 
     // 사용자 정보 수정
-    void updateUser(int userId, String userEmail, String userAddress, String userProfileImage);
+    void updateUser(int userId, User.Gender userGender, Date userBirthdate, String userAddress, String userProfileImage);
 
 }
