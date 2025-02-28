@@ -1,33 +1,35 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
-import Header from './components/Header';
-import Footer from './components/Footer';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 
-import Home from './pages/home/Home';
-import CompanyDetail from './pages/company/CompanyDetail';
-import CompanyMain from './pages/company/CompanyMain';
-import CompanyReview from './pages/company/CompanyReview';
-import CompanyReviewPost from './pages/company/CompanyReviewPost';
-import FindId from './pages/find/FindId';
-import FindIdResult from './pages/find/FindIdResult';
-import FindPassword from './pages/find/FindPassword';
-import FindPasswordResult from './pages/find/FindPasswordResult';
-import JobpostAdd from './pages/jobpost/JobpostAdd';
-import JobpostDetail from './pages/jobpost/JobpostDetail';
-import JobpostEdit from './pages/jobpost/JobpostEdit';
-import JobpostList from './pages/jobpost/JobpostList';
-import Login from './pages/login/Login';
-import MyApplication from './pages/mypage/MyApplication';
-import MyPage from './pages/mypage/MyPage';
-import MyScrap from './pages/mypage/MyScrap';
-import MyReviews from './pages/mypage/MyReviews';
-import RegistrationSuccess from './pages/register/success/RegistrationSuccess';
-import RegisterCompany from './pages/register/RegisterCompany';
-import RegisterPerson from './pages/register/RegisterPerson';
-import Resume from './pages/resume/Resume';
-import ResumeEdit from './pages/resume/ResumeEdit';
+import Home from './home/Home';
+import CompanyDetail from './company/CompanyDetail';
+import CompanyMain from './company/CompanyMain';
+import CompanyReview from './company/CompanyReview';
+import CompanyReviewPost from './company/CompanyReviewPost';
+import FindId from './find/FindId';
+import FindIdResult from './find/FindIdResult';
+import FindPassword from './find/FindPassword';
+import FindPasswordResult from './find/FindPasswordResult';
+import JobpostAdd from './jobpost/JobpostAdd';
+import JobpostDetail from './jobpost/JobpostDetail';
+import JobpostEdit from './jobpost/JobpostEdit';
+import JobpostList from './jobpost/JobpostList';
+import Login from './login/Login';
+import MyApplication from './mypage/MyApplication';
+import MyPage from './mypage/MyPage';
+import MyScrap from './mypage/MyScrap';
+import MyReviews from './mypage/MyReviews';
+import RegistrationSuccess from './register/success/RegistrationSuccess';
+import RegisterCompany from './register/RegisterCompany';
+import RegisterPerson from './register/RegisterPerson';
+import Resume from './resume/Resume';
+import ResumeEdit from './resume/ResumeEdit';
+import UserEdit from "./mypage/UserEdit";
+import NotFound from "../components/ NotFound";
 
 // 메인 레이아웃 컴포넌트
 const MainLayout = ({ children }) => (
@@ -41,10 +43,6 @@ const MainLayout = ({ children }) => (
         <Footer />
     </div>
 );
-
-function AdminMain() {
-    return null;
-}
 
 function PathRoute() {
     return (
@@ -61,7 +59,7 @@ function PathRoute() {
                 <Route path="/find/password" element={<MainLayout><FindPassword /></MainLayout>} /> {/* 비밀번호 찾기 페이지 */}
                 <Route path="/find/password/result" element={<MainLayout><FindPasswordResult /></MainLayout>} /> {/* 비밀번호 찾기 결과 페이지 */}
                 <Route path="/companies" element={<MainLayout><CompanyMain /></MainLayout>} /> {/* 회사 목록 페이지 */}
-                <Route path="/companies/:id" element={<MainLayout><CompanyDetail /></MainLayout>} /> {/* 회사 상세 정보 페이지 */}
+                <Route path="/companies/:companyId" element={<MainLayout><CompanyDetail /></MainLayout>} /> {/* 회사 상세 정보 페이지 */}
                 <Route path="/jobs" element={<MainLayout><JobpostList /></MainLayout>} /> {/* 채용공고 목록 페이지 */}
                 <Route path="/jobs/:id" element={<MainLayout><JobpostDetail /></MainLayout>} /> {/* 채용공고 상세 페이지 */}
 
@@ -70,6 +68,7 @@ function PathRoute() {
                 <Route path="/mypage/applications" element={<MainLayout><MyApplication /></MainLayout>} /> {/* 일반 사용자 지원 내역 페이지 */}
                 <Route path="/mypage/scraps" element={<MainLayout><MyScrap /></MainLayout>} /> {/* 일반 사용자 스크랩 목록 페이지 */}
                 <Route path="/mypage/reviews" element={<MainLayout><MyReviews /></MainLayout>} /> {/* 일반 사용자 작성 리뷰 목록 페이지 */}
+                <Route path="/mypage/user/edit" element={<MainLayout><UserEdit /></MainLayout>} /> {/* 사용자 정보 수정 페이지*/}
                 <Route path="/resumes" element={<MainLayout><Resume /></MainLayout>} /> {/* 이력서 조회 페이지 */}
                 <Route path="/resumes/edit" element={<MainLayout><ResumeEdit /></MainLayout>} /> {/* 이력서 편집 페이지 */}
                 <Route path="/companies/reviews/new" element={<MainLayout><CompanyReviewPost /></MainLayout>} /> {/* 회사 리뷰 작성 페이지 */}
@@ -77,12 +76,22 @@ function PathRoute() {
                 {/* 기업 사용자만 접근 가능 */}
                 <Route path="/jobs/new" element={<MainLayout><JobpostAdd /></MainLayout>} /> {/* 채용공고 등록 페이지 */}
                 <Route path="/jobs/:id/edit" element={<MainLayout><JobpostEdit /></MainLayout>} /> {/* 채용공고 편집 페이지 */}
+                <Route path="/jobs" element={<MainLayout><JobpostList /></MainLayout>} /> {/* 채용공고 목록 페이지 */}
+                <Route path="/jobs/:id" element={<MainLayout><JobpostDetail /></MainLayout>} /> {/* 채용공고 상세 페이지 */}
+                <Route path="/jobs/new" element={<MainLayout><JobpostAdd /></MainLayout>} /> {/* 채용공고 등록 페이지 */}
+                <Route path="/jobs/:id/edit" element={<MainLayout><JobpostEdit /></MainLayout>} /> {/* 채용공고 수정 페이지 */}
+                {/*<Route path="/jobs/:id/applications" element={<MainLayout><JobApplicationManager /></MainLayout>} /> /!* 채용공고 지원자 관리 페이지 *!/*/}
+
 
                 {/* 로그인한 모든 사용자 접근 가능 */}
                 <Route path="/companies/reviews" element={<MainLayout><CompanyReview /></MainLayout>} /> {/* 회사 리뷰 목록 페이지 */}
 
                 {/* 관리자만 접근 가능 */}
-                <Route path="/admin" element={<MainLayout><AdminMain /></MainLayout>} /> {/* 관리자 대시보드 페이지 */}
+                {/*<Route path="/admin" element={<MainLayout><AdminMain /></MainLayout>} /> /!* 관리자 대시보드 페이지 *!/*/}
+
+
+                {/* 모든 정의되지 않은 경로 */}
+                <Route path="*" element={<NotFound />} /> {/* 404 Not Found 페이지 */}
             </Routes>
         </BrowserRouter>
     );
