@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-
 
 @Controller
 @RequestMapping("/oauth/kakao")
@@ -37,7 +37,7 @@ public class KakaoAPIController {
     }
 
     @GetMapping("/callback")
-    public ResponseEntity<Map<String, String>> handleCallback(@RequestParam String code) {
+    public RedirectView handleCallback(@RequestParam String code) {
         String tokenUrl = "https://kauth.kakao.com/oauth/token";
         RestTemplate restTemplate = new RestTemplate();
 
@@ -71,20 +71,28 @@ public class KakaoAPIController {
 
         Map<String, Object> kakaoAccount = (Map<String, Object>) userInfo.get("kakao_account");
         String email = (String) kakaoAccount.get("email");
-        String gender = (String) kakaoAccount.get("gender");
-        String birthday = (String) kakaoAccount.get("birthday");
+        String gender = kakaoAccount.containsKey("gender") ? (String) kakaoAccount.get("gender") : null;
+        String birthday = kakaoAccount.containsKey("birthday") ? (String) kakaoAccount.get("birthday") : null;
 
-        // 프론트엔드에서 이 URL을 받아서 리다이렉트 처리하도록 함
+        // 프론트엔드로 바로 리다이렉트
         String frontendRedirectUri = "http://localhost:3000/register/person"
                 + "?nickname=" + URLEncoder.encode(nickname, StandardCharsets.UTF_8)
-                + "&email=" + email
-                + "&gender=" + gender
-                + "&birthday=" + birthday
-                + "&profileImg=" + profileImg;
+                + "&email=" + email;
 
-        Map<String, String> response = Map.of("redirectUrl", frontendRedirectUri);
-        return ResponseEntity.ok(response);
+        // null이 아닌 경우에만 파라미터 추가
+        if (gender != null) {
+            frontendRedirectUri += "&gender=" + gender;
+        }
+        if (birthday != null) {
+            frontendRedirectUri += "&birthday=" + birthday;
+        }
+        if (profileImg != null) {
+            frontendRedirectUri += "&profileImg=" + URLEncoder.encode(profileImg, StandardCharsets.UTF_8);
+        }
+
+        // RedirectView를 사용하여 바로 리다이렉트
+        RedirectView redirectView = new RedirectView();
+        redirectView.setUrl(frontendRedirectUri);
+        return redirectView;
     }
-
-
 }
