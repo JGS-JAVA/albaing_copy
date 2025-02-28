@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const RegisterPerson = () => {
+const Signup = () => {
     const [nickname, setNickname] = useState("");
     const [email, setEmail] = useState("");
     const [birthday, setBirthday] = useState("");
@@ -59,4 +59,4 @@ const RegisterPerson = () => {
     );
 };
 
-export default RegisterPerson;
+export default Signup;
