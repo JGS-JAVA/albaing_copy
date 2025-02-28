@@ -1,33 +1,33 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
-import Header from './components/Header';
-import Footer from './components/Footer';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 
-import Home from './pages/home/Home';
-import CompanyDetail from './pages/company/CompanyDetail';
-import CompanyMain from './pages/company/CompanyMain';
-import CompanyReview from './pages/company/CompanyReview';
-import CompanyReviewPost from './pages/company/CompanyReviewPost';
-import FindId from './pages/find/FindId';
-import FindIdResult from './pages/find/FindIdResult';
-import FindPassword from './pages/find/FindPassword';
-import FindPasswordResult from './pages/find/FindPasswordResult';
-import JobpostAdd from './pages/jobpost/JobpostAdd';
-import JobpostDetail from './pages/jobpost/JobpostDetail';
-import JobpostEdit from './pages/jobpost/JobpostEdit';
-import JobpostList from './pages/jobpost/JobpostList';
-import Login from './pages/login/Login';
-import MyApplication from './pages/mypage/MyApplication';
-import MyPage from './pages/mypage/MyPage';
-import MyScrap from './pages/mypage/MyScrap';
-import MyReviews from './pages/mypage/MyReviews';
-import RegistrationSuccess from './pages/register/success/RegistrationSuccess';
-import RegisterCompany from './pages/register/RegisterCompany';
-import RegisterPerson from './pages/register/RegisterPerson';
-import Resume from './pages/resume/Resume';
-import ResumeEdit from './pages/resume/ResumeEdit';
+import Home from './home/Home';
+import CompanyDetail from './company/CompanyDetail';
+import CompanyMain from './company/CompanyMain';
+import CompanyReview from './company/CompanyReview';
+import CompanyReviewPost from './company/CompanyReviewPost';
+import FindId from './find/FindId';
+import FindIdResult from './find/FindIdResult';
+import FindPassword from './find/FindPassword';
+import FindPasswordResult from './find/FindPasswordResult';
+import JobpostAdd from './jobpost/JobpostAdd';
+import JobpostDetail from './jobpost/JobpostDetail';
+import JobpostEdit from './jobpost/JobpostEdit';
+import JobpostList from './jobpost/JobpostList';
+import Login from './login/Login';
+import MyApplication from './mypage/MyApplication';
+import MyPage from './mypage/MyPage';
+import MyScrap from './mypage/MyScrap';
+import MyReviews from './mypage/MyReviews';
+import RegistrationSuccess from './register/success/RegistrationSuccess';
+import RegisterCompany from './register/RegisterCompany';
+import RegisterPerson from './register/RegisterPerson';
+import Resume from './resume/Resume';
+import ResumeEdit from './resume/ResumeEdit';
 
 // 메인 레이아웃 컴포넌트
 const MainLayout = ({ children }) => (
