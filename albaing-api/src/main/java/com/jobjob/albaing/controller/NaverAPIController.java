@@ -19,21 +19,15 @@ import java.util.Map;
 @RequestMapping("/oauth/naver")
 public class NaverAPIController {
 
-    //  @Value("${properties 작성한 변수이름}")
-    //           ${} 내부에서 ctrl + space 누르면 properties 에서 가져올 수 있는 변수이름 표기
     @Value("${naver.client-id}")
-    private String naverClientId; // properties에서 가져온 값이 naverClientId 변수이름에 저장됨
+    private String naverClientId;
 
     @Value("${naver.client-secret}")
     private String naverClientSecret;
 
     @Value("${naver.redirect-url}")
     private String naverRedirectUrl;
-   /*
-       아래와 같이 직접적으로 properties 에 작성한 값을 넣을 수 있지만
-       id나 secret 키가 유출될 가능성이 높기 때문에 properties 파일에 작성 후 가져오는 형식으로 설정
-       private String naverRedirectUrl = "http://localhost:8080/oauth/naver/callback";
-    */
+
 
 
     // state=xyz123  네이버 state 필수 작성 네이버 기준 형식에 맞추기위해서 작성한 값일뿐
