@@ -15,15 +15,14 @@ public class JobApplicationServiceImpl implements JobApplicationService {
     private JobApplicationMapper jobApplicationMapper;
 
     @Override
-    public List<JobApplication> getApplicationsByJobPost(int jobPostId) {
-        return jobApplicationMapper.findByJobPostId(jobPostId);
+    public List<JobApplication> getJobApplications(int resumeId) {
+        return jobApplicationMapper.getJobApplications(resumeId);
     }
 
     @Override
-    public void updateApplicationStatus(int applicationId, String status) {
-        if (!Arrays.asList("approved", "approving", "denied").contains(status)) {
-            throw new IllegalArgumentException("Invalid status value");
-        }
-        jobApplicationMapper.updateStatus(applicationId, status);
-    }
+    public void userApplyForJob(JobApplication jobApplication){
+        jobApplicationMapper.userApplyForJob(jobApplication);
+    };
+
+
 }

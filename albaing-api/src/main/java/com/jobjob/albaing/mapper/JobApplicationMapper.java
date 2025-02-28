@@ -7,6 +7,8 @@ import java.util.List;
 
 @Mapper
 public interface JobApplicationMapper {
-    List<JobApplication> findByJobPostId(int jobPostId);
-    void updateStatus(int applicationId, String status);
+
+    List<JobApplication> getJobApplications(int resumeId);
+
+    void userApplyForJob(JobApplication jobApplication);
 }
