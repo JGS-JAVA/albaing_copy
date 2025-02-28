@@ -6,13 +6,14 @@ import com.jobjob.albaing.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
+
 @RestController
 @RequestMapping("/api/auth")
 public class UserController {
 
     @Autowired
     private UserServiceImpl userService;
-
 
 
     // 마이페이지 - 사용자 정보 조회
@@ -24,10 +25,11 @@ public class UserController {
     // 마이페이지 - 사용자 정보 수정
     @PutMapping("/user/update/{userId}")
     public void updateUser(@PathVariable int userId,
-                           @RequestParam("userEmail") String userEmail,
+                           @RequestParam("userGender") User.Gender userGender,
+                           @RequestParam("userBirthdate") Date userBirthdate,
                            @RequestParam("userAddress") String userAddress,
                            @RequestParam("userProfileImage") String userProfileImage) {
-        userService.updateUser(userId, userEmail, userAddress, userProfileImage);
+        userService.updateUser(userId,userGender,userBirthdate,userAddress,userProfileImage);
     }
 
 }
