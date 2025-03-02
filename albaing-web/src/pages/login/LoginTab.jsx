@@ -35,7 +35,9 @@ export default function LoginTab() {
             });
 
             const responseData = await response.json();
-            if (!response.ok) {
+            if (response.ok) {
+                alert("로그인이 성공적으로 완료되었습니다.");
+            } else {
                 throw new Error(responseData.message || "로그인 실패. 이메일 또는 비밀번호를 확인하세요.");
             }
 
