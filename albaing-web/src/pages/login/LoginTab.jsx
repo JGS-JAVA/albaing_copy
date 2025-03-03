@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function LoginTab() {
-    const [tab, setTab] = useState("user"); // "user" 또는 "company"
+    const [tab, setTab] = useState("user");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -10,16 +10,14 @@ export default function LoginTab() {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        setError(""); // 에러 초기화
+        setError("");
 
         try {
-            // 선택된 탭에 따라 다른 엔드포인트로 요청
             const endpoint =
                 tab === "user"
                     ? "http://localhost:8080/api/account/auth/login-person"
                     : "http://localhost:8080/api/account/auth/login-company";
 
-            // 요청 본문 준비 (서버 모델에 맞춰 필드명 변경)
             const requestBody =
                 tab === "user"
                     ? { userEmail: email, userPassword: password }
@@ -41,23 +39,22 @@ export default function LoginTab() {
                 throw new Error(responseData.message || "로그인 실패. 이메일 또는 비밀번호를 확인하세요.");
             }
 
-            // 로그인 성공 시, 로컬 스토리지에 저장 후 이동
             localStorage.setItem(tab, JSON.stringify(responseData[tab]));
 
             if (tab === "company") {
-                navigate("/company/dashboard"); // 기업 로그인 후 이동할 페이지
+                navigate("/");
             } else {
-                navigate("/user/dashboard"); // 유저 로그인 후 이동할 페이지
+                navigate("/");
             }
         } catch (err) {
-            setError(err.message); // 발생한 에러 메시지 출력
+            setError(err.message);
         }
     };
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
             <div className="bg-white p-8 rounded-2xl shadow-lg w-96">
-                {/* 탭 버튼 */}
+
                 <div className="flex mb-4">
                     <button
                         className={`flex-1 py-2 text-center rounded-t-lg ${
@@ -77,7 +74,7 @@ export default function LoginTab() {
                     </button>
                 </div>
 
-                {/* 로그인 폼 */}
+
                 <form onSubmit={handleLogin} className="space-y-4">
                     {error && <p className="text-red-500 text-sm">{error}</p>}
                     <input
