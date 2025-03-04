@@ -22,7 +22,7 @@ const RegisterCompany = () => {
     // 이메일 인증 코드 요청
     const requestVerificationCode = async () => {
         try {
-            const response = await fetch("http://localhost:8080/api/account/auth/sendCode", {
+            const response = await fetch("http://localhost:8080/api/auth/sendCode", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -45,7 +45,7 @@ const RegisterCompany = () => {
     // 인증번호 확인
     const verifyCode = async () => {
         try {
-            const response = await fetch("http://localhost:8080/api/account/auth/checkCode", {
+            const response = await fetch("http://localhost:8080/api/auth/checkCode", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -131,7 +131,7 @@ const RegisterCompany = () => {
         }
 
         try {
-            const response = await fetch("http://localhost:8080/api/account/auth/register-company", {
+            const response = await fetch("http://localhost:8080/api/auth/register/company", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

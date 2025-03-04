@@ -64,7 +64,7 @@ const RegisterPerson = () => {
     // Request verification code
     const requestVerificationCode = async () => {
         try {
-            const response = await fetch("http://localhost:8080/api/account/auth/sendCode", {
+            const response = await fetch("http://localhost:8080/api/auth/sendCode", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -89,7 +89,7 @@ const RegisterPerson = () => {
     // Verify code
     const verifyCode = async () => {
         try {
-            const response = await fetch("http://localhost:8080/api/account/auth/checkCode", {
+            const response = await fetch("http://localhost:8080/api/auth/checkCode", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -160,7 +160,7 @@ const RegisterPerson = () => {
         }
 
         try {
-            const response = await fetch("http://localhost:8080/api/account/auth/register-person", {
+            const response = await fetch("http://localhost:8080/api/auth/register/person", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
