@@ -17,4 +17,6 @@ public interface JobPostMapper {
 
     //특정 회사 전체 공고 출력
     List<JobPost> showPosts(long companyId);
+
+    List<JobPost> getJobPostsByCompanyId(long companyId);
 }

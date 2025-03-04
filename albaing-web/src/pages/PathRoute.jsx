@@ -62,8 +62,8 @@ function PathRoute() {
                 <Route path="/find/id/result" element={<MainLayout><FindIdResult /></MainLayout>} /> {/* 아이디 찾기 결과 페이지 */}
                 <Route path="/find/password" element={<MainLayout><FindPassword /></MainLayout>} /> {/* 비밀번호 찾기 페이지 */}
                 <Route path="/find/password/result" element={<MainLayout><FindPasswordResult /></MainLayout>} /> {/* 비밀번호 찾기 결과 페이지 */}
-                <Route path="/companies" element={<MainLayout><CompanyMain /></MainLayout>} /> {/* 회사 목록 페이지 */}
-                <Route path="/companies/:companyId" element={<MainLayout><CompanyDetail /></MainLayout>} /> {/* 회사 상세 정보 페이지 */}
+                <Route path="/companies/:companyId" element={<MainLayout><CompanyMain /></MainLayout>} /> {/* 회사 목록 페이지 */}
+                <Route path="/companies/detail:companyId" element={<MainLayout><CompanyDetail /></MainLayout>} /> {/* 회사 상세 정보 페이지 */}
                 <Route path="/jobs" element={<MainLayout><JobpostList /></MainLayout>} /> {/* 채용공고 목록 페이지 */}
                 <Route path="/jobs/:id" element={<MainLayout><JobpostDetail /></MainLayout>} /> {/* 채용공고 상세 페이지 */}
 
