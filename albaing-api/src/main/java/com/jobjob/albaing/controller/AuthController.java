@@ -7,6 +7,7 @@ import com.jobjob.albaing.service.AuthServiceImpl;
 import com.jobjob.albaing.service.VerificationServiceImpl;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/account/auth")
+@RequestMapping("/api/auth")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class AuthController {
 
     @Autowired
@@ -24,34 +26,56 @@ public class AuthController {
     private VerificationServiceImpl verificationServiceImpl;
 
     // 유저 로그인
-    @PostMapping("/login-person")
-    public ResponseEntity<Map<String, Object>> loginPerson(@RequestBody User user,
-                                                           HttpSession session) {
-        Map<String, Object> loginResult = authService.loginUser(user.getUserEmail(), user.getUserPassword());
+    @PostMapping("/login/person")
+    public ResponseEntity<Map<String, Object>> loginPerson(@RequestBody User user, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
 
-        if ("success".equals(loginResult.get("status"))) {
-            User loggedInUser = (User) loginResult.get("user");
-            session.setAttribute("userSession", loggedInUser);
-            return ResponseEntity.ok(loginResult);
+        try {
+            Map<String, Object> loginResult = authService.loginUser(user.getUserEmail(), user.getUserPassword());
 
-        } else {
-            return ResponseEntity.status(401).body(loginResult);
+            if ("success".equals(loginResult.get("status"))) {
+                User loggedInUser = (User) loginResult.get("user");
+                session.setAttribute("userSession", loggedInUser);
+
+                response.put("status", "success");
+                response.put("user", loggedInUser);
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("status", "fail");
+                response.put("message", loginResult.get("message"));
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            }
+        } catch (Exception e) {
+            response.put("status", "error");
+            response.put("message", "로그인 중 오류가 발생했습니다: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
     // 기업 로그인
-    @PostMapping("/login-company")
-    public ResponseEntity<Map<String, Object>> loginCompany(@RequestBody Company company,
-                                                            HttpSession session) {
-        Map<String, Object> loginResult = authService.loginCompany(company.getCompanyEmail(), company.getCompanyPassword());
+    @PostMapping("/login/company")
+    public ResponseEntity<Map<String, Object>> loginCompany(@RequestBody Company company, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
 
-        if ("success".equals(loginResult.get("status"))) {
-            Company loggedInCompany = (Company) loginResult.get("company");
-            session.setAttribute("companySession", loggedInCompany);
-            return ResponseEntity.ok(loginResult);
+        try {
+            Map<String, Object> loginResult = authService.loginCompany(company.getCompanyEmail(), company.getCompanyPassword());
 
-        } else {
-            return ResponseEntity.status(401).body(loginResult);
+            if ("success".equals(loginResult.get("status"))) {
+                Company loggedInCompany = (Company) loginResult.get("company");
+                session.setAttribute("companySession", loggedInCompany);
+
+                response.put("status", "success");
+                response.put("company", loggedInCompany);
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("status", "fail");
+                response.put("message", loginResult.get("message"));
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            }
+        } catch (Exception e) {
+            response.put("status", "error");
+            response.put("message", "로그인 중 오류가 발생했습니다: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
@@ -61,6 +85,7 @@ public class AuthController {
         session.invalidate();
         Map<String, Object> response = new HashMap<>();
         response.put("status", "logout");
+        response.put("message", "로그아웃 되었습니다.");
         return ResponseEntity.ok(response);
     }
 
@@ -69,78 +94,77 @@ public class AuthController {
     public ResponseEntity<?> checkLogin(HttpSession session) {
         User loginUser = (User) session.getAttribute("userSession");
         Company loginCompany = (Company) session.getAttribute("companySession");
+
         if (loginUser != null) {
             return ResponseEntity.ok(loginUser);
         } else if (loginCompany != null) {
             return ResponseEntity.ok(loginCompany);
         } else {
-            return ResponseEntity.status(401).body(Map.of("message", "로그인 상태가 아닙니다."));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "로그인 상태가 아닙니다."));
         }
     }
 
     // 유저 회원가입
-    @PostMapping("/register-person")
+    @PostMapping("/register/person")
     public ResponseEntity<Map<String, Object>> registerUser(@RequestBody User user) {
         Map<String, Object> response = new HashMap<>();
 
-        // 이메일 인증 확인
         boolean isVerified = verificationServiceImpl.isEmailVerified(user.getUserEmail());
         if (!isVerified) {
             response.put("status", "fail");
             response.put("message", "이메일 인증이 완료되지 않았습니다. 인증을 먼저 완료해주세요.");
-            return ResponseEntity.status(400).body(response);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
 
         try {
             authService.registerUser(user);
+
             response.put("status", "success");
             response.put("message", "회원가입이 성공적으로 완료되었습니다.");
 
-            // 회원가입이 완료되면 인증 정보 삭제
             verificationServiceImpl.removeEmailVerification(user.getUserEmail());
 
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             response.put("status", "fail");
             response.put("message", e.getMessage());
-            return ResponseEntity.status(400).body(response);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         } catch (Exception e) {
             response.put("status", "error");
             response.put("message", "회원가입 중 오류가 발생했습니다: " + e.getMessage());
-            return ResponseEntity.status(500).body(response);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
     // 기업 회원가입
-    @PostMapping("/register-company")
+    @PostMapping("/register/company")
     public ResponseEntity<Map<String, Object>> registerCompany(@RequestBody Company company) {
         Map<String, Object> response = new HashMap<>();
 
-        // 이메일 인증 확인
         boolean isVerified = verificationServiceImpl.isEmailVerified(company.getCompanyEmail());
         if (!isVerified) {
             response.put("status", "fail");
             response.put("message", "이메일 인증이 완료되지 않았습니다. 인증을 먼저 완료해주세요.");
-            return ResponseEntity.status(400).body(response);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
 
         try {
             authService.registerCompany(company);
+
             response.put("status", "success");
             response.put("message", "회원가입이 성공적으로 완료되었습니다.");
 
-            // 회원가입이 완료되면 인증 정보 삭제
             verificationServiceImpl.removeEmailVerification(company.getCompanyEmail());
 
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             response.put("status", "fail");
             response.put("message", e.getMessage());
-            return ResponseEntity.status(400).body(response);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         } catch (Exception e) {
             response.put("status", "error");
             response.put("message", "회원가입 중 오류가 발생했습니다: " + e.getMessage());
-            return ResponseEntity.status(500).body(response);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
@@ -151,16 +175,10 @@ public class AuthController {
 
         try {
             String email = vr.getEmail();
-            System.out.println("컨트롤러- 이메일:" + email);
-
             String code = verificationServiceImpl.randomCode();
-            System.out.println("컨트롤러- 코드:" + code);
 
             verificationServiceImpl.saveEmailCode(email, code);
-            System.out.println("컨트롤러- 세이브 메서드:" + email + code);
-
             verificationServiceImpl.sendEmail(email, code);
-            System.out.println("컨트롤러- 이메일 전송 성공:" + code);
 
             response.put("status", "success");
             response.put("message", "이메일을 성공적으로 보냈습니다: " + email);
@@ -168,7 +186,7 @@ public class AuthController {
         } catch (Exception e) {
             response.put("status", "error");
             response.put("message", "이메일 전송 중 오류가 발생했습니다: " + e.getMessage());
-            return ResponseEntity.status(500).body(response);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
@@ -178,12 +196,9 @@ public class AuthController {
         Map<String, Object> response = new HashMap<>();
 
         boolean isValid = verificationServiceImpl.verifyCodeWithVO(vr);
-        System.out.println("인증번호 확인 결과: " + isValid);
 
         if (isValid) {
-            // 인증 완료 시 이메일 인증 상태를 업데이트
             verificationServiceImpl.markEmailAsVerified(vr.getEmail());
-            System.out.println("이메일 인증 완료 처리: " + vr.getEmail());
 
             response.put("status", "success");
             response.put("message", "인증번호가 일치합니다.");
@@ -191,7 +206,7 @@ public class AuthController {
         } else {
             response.put("status", "fail");
             response.put("message", "인증번호가 일치하지 않습니다.");
-            return ResponseEntity.status(400).body(response);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
 }
