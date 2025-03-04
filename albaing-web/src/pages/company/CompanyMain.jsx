@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import {useNavigate, useParams} from "react-router-dom";
 
 const CompanyMain = () => {
     const [activeTab, setActiveTab] = useState('dashboard');
@@ -9,63 +10,69 @@ const CompanyMain = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // 로컬 스토리지에서 companyId 가져오기 (로그인 시 저장했다고 가정)
-    const companyId = localStorage.getItem('companyId');
+    const { companyId } = useParams();
+    const navigate = useNavigate();
 
     useEffect(() => {
-        // 로딩 상태 시작
         setLoading(true);
+        setError(null);
 
-        // companyId가 없는 경우 로그인 정보가 없다고 간주
-        if (!companyId) {
-            setError('Authentication error. Please log in again.');
+        const authUserStr = localStorage.getItem('authUser');
+        if (!authUserStr) {
+            setError('로그인이 필요한 페이지입니다.');
             setLoading(false);
+
+            setTimeout(() => navigate('/login'), 1500);
             return;
         }
 
-        // 1) 회사 정보 가져오기 (필수)
-        axios
-            .get(`/api/companies/${companyId}`)
+        const authUser = JSON.parse(authUserStr);
+
+        // 1. 기업 사용자인지 확인
+        if (authUser.type !== 'company') {
+            setError('기업 회원만 접근할 수 있는 페이지입니다.');
+            setLoading(false);
+            // 홈으로 리다이렉션
+            setTimeout(() => navigate('/'), 1500);
+            return;
+        }
+
+        // 2. URL의 companyId와 로그인한 기업 ID가 일치하는지 확인
+        const loggedInCompanyId = authUser.data.companyId;
+
+        if (loggedInCompanyId !== parseInt(companyId)) {
+            setError('본인 회사의 페이지만 관리할 수 있습니다.');
+            setLoading(false);
+            // 로그인한 기업의 회사 페이지로 리다이렉션
+            setTimeout(() => navigate(`/companies/${loggedInCompanyId}`), 1500);
+            return;
+        }
+
+        axios.get(`/api/companies/${companyId}`)
             .then((companyRes) => {
                 setCompanyData(companyRes.data);
-
-                // 2) 채용공고 가져오기 (없을 수 있으므로 실패 시 빈 배열)
-                return axios
-                    .get(`/api/jobs/company/${companyId}`)
-                    .then((jobsRes) => {
-                        setJobPosts(jobsRes.data);
-                    })
-                    .catch(() => {
-                        setJobPosts([]);
-                    });
+                return axios.get(`/api/jobs/company/${companyId}`);
             })
-            .then(() => {
-                // 3) 지원자 데이터 가져오기 (없을 수 있으므로 실패 시 빈 배열)
-                return axios
-                    .get(`/api/applications/company/${companyId}`)
-                    .then((appsRes) => {
-                        setApplications(appsRes.data);
-                    })
-                    .catch(() => {
-                        setApplications([]);
-                    });
+            .then((jobsRes) => {
+                setJobPosts(jobsRes.data);
+                return axios.get(`/api/applications/company/${companyId}`);
             })
-            .catch(() => {
-                // 회사 정보 불러오기 실패 시 전체 에러 처리
-                setError('Failed to load company data. Please try again later.');
+            .then((appsRes) => {
+                setApplications(appsRes.data);
+                setLoading(false);
             })
-            .finally(() => {
-                // 모든 요청이 끝난 후 로딩 종료
+            .catch((err) => {
+                console.error("API 요청 오류:", err);
+                setError('데이터를 불러오는 중 오류가 발생했습니다.');
                 setLoading(false);
             });
-    }, [companyId]);
 
-    // 탭 변경 함수
+    }, [companyId, navigate]);
+
     const handleTabChange = (tab) => {
         setActiveTab(tab);
     };
 
-    // 채용공고 작성 페이지 이동 (단순 이동이므로 then/catch 불필요)
     const handleCreateJobPost = () => {
         window.location.href = '/jobs/new';
     };

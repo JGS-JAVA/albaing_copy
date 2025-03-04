@@ -53,53 +53,57 @@ export default function Header() {
     const [userType, setUserType] = useState(null); // 'personal' 또는 'company'
     const navigate = useNavigate();
 
-    // 로그인 상태 확인
-    useEffect(() => {
-        // localStorage에서 authUser 확인
-        const checkLoginStatus = () => {
-            const authUser = localStorage.getItem('authUser');
+    // 로그인 상태 확인 함수
+    const checkLoginStatus = () => {
+        const authUser = localStorage.getItem('authUser');
 
-            if (authUser) {
-                const userData = JSON.parse(authUser);
-                setIsLoggedIn(true);
-                setUserType(userData.type);
-            } else {
-                // 세션을 통한 확인 (백엔드 API 호출)
-                axios.get('/api/auth/checkLogin', { withCredentials: true })
-                    .then(response => {
-                        if (response.status === 200 && response.data) {
-                            setIsLoggedIn(true);
+        if (authUser) {
+            const userData = JSON.parse(authUser);
+            setIsLoggedIn(true);
+            setUserType(userData.type);
+        } else {
+            axios.get('/api/auth/checkLogin', { withCredentials: true })
+                .then(response => {
+                    if (response.status === 200 && response.data) {
+                        setIsLoggedIn(true);
 
-                            // 유저 타입 확인 (회사인지 개인인지)
-                            if (response.data.userId) {
-                                setUserType('personal');
-                                localStorage.setItem('authUser', JSON.stringify({
-                                    type: 'personal',
-                                    data: response.data
-                                }));
-                            } else if (response.data.companyId) {
-                                setUserType('company');
-                                localStorage.setItem('authUser', JSON.stringify({
-                                    type: 'company',
-                                    data: response.data
-                                }));
-                            }
-                        } else {
-                            setIsLoggedIn(false);
-                            setUserType(null);
-                            localStorage.removeItem('authUser');
+                        if (response.data.userId) {
+                            setUserType('personal');
+                            localStorage.setItem('authUser', JSON.stringify({
+                                type: 'personal',
+                                data: response.data
+                            }));
+                        } else if (response.data.companyId) {
+                            setUserType('company');
+                            localStorage.setItem('authUser', JSON.stringify({
+                                type: 'company',
+                                data: response.data
+                            }));
                         }
-                    })
-                    .catch(error => {
-                        console.error('Login check failed:', error);
+                    } else {
                         setIsLoggedIn(false);
                         setUserType(null);
                         localStorage.removeItem('authUser');
-                    });
-            }
-        };
+                    }
+                })
+                .catch(error => {
+                    console.error('Login check failed:', error);
+                    setIsLoggedIn(false);
+                    setUserType(null);
+                    localStorage.removeItem('authUser');
+                });
+        }
+    };
 
+    // 컴포넌트 마운트 시 로그인 상태 확인
+    useEffect(() => {
         checkLoginStatus();
+
+        window.addEventListener('auth-change', checkLoginStatus);
+
+        return () => {
+            window.removeEventListener('auth-change', checkLoginStatus);
+        };
     }, []);
 
     // 로그아웃 처리
@@ -109,17 +113,23 @@ export default function Header() {
                 localStorage.removeItem('authUser');
                 setIsLoggedIn(false);
                 setUserType(null);
+
+                window.dispatchEvent(new Event('auth-change'));
+
                 navigate('/');
             })
             .catch(error => {
                 console.error('Logout failed:', error);
-                // 에러가 발생해도 로컬의 로그인 정보는 삭제
                 localStorage.removeItem('authUser');
                 setIsLoggedIn(false);
                 setUserType(null);
+
+                window.dispatchEvent(new Event('auth-change'));
+
                 navigate('/');
             });
     };
+
 
     return (
         <header className="bg-white border-b border-gray-200 sticky top-0 z-50 w-screen">
