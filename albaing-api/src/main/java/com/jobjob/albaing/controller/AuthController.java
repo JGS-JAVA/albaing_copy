@@ -27,6 +27,15 @@ public class AuthController {
     @PostMapping("/login-person")
     public ResponseEntity<Map<String, Object>> loginPerson(@RequestBody User user, HttpSession session) {
         Map<String, Object> response = new HashMap<>();
+      
+    public ResponseEntity<Map<String, Object>> loginPerson(@RequestBody User user,
+                                                           HttpSession session) {
+        Map<String, Object> loginResult = authService.loginUser(user.getUserEmail(), user.getUserPassword());
+
+        if ("success".equals(loginResult.get("status"))) {
+            User loggedInUser = (User) loginResult.get("user");
+            session.setAttribute("userSession", loggedInUser);
+            return ResponseEntity.ok(loginResult);
 
         try {
             Map<String, Object> loginResult = authService.loginUser(user.getUserEmail(), user.getUserPassword());
@@ -56,6 +65,15 @@ public class AuthController {
     @PostMapping("/login-company")
     public ResponseEntity<Map<String, Object>> loginCompany(@RequestBody Company company, HttpSession session) {
         Map<String, Object> response = new HashMap<>();
+      
+    public ResponseEntity<Map<String, Object>> loginCompany(@RequestBody Company company,
+                                                            HttpSession session) {
+        Map<String, Object> loginResult = authService.loginCompany(company.getCompanyEmail(), company.getCompanyPassword());
+
+        if ("success".equals(loginResult.get("status"))) {
+            Company loggedInCompany = (Company) loginResult.get("company");
+            session.setAttribute("companySession", loggedInCompany);
+            return ResponseEntity.ok(loginResult);
 
         try {
             Map<String, Object> loginResult = authService.loginCompany(company.getCompanyEmail(), company.getCompanyPassword());
