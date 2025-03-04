@@ -438,7 +438,6 @@ const CompanyMain = () => {
                                         <p className="text-gray-600 mb-1"><span className="font-medium">이메일:</span> {companyData.companyEmail}</p>
                                         <p className="text-gray-600 mb-1"><span className="font-medium">회사연락처:</span> {companyData.companyPhone}</p>
                                         <p className="text-gray-600 mb-1"><span className="font-medium">본사 위치:</span> {companyData.companyLocalAddress}</p>
-                                        <p className="text-gray-600 mb-1"><span className="font-medium">규모:</span> {companyData.companySize} employees</p>
                                         <p className="text-gray-600 mb-1"><span className="font-medium">회사 창립일:</span> {companyData.companyOpenDate}</p>
                                         <p className="text-gray-600 mb-1"><span className="font-medium">사업자등록번호:</span> {companyData.companyRegistrationNumber}</p>
                                     </div>
