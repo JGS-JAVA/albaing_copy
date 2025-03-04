@@ -32,7 +32,13 @@ export default function Login() {
                         data: userType === 'personal' ? response.data.user : response.data.company
                     }));
 
-                    navigate('/');
+                    window.dispatchEvent(new Event('auth-change'));
+
+                    if (userType === 'company') {
+                        navigate(`/company/manage/${response.data.company.companyId}`);
+                    } else {
+                        navigate('/');
+                    }
                 } else {
                     setError(response.data?.message || '로그인에 실패했습니다');
                 }
