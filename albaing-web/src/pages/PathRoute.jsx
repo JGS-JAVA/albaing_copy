@@ -30,7 +30,6 @@ import Resume from './resume/Resume';
 import ResumeEdit from './resume/ResumeEdit';
 import UserEdit from "./mypage/UserEdit";
 import NotFound from "../components/ NotFound";
-import ProtectedRoute from "../components/ProtectedRoute";
 import RegisterPage from "./register/RegisterPage";
 
 // 메인 레이아웃 컴포넌트
@@ -49,7 +48,6 @@ const MainLayout = ({ children }) => (
 function PathRoute() {
     return (
         <BrowserRouter>
-            <ProtectedRoute/>
             <Routes>
                 {/* 모든 사용자 접근 가능 */}
                 <Route path="/" element={<MainLayout><Home /></MainLayout>} /> {/* 메인 홈페이지 */}
