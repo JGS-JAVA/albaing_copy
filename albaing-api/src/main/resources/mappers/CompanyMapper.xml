@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.kh.khtAcademy.mapper.CompaniesMapper">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jobjob.albaing.mapper.CompanyMapper">
 
-    <!-- 회사 회원가입 -->
+    <!-- 기업 회원가입 -->
     <insert id="registerCompany">
         INSERT INTO companies (
             company_name,
@@ -36,12 +35,72 @@
                  );
     </insert>
 
-    <!-- 이메일을 이용해 회사 정보 조회 (로그인 시 사용) -->
-    <select id="findByEmail" resultType="Company">
+    <!-- 기업 로그인 -->
+    <select id="loginCompany" parameterType="map">
         SELECT *
         FROM companies
         WHERE company_email = #{companyEmail}
     </select>
+
+    <!-- 어드민용 - 모든 리뷰 조회 -->
+    <select id="getAllReviewsForAdmin">
+        SELECT r.*, u.user_name, c.company_name
+        FROM reviews r
+                 JOIN users u ON r.user_id = u.user_id
+                 JOIN companies c ON r.company_id = c.company_id
+        ORDER BY r.review_created_at DESC
+    </select>
+
+    <!-- 어드민용 - 리뷰 수정 -->
+    <update id="updateReviewByAdmin" parameterType="Review">
+        UPDATE reviews
+        SET
+            review_title = #{reviewTitle},
+            review_content = #{reviewContent},
+            review_updated_at = NOW()
+        WHERE review_id = #{reviewId}
+    </update>
+
+    <!-- 어드민용 - 리뷰 삭제 -->
+    <delete id="deleteReviewByAdmin">
+        DELETE FROM reviews
+        WHERE review_id = #{reviewId}
+    </delete>
+
+    <!-- 어드민용 - 댓글 삭제 -->
+    <delete id="deleteCommentByAdmin">
+        DELETE FROM comments
+        WHERE comment_id = #{commentId}
+    </delete>
+
+    <!-- 리뷰 조회 (ID 기준) -->
+    <select id="getReviewById" resultType="Review">
+        SELECT *
+        FROM reviews
+        WHERE review_id = #{reviewId}
+    </select>
+
+    <!-- 회사용 - 리뷰 삭제 -->
+    <delete id="deleteReviewByCompany">
+        DELETE FROM reviews
+        WHERE review_id = #{reviewId} AND company_id = #{companyId}
+    </delete>
+
+    <!-- 회사용 - 댓글이 자사 리뷰에 속하는지 확인 -->
+    <select id="checkCommentBelongsToCompany" parameterType="map" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM comments c
+                 JOIN reviews r ON c.review_id = r.review_id
+        WHERE c.comment_id = #{commentId}
+          AND c.review_id = #{reviewId}
+          AND r.company_id = #{companyId}
+    </select>
+
+    <!-- 회사용 - 댓글 삭제 -->
+    <delete id="deleteCommentByCompany" parameterType="map">
+        DELETE FROM comments
+        WHERE comment_id = #{commentId}
+    </delete>
 
 
 </mapper>
