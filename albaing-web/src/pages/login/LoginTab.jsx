@@ -15,13 +15,17 @@ export default function LoginTab() {
         try {
             const endpoint =
                 tab === "user"
-                    ? "http://localhost:8080/api/account/auth/login-person"
-                    : "http://localhost:8080/api/account/auth/login-company";
+                    ? "http://localhost:8080/api/auth/login/person"
+                    : "http://localhost:8080/api/auth/login/company";
+
+            console.log("Sending request to:", endpoint); // 디버깅용 로그 추가
 
             const requestBody =
                 tab === "user"
                     ? { userEmail: email, userPassword: password }
                     : { companyEmail: email, companyPassword: password };
+
+            console.log("Request body:", requestBody); // 디버깅용 로그 추가
 
             const response = await fetch(endpoint, {
                 method: "POST",
@@ -32,22 +36,18 @@ export default function LoginTab() {
                 credentials: "include",
             });
 
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || `${response.status}: ${response.statusText}`);
+            }
+
             const responseData = await response.json();
-            if (response.ok) {
-                alert("로그인이 성공적으로 완료되었습니다.");
-            } else {
-                throw new Error(responseData.message || "로그인 실패. 이메일 또는 비밀번호를 확인하세요.");
-            }
-
+            alert("로그인이 성공적으로 완료되었습니다.");
             localStorage.setItem(tab, JSON.stringify(responseData[tab]));
-
-            if (tab === "company") {
-                navigate("/");
-            } else {
-                navigate("/");
-            }
+            navigate("/");
         } catch (err) {
-            setError(err.message);
+            console.error("Login error:", err); // 더 자세한 에러 로깅
+            setError(err.message || "로그인 중 오류가 발생했습니다.");
         }
     };
 
