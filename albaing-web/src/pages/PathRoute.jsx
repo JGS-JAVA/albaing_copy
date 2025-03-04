@@ -31,7 +31,7 @@ import ResumeEdit from './resume/ResumeEdit';
 import UserEdit from "./mypage/UserEdit";
 import NotFound from "../components/ NotFound";
 import ProtectedRoute from "../components/ProtectedRoute";
-import LoginTab from "./login/LoginTab";
+import RegisterPage from "./register/RegisterPage";
 
 // 메인 레이아웃 컴포넌트
 const MainLayout = ({ children }) => (
@@ -53,7 +53,8 @@ function PathRoute() {
             <Routes>
                 {/* 모든 사용자 접근 가능 */}
                 <Route path="/" element={<MainLayout><Home /></MainLayout>} /> {/* 메인 홈페이지 */}
-                <Route path="/login" element={<MainLayout><LoginTab /></MainLayout>} /> {/* 로그인 페이지 */}
+                <Route path="/login" element={<MainLayout><Login /></MainLayout>} /> {/* 로그인 페이지 */}
+                <Route path="/register" element={<MainLayout><RegisterPage /></MainLayout>} /> {/* 회원가입 선택 페이지 */}
                 <Route path="/register/success" element={<MainLayout><RegistrationSuccess /></MainLayout>} /> {/* 회원가입 성공 페이지 */}
                 <Route path="/register/person" element={<MainLayout><RegisterPerson /></MainLayout>} /> {/* 개인 회원가입 페이지 */}
                 <Route path="/register/company" element={<MainLayout><RegisterCompany /></MainLayout>} /> {/* 기업 회원가입 페이지 */}
