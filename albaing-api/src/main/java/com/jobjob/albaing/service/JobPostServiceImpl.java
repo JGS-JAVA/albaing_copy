@@ -21,7 +21,6 @@ public class JobPostServiceImpl implements JobPostService {
         jobPostMapper.insertJobPost(jobPost);
         return jobPost;
     }
-
     @Override
     public JobPost getJobPost(int jobPostId) {
         return jobPostMapper.selectJobPostById(jobPostId);
@@ -62,9 +61,9 @@ public class JobPostServiceImpl implements JobPostService {
 
         return jobPostMapper.countJobPost(params);
     }
-    //특정 회사 전체 공고 출력
+
     @Override
-    public List<JobPost> showPosts(long companyId) {
-        return jobPostMapper.showPosts(companyId);
+    public List<JobPost> getJobPostsByCompanyId(long companyId) {
+        return jobPostMapper.getJobPostsByCompanyId(companyId);
     }
 }
