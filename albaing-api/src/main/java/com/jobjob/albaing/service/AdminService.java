@@ -1,12 +1,10 @@
-package com.jobjob.albaing.mapper;
+package com.jobjob.albaing.service;
 
 import com.jobjob.albaing.dto.*;
-import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
-@Mapper
-public interface AdminMapper {
+public interface AdminService {
 
     List<User> adminSearchUsers(String userName, String userEmail, String userPhone);
 
