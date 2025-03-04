@@ -1,6 +1,7 @@
 package com.jobjob.albaing.controller;
 
 import com.jobjob.albaing.dto.JobPost;
+import com.jobjob.albaing.service.CompanyService;
 import com.jobjob.albaing.service.JobPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -42,11 +43,9 @@ public class JobPostController {
         return ResponseEntity.ok().build();
     }
 
-    //상세 페이지 기업 채용 공고 출력
     @GetMapping("/company/{companyId}")
-    public String showPosts(@PathVariable("companyId") long companyId, Model model) {
-        List<JobPost> jobPosts = jobPostService.showPosts(companyId);
-        model.addAttribute("jobPosts", jobPosts);
-        return "company/companyDetail";
+    public ResponseEntity<List<JobPost>> getJobPostsByCompanyId(@PathVariable("companyId") long companyId) {
+        List<JobPost> jobPosts = jobPostService.getJobPostsByCompanyId(companyId);
+        return ResponseEntity.ok(jobPosts);
     }
 }
