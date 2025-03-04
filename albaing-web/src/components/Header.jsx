@@ -17,6 +17,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import albaingLogo from '../assets/svg/albaing_logo.svg';
+import axios from 'axios';
 
 // 카테고리 메뉴 구성
 const categories = [
@@ -49,35 +50,52 @@ const categories = [
 export default function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [userType, setUserType] = useState(null); // 'user' or 'company'
+    const [userType, setUserType] = useState(null); // 'personal' 또는 'company'
     const navigate = useNavigate();
 
-    // 로그인 상태 확인 (실제 구현 시에는 JWT 토큰이나 세션 확인 로직으로 대체)
+    // 로그인 상태 확인
     useEffect(() => {
-        // API 호출로 로그인 상태 확인
-        const checkLoginStatus = async () => {
-            try {
-                const response = await fetch('/api/account/auth/checkLogin', {
-                    credentials: 'include',
-                });
+        // localStorage에서 authUser 확인
+        const checkLoginStatus = () => {
+            const authUser = localStorage.getItem('authUser');
 
-                if (response.ok) {
-                    const data = await response.json();
-                    setIsLoggedIn(true);
-                    // 유저 타입 확인 (회사인지 개인인지)
-                    if (data.userId) {
-                        setUserType('user');
-                    } else if (data.companyId) {
-                        setUserType('company');
-                    }
-                } else {
-                    setIsLoggedIn(false);
-                    setUserType(null);
-                }
-            } catch (error) {
-                console.error('Login check failed:', error);
-                setIsLoggedIn(false);
-                setUserType(null);
+            if (authUser) {
+                const userData = JSON.parse(authUser);
+                setIsLoggedIn(true);
+                setUserType(userData.type);
+            } else {
+                // 세션을 통한 확인 (백엔드 API 호출)
+                axios.get('/api/auth/checkLogin', { withCredentials: true })
+                    .then(response => {
+                        if (response.status === 200 && response.data) {
+                            setIsLoggedIn(true);
+
+                            // 유저 타입 확인 (회사인지 개인인지)
+                            if (response.data.userId) {
+                                setUserType('personal');
+                                localStorage.setItem('authUser', JSON.stringify({
+                                    type: 'personal',
+                                    data: response.data
+                                }));
+                            } else if (response.data.companyId) {
+                                setUserType('company');
+                                localStorage.setItem('authUser', JSON.stringify({
+                                    type: 'company',
+                                    data: response.data
+                                }));
+                            }
+                        } else {
+                            setIsLoggedIn(false);
+                            setUserType(null);
+                            localStorage.removeItem('authUser');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Login check failed:', error);
+                        setIsLoggedIn(false);
+                        setUserType(null);
+                        localStorage.removeItem('authUser');
+                    });
             }
         };
 
@@ -85,21 +103,22 @@ export default function Header() {
     }, []);
 
     // 로그아웃 처리
-    const handleLogout = async () => {
-        try {
-            const response = await fetch('/api/account/auth/logout', {
-                method: 'POST',
-                credentials: 'include',
-            });
-
-            if (response.ok) {
+    const handleLogout = () => {
+        axios.post('/api/auth/logout', {}, { withCredentials: true })
+            .then(response => {
+                localStorage.removeItem('authUser');
                 setIsLoggedIn(false);
                 setUserType(null);
                 navigate('/');
-            }
-        } catch (error) {
-            console.error('Logout failed:', error);
-        }
+            })
+            .catch(error => {
+                console.error('Logout failed:', error);
+                // 에러가 발생해도 로컬의 로그인 정보는 삭제
+                localStorage.removeItem('authUser');
+                setIsLoggedIn(false);
+                setUserType(null);
+                navigate('/');
+            });
     };
 
     return (
@@ -184,8 +203,8 @@ export default function Header() {
                                 <Link to="/login" className="text-sm font-semibold text-gray-900">
                                     로그인
                                 </Link>
-                                <span className="text-gray-300">|</span>
-                                <Link to="/register/person" className="text-sm font-semibold text-gray-900">
+                                <span className="text-gray-300 -mt-2 font-bold text-2xl">|</span>
+                                <Link to="/register" className="text-sm font-semibold text-gray-900">
                                     회원가입
                                 </Link>
                             </>

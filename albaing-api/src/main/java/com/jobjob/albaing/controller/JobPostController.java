@@ -43,6 +43,7 @@ public class JobPostController {
         return ResponseEntity.ok().build();
     }
 
+    //상세 페이지 기업 채용 공고 출력
     @GetMapping("/company/{companyId}")
     public ResponseEntity<List<JobPost>> getJobPostsByCompanyId(@PathVariable("companyId") long companyId) {
         List<JobPost> jobPosts = jobPostService.getJobPostsByCompanyId(companyId);
