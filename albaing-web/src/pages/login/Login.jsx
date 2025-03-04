@@ -35,7 +35,7 @@ export default function Login() {
                     window.dispatchEvent(new Event('auth-change'));
 
                     if (userType === 'company') {
-                        navigate(`/companies/${response.data.company.companyId}`);
+                        navigate(`/company/manage/${response.data.company.companyId}`);
                     } else {
                         navigate('/');
                     }
