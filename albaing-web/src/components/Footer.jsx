@@ -12,7 +12,7 @@ export default function Footer() {
                         {/* 로고 */}
                         <div>
                             <Link to="/">
-                                <img src={albaingLogo} alt="알바잉 로고" className="h-36 w-auto" />
+                                <img src={albaingLogo} alt="알바잉 로고" className="h-24 md:h-36 w-auto" />
                             </Link>
                         </div>
 
@@ -31,7 +31,7 @@ export default function Footer() {
                     </div>
 
                     {/* 메뉴 링크들 */}
-                    <div className="flex flex-wrap justify-between md:space-x-12">
+                    <div className="flex-wrap justify-between md:space-x-12 hidden md:flex">
                         {/* 서비스 */}
                         <div className="w-1/2 md:w-auto mb-6 md:mb-0">
                             <h3 className="font-semibold mb-4 text-gray-900">서비스</h3>
