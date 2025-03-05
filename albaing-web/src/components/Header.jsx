@@ -71,7 +71,7 @@ export default function Header() {
                             <img
                                 src={albaingLogo}
                                 alt="알바잉 로고"
-                                className="h-20 w-auto"
+                                className="md:h-32 h-28 w-auto"
                             />
                         </Link>
                     </div>
@@ -143,7 +143,6 @@ export default function Header() {
                                 <Link to="/login" className="text-sm font-semibold text-gray-900">
                                     로그인
                                 </Link>
-                                <span className="text-gray-300 -mt-2 font-bold text-2xl">|</span>
                                 <Link to="/register" className="text-sm font-semibold text-gray-900">
                                     회원가입
                                 </Link>
