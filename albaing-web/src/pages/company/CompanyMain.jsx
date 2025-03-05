@@ -10,6 +10,7 @@ const CompanyMain = () => {
 
     const { isLoggedIn, userType, userData } = useAuth();
 
+    const [activeTab, setActiveTab] = useState('dashboard');
     const [companyData, setCompanyData] = useState(null);
     const [jobPosts, setJobPosts] = useState([]);
     const [applications, setApplications] = useState([]);
@@ -32,7 +33,7 @@ const CompanyMain = () => {
         // 본인 회사인지 체크
         const userCompanyId = userData.companyId;
         if (parseInt(companyId) !== userCompanyId) {
-            navigate(`/companies/${userCompanyId}`);
+            navigate(`/company/manage/${userCompanyId}`);
             return;
         }
 
