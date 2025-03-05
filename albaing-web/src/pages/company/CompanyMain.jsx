@@ -1,73 +1,61 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {useNavigate, useParams} from "react-router-dom";
+import {useAuth} from "../../contexts/AuthContext";
+
 
 const CompanyMain = () => {
-    const [activeTab, setActiveTab] = useState('dashboard');
+    const { companyId } = useParams();
+    const navigate = useNavigate();
+
+    const { isLoggedIn, userType, userData } = useAuth();
+
     const [companyData, setCompanyData] = useState(null);
     const [jobPosts, setJobPosts] = useState([]);
     const [applications, setApplications] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const { companyId } = useParams();
-    const navigate = useNavigate();
-
     useEffect(() => {
-        setLoading(true);
-        setError(null);
-
-        const authUserStr = localStorage.getItem('authUser');
-        if (!authUserStr) {
-            setError('로그인이 필요한 페이지입니다.');
-            setLoading(false);
-
-            setTimeout(() => navigate('/login'), 1500);
+        // 로그인 및 권한 체크
+        if (!isLoggedIn) {
+            navigate('/login');
             return;
         }
 
-        const authUser = JSON.parse(authUserStr);
-
-        // 1. 기업 사용자인지 확인
-        if (authUser.type !== 'company') {
-            setError('기업 회원만 접근할 수 있는 페이지입니다.');
-            setLoading(false);
-            // 홈으로 리다이렉션
-            setTimeout(() => navigate('/'), 1500);
+        // 기업 사용자 체크
+        if (userType !== 'company') {
+            navigate('/');
             return;
         }
 
-        // 2. URL의 companyId와 로그인한 기업 ID가 일치하는지 확인
-        const loggedInCompanyId = authUser.data.companyId;
-
-        if (loggedInCompanyId !== parseInt(companyId)) {
-            setError('본인 회사의 페이지만 관리할 수 있습니다.');
-            setLoading(false);
-            // 로그인한 기업의 회사 페이지로 리다이렉션
-            setTimeout(() => navigate(`/companies/${loggedInCompanyId}`), 1500);
+        // 본인 회사인지 체크
+        const userCompanyId = userData.companyId;
+        if (parseInt(companyId) !== userCompanyId) {
+            navigate(`/companies/${userCompanyId}`);
             return;
         }
 
-        axios.get(`/api/companies/${companyId}`)
-            .then((companyRes) => {
+        // 데이터 로딩
+        axios.get(`/api/companies/${companyId}`, { withCredentials: true })
+            .then(companyRes => {
                 setCompanyData(companyRes.data);
-                return axios.get(`/api/jobs/company/${companyId}`);
+                return axios.get(`/api/jobs/company/${companyId}`, { withCredentials: true });
             })
-            .then((jobsRes) => {
+            .then(jobsRes => {
                 setJobPosts(jobsRes.data);
-                return axios.get(`/api/applications/company/${companyId}`);
+                return axios.get(`/api/applications/company/${companyId}`, { withCredentials: true });
             })
-            .then((appsRes) => {
+            .then(appsRes => {
                 setApplications(appsRes.data);
                 setLoading(false);
             })
-            .catch((err) => {
-                console.error("API 요청 오류:", err);
+            .catch(err => {
+                console.error("데이터 로딩 오류:", err);
                 setError('데이터를 불러오는 중 오류가 발생했습니다.');
                 setLoading(false);
             });
-
-    }, [companyId, navigate]);
+    }, [companyId, isLoggedIn, navigate, userData, userType]);
 
     const handleTabChange = (tab) => {
         setActiveTab(tab);

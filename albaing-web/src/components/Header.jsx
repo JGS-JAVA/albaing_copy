@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
     Dialog,
@@ -17,7 +17,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import albaingLogo from '../assets/svg/albaing_logo.svg';
-import axios from 'axios';
+import { useAuth } from '../contexts/AuthContext';
 
 // 카테고리 메뉴 구성
 const categories = [
@@ -49,87 +49,17 @@ const categories = [
 
 export default function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [userType, setUserType] = useState(null); // 'personal' 또는 'company'
     const navigate = useNavigate();
 
-    // 로그인 상태 확인 함수
-    const checkLoginStatus = () => {
-        const authUser = localStorage.getItem('authUser');
-
-        if (authUser) {
-            const userData = JSON.parse(authUser);
-            setIsLoggedIn(true);
-            setUserType(userData.type);
-        } else {
-            axios.get('/api/auth/checkLogin', { withCredentials: true })
-                .then(response => {
-                    if (response.status === 200 && response.data) {
-                        setIsLoggedIn(true);
-
-                        if (response.data.userId) {
-                            setUserType('personal');
-                            localStorage.setItem('authUser', JSON.stringify({
-                                type: 'personal',
-                                data: response.data
-                            }));
-                        } else if (response.data.companyId) {
-                            setUserType('company');
-                            localStorage.setItem('authUser', JSON.stringify({
-                                type: 'company',
-                                data: response.data
-                            }));
-                        }
-                    } else {
-                        setIsLoggedIn(false);
-                        setUserType(null);
-                        localStorage.removeItem('authUser');
-                    }
-                })
-                .catch(error => {
-                    console.error('Login check failed:', error);
-                    setIsLoggedIn(false);
-                    setUserType(null);
-                    localStorage.removeItem('authUser');
-                });
-        }
-    };
-
-    // 컴포넌트 마운트 시 로그인 상태 확인
-    useEffect(() => {
-        checkLoginStatus();
-
-        window.addEventListener('auth-change', checkLoginStatus);
-
-        return () => {
-            window.removeEventListener('auth-change', checkLoginStatus);
-        };
-    }, []);
+    // Context에서 인증 정보 가져오기
+    const { isLoggedIn, userType, userData, logout } = useAuth();
 
     // 로그아웃 처리
     const handleLogout = () => {
-        axios.post('/api/auth/logout', {}, { withCredentials: true })
-            .then(response => {
-                localStorage.removeItem('authUser');
-                setIsLoggedIn(false);
-                setUserType(null);
-
-                window.dispatchEvent(new Event('auth-change'));
-
-                navigate('/');
-            })
-            .catch(error => {
-                console.error('Logout failed:', error);
-                localStorage.removeItem('authUser');
-                setIsLoggedIn(false);
-                setUserType(null);
-
-                window.dispatchEvent(new Event('auth-change'));
-
-                navigate('/');
-            });
+        logout().then(() => {
+            navigate('/');
+        });
     };
-
 
     return (
         <header className="bg-white border-b border-gray-200 sticky top-0 z-50 w-screen">
@@ -198,7 +128,7 @@ export default function Header() {
                     <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-4">
                         {isLoggedIn ? (
                             <>
-                                <Link to={userType === 'company' ? "/company/mypage" : "/mypage"} className="text-sm font-semibold text-gray-900">
+                                <Link to={userType === 'company' ? `/companies/${userData.companyId}` : "/mypage"} className="text-sm font-semibold text-gray-900">
                                     마이페이지
                                 </Link>
                                 <button
@@ -228,7 +158,7 @@ export default function Header() {
                 <div className="fixed inset-0 z-10" />
                 <DialogPanel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
                     <div className="flex items-center justify-between">
-                        <Link to="/" className="-m-1.5 p-1.5">
+                        <Link to="/" className="-m-1.5 p-1.5" onClick={() => setMobileMenuOpen(false)}>
                             <span className="sr-only">알바잉</span>
                             <img
                                 src={albaingLogo}
@@ -286,7 +216,7 @@ export default function Header() {
                                 {isLoggedIn ? (
                                     <>
                                         <Link
-                                            to={userType === 'company' ? "/company/mypage" : "/mypage"}
+                                            to={userType === 'company' ? `/companies/${userData.companyId}` : "/mypage"}
                                             className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold text-gray-900 hover:bg-gray-50"
                                             onClick={() => setMobileMenuOpen(false)}
                                         >
