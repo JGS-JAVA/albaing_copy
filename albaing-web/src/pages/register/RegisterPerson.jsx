@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const RegisterPerson = () => {
-    // State variables to match backend User DTO structure
     const [userName, setUserName] = useState("");
     const [userEmail, setUserEmail] = useState("");
     const [userPassword, setUserPassword] = useState("");
@@ -18,23 +18,18 @@ const RegisterPerson = () => {
 
     const navigate = useNavigate();
 
-    // Load OAuth data if available from URL parameters
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
 
-        // Set name from either 'name' or 'nickname' parameter
         const nameParam = params.get("name");
         const nicknameParam = params.get("nickname");
         setUserName(decodeURIComponent(nameParam || nicknameParam || ""));
 
-        // Set email
         setUserEmail(params.get("email") || "");
 
-        // Set birthdate if available, format it properly if needed
         const birthdayParam = params.get("birthday");
         if (birthdayParam) {
-            // If birthday is in MM-DD format, convert to a full date
-            if (birthdayParam.length === 5) { // e.g. "12-25"
+            if (birthdayParam.length === 5) {
                 const currentYear = new Date().getFullYear();
                 setUserBirthdate(`${currentYear}-${birthdayParam.replace("-", "-")}`);
             } else {
@@ -42,78 +37,49 @@ const RegisterPerson = () => {
             }
         }
 
-        // Set gender
         const genderParam = params.get("gender");
         if (genderParam) {
-            // Convert Naver/Kakao gender format to your database format if needed
             setUserGender(genderParam === "M" ? "male" : genderParam === "F" ? "female" : genderParam);
         }
 
-        // Set profile image
         const profileImageParam = params.get("profileImage") || params.get("profileImg");
         if (profileImageParam) {
             setUserProfileImage(decodeURIComponent(profileImageParam));
         }
 
-        // If we got data from OAuth, we can skip email verification
         if (params.get("email")) {
             setEmailVerified(true);
         }
     }, []);
 
-    // Request verification code
-    const requestVerificationCode = async () => {
-        try {
-            const response = await fetch("http://localhost:8080/api/auth/sendCode", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    email: userEmail
-                })
-            });
-
-            const data = await response.json();
-            if (response.ok) {
+    const requestVerificationCode = () => {
+        axios.post("/api/auth/sendCode", {
+            email: userEmail
+        })
+            .then(response => {
                 alert("인증번호가 이메일로 발송되었습니다.");
-            } else {
-                alert("인증번호 발송 실패: " + data.message);
-            }
-        } catch (error) {
-            alert("인증번호 발송 중 오류가 발생했습니다.");
-            console.error("인증번호 발송 오류:", error);
-        }
+            })
+            .catch(error => {
+                alert(`인증번호 발송 실패: ${error.response?.data?.message || "알 수 없는 오류가 발생했습니다."}`);
+                console.error("인증번호 발송 오류:", error);
+            });
     };
 
-    // Verify code
-    const verifyCode = async () => {
-        try {
-            const response = await fetch("http://localhost:8080/api/auth/checkCode", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    email: userEmail,
-                    code: verificationCode
-                })
-            });
-
-            const data = await response.json();
-            if (response.ok) {
+    const verifyCode = () => {
+        axios.post("/api/auth/checkCode", {
+            email: userEmail,
+            code: verificationCode
+        })
+            .then(response => {
                 setEmailVerified(true);
                 alert("이메일 인증이 완료되었습니다.");
-            } else {
-                alert("인증번호 확인 실패: " + data.message);
-            }
-        } catch (error) {
-            alert("인증번호 확인 중 오류가 발생했습니다.");
-            console.error("인증번호 확인 오류:", error);
-        }
+            })
+            .catch(error => {
+                alert(`인증번호 확인 실패: ${error.response?.data?.message || "알 수 없는 오류가 발생했습니다."}`);
+                console.error("인증번호 확인 오류:", error);
+            });
     };
 
-    // Validate inputs before submission
     const validateInputs = () => {
         if (!userEmail) {
             alert("이메일을 입력해주세요.");
@@ -153,44 +119,30 @@ const RegisterPerson = () => {
         return true;
     };
 
-    // Handle signup
-    const handleSignup = async () => {
+    const handleSignup = () => {
         if (!validateInputs()) {
             return;
         }
 
-        try {
-            const response = await fetch("http://localhost:8080/api/auth/register/person", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    userEmail,
-                    userPassword,
-                    userName,
-                    userBirthdate: userBirthdate ? new Date(userBirthdate) : null,
-                    userGender,
-                    userPhone,
-                    userAddress,
-                    userProfileImage,
-                    userTermsAgreement
-                })
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
+        axios.post("/api/auth/register/person", {
+            userEmail,
+            userPassword,
+            userName,
+            userBirthdate: userBirthdate ? new Date(userBirthdate) : null,
+            userGender,
+            userPhone,
+            userAddress,
+            userProfileImage,
+            userTermsAgreement
+        })
+            .then(response => {
                 alert("회원가입이 성공적으로 완료되었습니다.");
-                navigate("/login"); // Redirect to login page
-            } else {
-                alert("회원가입 실패: " + data.message);
-                console.error("회원가입 실패:", data);
-            }
-        } catch (error) {
-            alert("회원가입 중 오류가 발생했습니다.");
-            console.error("회원가입 오류:", error);
-        }
+                navigate("/login");
+            })
+            .catch(error => {
+                alert(`회원가입 실패: ${error.response?.data?.message || "알 수 없는 오류가 발생했습니다."}`);
+                console.error("회원가입 실패:", error);
+            });
     };
 
     return (

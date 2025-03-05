@@ -11,7 +11,7 @@ const CompanyDetail = () => {
     const [activeTab, setActiveTab] = useState("info");
 
     useEffect(() => {
-            axios.get(`http://localhost:8080/api/companies/${companyId}`)
+            axios.get(`/api/companies/${companyId}`)
                 .then((res) => {
                     setCompany(res.data)
                 })
@@ -23,7 +23,7 @@ const CompanyDetail = () => {
 
     useEffect(() => {
         if (activeTab === "jobs") {
-            axios.get(`http://localhost:8080/api/jobs/company/${companyId}`)
+            axios.get(`/api/jobs/company/${companyId}`)
                 .then((res) => {
                     setJobPost(res.data)
                 })
@@ -36,7 +36,7 @@ const CompanyDetail = () => {
 
     useEffect(() => {
         if (activeTab === "reviews") {
-            axios.get(`http://localhost:8080/api/companies/${companyId}/reviews`)
+            axios.get(`/api/companies/${companyId}/reviews`)
                 .then((res) => {
                     setReview(res.data)
                 })
