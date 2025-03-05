@@ -39,6 +39,7 @@ dependencies {
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'javax.servlet:javax.servlet-api:4.0.0'
 
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

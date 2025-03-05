@@ -1,13 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './assets/styles/index.css';
-import PathRoute from "./PathRoute";
+import PathRoute from "./pages/PathRoute";
+import {AuthProvider} from "./contexts/AuthContext";
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
+      <AuthProvider>
       <PathRoute/>
+      </AuthProvider>
   </React.StrictMode>
 );
 
