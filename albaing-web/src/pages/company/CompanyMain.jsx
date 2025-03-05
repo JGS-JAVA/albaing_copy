@@ -18,34 +18,41 @@ const CompanyMain = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        // 로그인 및 권한 체크
+        // 아직 로그인 상태를 확인할 수 없는 경우, 리턴하여 네비게이션 방지
+        if (isLoggedIn === null || userData === null) return;
+
+        // 로그인 여부 체크
         if (!isLoggedIn) {
             navigate('/login');
             return;
         }
 
-        // 기업 사용자 체크
+        // 기업 사용자 여부 체크
         if (userType !== 'company') {
             navigate('/');
             return;
         }
 
-        // 본인 회사인지 체크
-        const userCompanyId = userData.companyId;
-        if (parseInt(companyId) !== userCompanyId) {
-            navigate(`/company/manage/${userCompanyId}`);
+        // 본인 회사인지 체크 (userData가 로딩될 때까지 대기)
+        if (userData && userData.companyId && parseInt(companyId) !== userData.companyId) {
+            navigate(`/company/manage/${userData.companyId}`);
             return;
         }
 
-        // 데이터 로딩
+        // 데이터 로딩 시작
+        setLoading(true);
         axios.get(`/api/companies/${companyId}`, { withCredentials: true })
             .then(companyRes => {
                 setCompanyData(companyRes.data);
-                return axios.get(`/api/jobs/company/${companyId}`, { withCredentials: true });
+
+                return axios.get(`/api/jobs/company/${companyId}`, { withCredentials: true })
+                    .catch(jobError => jobError.response?.status === 404 ? { data: [] } : Promise.reject(jobError));
             })
             .then(jobsRes => {
                 setJobPosts(jobsRes.data);
-                return axios.get(`/api/applications/company/${companyId}`, { withCredentials: true });
+
+                return axios.get(`/api/applications/company/${companyId}`, { withCredentials: true })
+                    .catch(appError => appError.response?.status === 404 ? { data: [] } : Promise.reject(appError));
             })
             .then(appsRes => {
                 setApplications(appsRes.data);
@@ -53,7 +60,17 @@ const CompanyMain = () => {
             })
             .catch(err => {
                 console.error("데이터 로딩 오류:", err);
-                setError('데이터를 불러오는 중 오류가 발생했습니다.');
+                setError(
+                    err.response
+                        ? ({
+                            404: '요청한 회사 정보를 찾을 수 없습니다.',
+                            403: '해당 회사 정보에 접근 권한이 없습니다.',
+                            500: '서버 내부 오류가 발생했습니다.'
+                        }[err.response.status] || '데이터를 불러오는 중 예상치 못한 오류가 발생했습니다.')
+                        : err.request
+                            ? '서버로부터 응답을 받지 못했습니다. 네트워크 연결을 확인해주세요.'
+                            : '데이터 처리 중 오류가 발생했습니다.'
+                );
                 setLoading(false);
             });
     }, [companyId, isLoggedIn, navigate, userData, userType]);
@@ -182,7 +199,8 @@ const CompanyMain = () => {
                                         <table className="min-w-full divide-y divide-gray-200">
                                             <thead>
                                             <tr>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">제목</th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    제목</th>
                                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">카테고리</th>
                                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">근무지</th>
                                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">마감일</th>
@@ -293,7 +311,7 @@ const CompanyMain = () => {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 <button
-                                                    onClick={() => window.location.href = `/company/job/edit/${job.jobPostId}`}
+                                                    onClick={() => window.location.href = `/jobs/edit/${job.jobPostId}`}
                                                     className="text-blue-600 hover:text-blue-900 mr-3"
                                                 >
                                                     수정하기
@@ -446,7 +464,7 @@ const CompanyMain = () => {
 
                                 <div className="text-right">
                                     <button
-                                        onClick={() => window.location.href = '/company/profile/edit'}
+                                        onClick={() => window.location.href = `/companies/${companyId}`}
                                         className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
                                     >
                                         수정하기
