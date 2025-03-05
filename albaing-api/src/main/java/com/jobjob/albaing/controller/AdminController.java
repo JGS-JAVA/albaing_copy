@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -18,7 +19,14 @@ public class AdminController {
     private AdminServiceImpl adminService;
 
     @GetMapping("/users")
-    private List<User> adminSearchUsers(@PathVariable String userName,
-                                        @PathVariable String password) {}
+    public List<User> adminSearchUsers(@PathVariable String userName,
+                                       @PathVariable String userEmail,
+                                       @PathVariable String userPhone,
+                                       @PathVariable String sortOrderBy,
+                                       @PathVariable Boolean isDESC) {
+
+        List<User> users = adminService.adminSearchUsers(userName, userEmail, userPhone, sortOrderBy, isDESC);
+        return users;
+    }
 
 }
