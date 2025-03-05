@@ -1,53 +1,37 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import {useAuth} from "../../contexts/AuthContext";
 
 export default function Login() {
-    const [userType, setUserType] = useState('personal'); // 'personal' 또는 'company'
+    const [userType, setUserType] = useState('personal');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleLogin = (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
 
-        const endpoint = userType === 'personal'
-            ? '/api/auth/login/person'
-            : '/api/auth/login/company';
+        const credentials = userType === 'personal'
+            ? { userEmail: email, userPassword: password }
+            : { companyEmail: email, companyPassword: password };
 
-        axios.post(endpoint, {
-            ...(userType === 'personal'
-                ? { userEmail: email, userPassword: password }
-                : { companyEmail: email, companyPassword: password }),
-        }, { withCredentials: true })
-            .then(response => {
-                if (response.data && response.data.status === "success") {
-                    localStorage.setItem('authUser', JSON.stringify({
-                        type: userType,
-                        data: userType === 'personal' ? response.data.user : response.data.company
-                    }));
-
-                    window.dispatchEvent(new Event('auth-change'));
-
+        login(credentials, userType)
+            .then(result => {
+                if (result.success) {
                     if (userType === 'company') {
-                        navigate(`/company/manage/${response.data.company.companyId}`);
+                        navigate(`/company/manage/${result.data.company.companyId}`);
                     } else {
                         navigate('/');
                     }
                 } else {
-                    setError(response.data?.message || '로그인에 실패했습니다');
-                }
-            })
-            .catch(error => {
-                if (error.response && error.response.data) {
-                    setError(error.response.data.message || '로그인에 실패했습니다');
-                } else {
-                    setError('서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.');
+                    setError(result.message);
                 }
             })
             .finally(() => {
