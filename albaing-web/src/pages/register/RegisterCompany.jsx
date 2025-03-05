@@ -1,5 +1,6 @@
-import {useState, useEffect} from "react";
+import {useState} from "react";
 import {useNavigate} from "react-router-dom";
+import axios from "axios";
 
 const RegisterCompany = () => {
     const [companyName, setCompanyName] = useState("");
@@ -19,57 +20,34 @@ const RegisterCompany = () => {
 
     const navigate = useNavigate();
 
-    // 이메일 인증 코드 요청
-    const requestVerificationCode = async () => {
-        try {
-            const response = await fetch("http://localhost:8080/api/auth/sendCode", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({email: companyEmail}),
-            });
-
-            const data = await response.json();
-            if (response.ok) {
+    const requestVerificationCode = () => {
+        axios.post("/api/auth/sendCode", {
+            email: companyEmail
+        })
+            .then(response => {
                 alert("인증번호가 이메일로 발송되었습니다.");
-            } else {
-                alert("인증번호 발송 실패: " + data.message);
-            }
-        } catch (error) {
-            alert("인증번호 발송 중 오류가 발생했습니다.");
-            console.error("인증번호 발송 오류:", error);
-        }
+            })
+            .catch(error => {
+                alert(`인증번호 발송 실패: ${error.response?.data?.message || "알 수 없는 오류가 발생했습니다."}`);
+                console.error("인증번호 발송 오류:", error);
+            });
     };
 
-    // 인증번호 확인
-    const verifyCode = async () => {
-        try {
-            const response = await fetch("http://localhost:8080/api/auth/checkCode", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    email: companyEmail,
-                    code: verificationCode,
-                }),
-            });
-
-            const data = await response.json();
-            if (response.ok) {
+    const verifyCode = () => {
+        axios.post("/api/auth/checkCode", {
+            email: companyEmail,
+            code: verificationCode
+        })
+            .then(response => {
                 setEmailVerified(true);
                 alert("이메일 인증이 완료되었습니다.");
-            } else {
-                alert("인증번호 확인 실패: " + data.message);
-            }
-        } catch (error) {
-            alert("인증번호 확인 중 오류가 발생했습니다.");
-            console.error("인증번호 확인 오류:", error);
-        }
+            })
+            .catch(error => {
+                alert(`인증번호 확인 실패: ${error.response?.data?.message || "알 수 없는 오류가 발생했습니다."}`);
+                console.error("인증번호 확인 오류:", error);
+            });
     };
 
-    // 입력값 검증
     const validateInputs = () => {
         if (!companyEmail) {
             alert("이메일을 입력해주세요.");
@@ -124,46 +102,32 @@ const RegisterCompany = () => {
         return true;
     };
 
-    // 회원가입 처리
-    const handleSignup = async () => {
+    const handleSignup = () => {
         if (!validateInputs()) {
             return;
         }
 
-        try {
-            const response = await fetch("http://localhost:8080/api/auth/register/company", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    companyEmail,
-                    companyPassword,
-                    companyName,
-                    companyRegistrationNumber,
-                    companyOwnerName,
-                    companyPhone,
-                    companyLocalAddress,
-                    companyLogo,
-                    companyDescription,
-                    companyOpenDate,
-                    termsAgreement,
-                }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
+        axios.post("/api/auth/register/company", {
+            companyEmail,
+            companyPassword,
+            companyName,
+            companyRegistrationNumber,
+            companyOwnerName,
+            companyPhone,
+            companyLocalAddress,
+            companyLogo,
+            companyDescription,
+            companyOpenDate,
+            termsAgreement
+        })
+            .then(response => {
                 alert("회사 회원가입이 성공적으로 완료되었습니다.");
                 navigate("/login");
-            } else {
-                alert("회원가입 실패: " + data.message);
-                console.error("회원가입 실패:", data);
-            }
-        } catch (error) {
-            alert("회원가입 중 오류가 발생했습니다.");
-            console.error("회원가입 오류:", error);
-        }
+            })
+            .catch(error => {
+                alert(`회원가입 실패: ${error.response?.data?.message || "알 수 없는 오류가 발생했습니다."}`);
+                console.error("회원가입 오류:", error);
+            });
     };
 
     return (

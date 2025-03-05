@@ -6,7 +6,6 @@ const JobPostAdd = () => {
     const navigate = useNavigate();
     const companyId = localStorage.getItem('companyId');
 
-    // DB ENUM에 정의된 값과 정확히 일치하는 직종 카테고리 배열
     const jobCategories = [
         "외식/음료",
         "유통/판매",
@@ -28,7 +27,7 @@ const JobPostAdd = () => {
     const workSchedules = ['무관', '평일', '주말'];
     const shiftHours = ['무관', '오전(06:00~12:00)', '오후(12:00~18:00)', '저녁(18:00~24:00)', '새벽(00:00~06:00)'];
 
-    const [activeTab, setActiveTab] = useState("edit"); // "edit" 또는 "preview"
+    const [activeTab, setActiveTab] = useState("edit");
 
     const [formData, setFormData] = useState({
         companyId: companyId,
@@ -58,31 +57,33 @@ const JobPostAdd = () => {
         }));
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
+
         if (!formData.jobPostJobCategory) {
             setError('직종 카테고리를 선택해주세요.');
             return;
         }
+
         setLoading(true);
         setError(null);
 
-        try {
-            const response = await axios.post('/api/jobs', formData);
-            setLoading(false);
-            navigate(`/jobs/${response.data.jobPostId}`);
-        } catch (err) {
-            setLoading(false);
-            setError('채용공고 등록 중 오류가 발생했습니다. 다시 시도해주세요.');
-            console.error('Error creating job post:', err);
-        }
+        axios.post('/api/jobs', formData)
+            .then(response => {
+                setLoading(false);
+                navigate(`/jobs/${response.data.jobPostId}`);
+            })
+            .catch(error => {
+                setLoading(false);
+                setError('채용공고 등록 중 오류가 발생했습니다. 다시 시도해주세요.');
+                console.error('Error creating job post:', error);
+            });
     };
 
     const handleCancel = () => {
         navigate(-1);
     };
 
-    // 미리보기 컴포넌트 (formData를 기반으로 미리보기 카드 렌더링)
     const PreviewCard = ({ data }) => {
         return (
             <div className="bg-white p-6 rounded-lg shadow-lg">
@@ -120,7 +121,6 @@ const JobPostAdd = () => {
                 </button>
             </div>
 
-            {/* 탭 메뉴: 작성 / 미리보기 */}
             <div className="mb-6">
                 <button
                     onClick={() => setActiveTab("edit")}
@@ -144,7 +144,6 @@ const JobPostAdd = () => {
 
             {activeTab === "edit" ? (
                 <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md space-y-6">
-                    {/* 채용공고 제목 */}
                     <div>
                         <label htmlFor="jobPostTitle" className="block text-sm font-medium text-gray-700 mb-1">
                             채용공고 제목 *
@@ -161,7 +160,6 @@ const JobPostAdd = () => {
                         />
                     </div>
 
-                    {/* 채용공고 이미지 URL */}
                     <div>
                         <label htmlFor="jobPostOptionalImage" className="block text-sm font-medium text-gray-700 mb-1">
                             이미지 URL (선택사항)
@@ -177,7 +175,6 @@ const JobPostAdd = () => {
                         />
                     </div>
 
-                    {/* 연락처 */}
                     <div>
                         <label htmlFor="jobPostContactNumber" className="block text-sm font-medium text-gray-700 mb-1">
                             연락처 *
@@ -194,7 +191,6 @@ const JobPostAdd = () => {
                         />
                     </div>
 
-                    {/* 학력요건 */}
                     <div>
                         <label htmlFor="jobPostRequiredEducations" className="block text-sm font-medium text-gray-700 mb-1">
                             필요 학력
@@ -210,7 +206,6 @@ const JobPostAdd = () => {
                         />
                     </div>
 
-                    {/* 직종 카테고리 */}
                     <div>
                         <label htmlFor="jobPostJobCategory" className="block text-sm font-medium text-gray-700 mb-1">
                             직종 카테고리 *
@@ -232,7 +227,6 @@ const JobPostAdd = () => {
                         </select>
                     </div>
 
-                    {/* 고용형태 */}
                     <div>
                         <label htmlFor="jobPostJobType" className="block text-sm font-medium text-gray-700 mb-1">
                             고용형태 *
@@ -252,7 +246,6 @@ const JobPostAdd = () => {
                         </select>
                     </div>
 
-                    {/* 근무기간 */}
                     <div>
                         <label htmlFor="jobPostWorkingPeriod" className="block text-sm font-medium text-gray-700 mb-1">
                             근무기간 *
@@ -272,7 +265,6 @@ const JobPostAdd = () => {
                         </select>
                     </div>
 
-                    {/* 근무요일 */}
                     <div>
                         <label htmlFor="jobWorkSchedule" className="block text-sm font-medium text-gray-700 mb-1">
                             근무요일 *
@@ -292,7 +284,6 @@ const JobPostAdd = () => {
                         </select>
                     </div>
 
-                    {/* 근무시간 */}
                     <div>
                         <label htmlFor="jobPostShiftHours" className="block text-sm font-medium text-gray-700 mb-1">
                             근무시간 *
@@ -312,7 +303,6 @@ const JobPostAdd = () => {
                         </select>
                     </div>
 
-                    {/* 급여 */}
                     <div>
                         <label htmlFor="jobPostSalary" className="block text-sm font-medium text-gray-700 mb-1">
                             급여 *
@@ -329,7 +319,6 @@ const JobPostAdd = () => {
                         />
                     </div>
 
-                    {/* 근무지 */}
                     <div>
                         <label htmlFor="jobPostWorkPlace" className="block text-sm font-medium text-gray-700 mb-1">
                             근무지 *
@@ -346,7 +335,6 @@ const JobPostAdd = () => {
                         />
                     </div>
 
-                    {/* 채용 마감일 */}
                     <div>
                         <label htmlFor="jobPostDueDate" className="block text-sm font-medium text-gray-700 mb-1">
                             채용 마감일 *
@@ -380,7 +368,6 @@ const JobPostAdd = () => {
                     </div>
                 </form>
             ) : (
-                // 미리보기 탭: 현재 formData를 바탕으로 미리보기 카드 렌더링
                 <div className="space-y-6">
                     <PreviewCard data={formData} />
                     <div className="text-right">
