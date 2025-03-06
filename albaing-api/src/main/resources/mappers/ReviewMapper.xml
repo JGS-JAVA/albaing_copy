@@ -98,7 +98,7 @@
           FROM reviews
           WHERE company_id = #{companyId}
           ORDER BY review_created_at DESC
-          
+          LIMIT 5
     </select>
 
     <!-- 유저 리뷰 작성 -->

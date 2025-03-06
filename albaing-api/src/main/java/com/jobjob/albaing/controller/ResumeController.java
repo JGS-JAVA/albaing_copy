@@ -13,11 +13,6 @@ public class ResumeController {
     @Autowired
     private ResumeServiceImpl resumeService;
 
-    // 1. 회원가입 시 이력서 자동 생성 (POST)
-    @PostMapping("/create")
-    public void createResumeForUser(@RequestBody User user) {
-        resumeService.createResumeForUser(user);
-    }
 
     // 2. 이력서 수정
     @PutMapping("/update/{resumeId}")
@@ -34,6 +29,12 @@ public class ResumeController {
     @GetMapping("/{resumeId}")
     public Resume resumeDetails(@PathVariable int resumeId) {
         return resumeService.resumeDetails(resumeId);
+    }
+
+
+    @GetMapping("/user/{userId}")
+    public Resume getResumeByUserId(@PathVariable int userId) {
+        return resumeService.getResumeByUserId(userId);
     }
 
 

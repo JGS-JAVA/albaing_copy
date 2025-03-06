@@ -6,7 +6,7 @@ import Footer from '../components/Footer';
 
 
 import Home from './home/Home';
-import CompanyDetail from './company/detail/CompanyDetail';
+import CompanyDetail from './company/CompanyDetail';
 import CompanyMain from './company/CompanyMain';
 import CompanyReview from './company/CompanyReview';
 import CompanyReviewPost from './company/CompanyReviewPost';
@@ -81,9 +81,10 @@ function PathRoute() {
                 <Route path="/jobs/edit/:jobPostId" element={<MainLayout><JobpostEdit /></MainLayout>} /> {/* 채용공고 수정 페이지 */}
                 {/*<Route path="/jobs/:id/applications" element={<MainLayout><JobApplicationManager /></MainLayout>} /> /!* 채용공고 지원자 관리 페이지 *!/*/}
 
-
-                {/* 로그인한 모든 사용자 접근 가능 */}
-                <Route path="/companies/:companyId/reviews/:reviewId" element={<MainLayout><CompanyReview /></MainLayout>} /> {/* 회사 리뷰 목록 페이지 */}
+                {/* 로그인한 모든 사용자 접근 가능 - ProtectedRoute 사용(타입 제한 없음) */}
+                <Route element={<ProtectedRoute />}>
+                    <Route path="/companies/:companyId/reviews/:reviewId" element={<MainLayout><CompanyReview /></MainLayout>} /> {/* 회사 리뷰 목록 페이지 */}
+                </Route>
 
                 {/* 관리자만 접근 가능 */}
                 {/*<Route path="/admin" element={<MainLayout><AdminMain /></MainLayout>} /> /!* 관리자 대시보드 페이지 *!/*/}
