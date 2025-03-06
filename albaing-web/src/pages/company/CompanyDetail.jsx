@@ -442,6 +442,9 @@ const CompanyDetail = () => {
                                         </Link>
                                     </div>
                                 ))}
+
+                                {/* 공고 하단 페이지네이션 위치 */}
+
                             </div>
                         ) : (
                             <div className="text-center py-12 bg-gray-50 rounded-lg">

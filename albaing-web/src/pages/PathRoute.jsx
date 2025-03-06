@@ -86,7 +86,7 @@ function PathRoute() {
 
 
                 {/* 로그인한 모든 사용자 접근 가능 */}
-                <Route path="/companies/reviews" element={<MainLayout><CompanyReview /></MainLayout>} /> {/* 회사 리뷰 목록 페이지 */}
+                <Route path="/companies/:companyId/reviews/:reviewId" element={<MainLayout><CompanyReview /></MainLayout>} /> {/* 회사 리뷰 목록 페이지 */}
 
                 {/* 관리자만 접근 가능 */}
                 {/*<Route path="/admin" element={<MainLayout><AdminMain /></MainLayout>} /> /!* 관리자 대시보드 페이지 *!/*/}
