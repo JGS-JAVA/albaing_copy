@@ -43,7 +43,8 @@ public class AdminController {
         return resumesResult;
     }
 
+//
+//    @GetMapping("/companies")
+//    public List<Company> adminSearchCompanies(@PathVariable String )
 
-    @GetMapping("/companies")
-    public List<Company> adminSearchCompanies(@PathVariable String )
 }

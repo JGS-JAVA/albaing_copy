@@ -7,8 +7,15 @@ import java.util.List;
 
 @Mapper
 public interface ResumeMapper {
+
         // 회원가입 시 이력서 자동 생성
         void createResumeForUser(Resume resume);
+
+        // 기본 학력 정보 생성
+        void createDefaultEducation(EducationHistory educationHistory);
+
+        // 기본 경력 정보 생성
+        void createDefaultCareer(CareerHistory careerHistory);
 
         // 사용자 ID로 이력서 조회 (중복 생성 방지용)
         Resume getResumeByUserId(int userId);
@@ -26,9 +33,5 @@ public interface ResumeMapper {
         void updateCareer(ResumeUpdateRequest resumeUpdateRequest);
 
 
-        // 기본 학력 정보 생성
-        void createDefaultEducation(EducationHistory educationHistory);
 
-        // 기본 경력 정보 생성
-        void createDefaultCareer(CareerHistory careerHistory);
     }
