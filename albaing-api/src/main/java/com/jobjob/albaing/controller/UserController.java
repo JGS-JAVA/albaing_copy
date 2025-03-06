@@ -9,11 +9,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api")
 public class UserController {
 
     @Autowired
     private UserServiceImpl userService;
+    @Autowired
+    private ResumeServiceImpl resumeService;
+
 
 
     // 마이페이지 - 사용자 정보 조회

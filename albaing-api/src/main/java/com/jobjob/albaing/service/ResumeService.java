@@ -14,5 +14,8 @@ public interface ResumeService {
 
         // 이력서 수정
         void updateResume(ResumeUpdateRequest resumeUpdateRequest);
+
+        // 이력서 조회 (유저아이디)
+        Resume getResumeByUserId(int userId);
     }
 

@@ -1,9 +1,11 @@
 package com.jobjob.albaing.controller;
 
 import com.jobjob.albaing.dto.Company;
+import com.jobjob.albaing.dto.Resume;
 import com.jobjob.albaing.dto.User;
 import com.jobjob.albaing.model.vo.VerificationRequest;
 import com.jobjob.albaing.service.AuthServiceImpl;
+import com.jobjob.albaing.service.ResumeServiceImpl;
 import com.jobjob.albaing.service.VerificationServiceImpl;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,11 @@ public class AuthController {
 
     @Autowired
     private VerificationServiceImpl verificationServiceImpl;
+
+    @Autowired
+    private ResumeServiceImpl resumeService;
+
+
 
     // 유저 로그인
     @PostMapping("/login/person")
@@ -119,6 +126,8 @@ public class AuthController {
         try {
             authService.registerUser(user);
 
+            resumeService.createResumeForUser(user);
+
             response.put("status", "success");
             response.put("message", "회원가입이 성공적으로 완료되었습니다.");
 
@@ -135,6 +144,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
 
     // 기업 회원가입
     @PostMapping("/register/company")
@@ -209,4 +219,13 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
+
+    // 회원가입 시 이력서 자동 생성 (POST)
+    @PostMapping("/resume/create")
+    public void createResumeForUser(@RequestBody User user) {
+        resumeService.createResumeForUser(user);
+    }
+
+
+
 }

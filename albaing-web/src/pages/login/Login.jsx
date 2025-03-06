@@ -26,9 +26,9 @@ export default function Login() {
             .then(result => {
                 if (result.success) {
                     if (userType === 'company') {
-                        navigate(`/company/manage/${result.data.company.companyId}`);
+                        navigate(`/company/manage/${result.data.company.companyId}`, { replace: true });
                     } else {
-                        navigate('/');
+                        navigate('/', { replace: true });
                     }
                 } else {
                     setError(result.message);

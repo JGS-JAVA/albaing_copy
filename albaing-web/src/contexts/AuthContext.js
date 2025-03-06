@@ -3,7 +3,6 @@ import axios from 'axios';
 
 export const AuthContext = createContext();
 
-// Provider component
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -12,9 +11,26 @@ export const AuthProvider = ({ children }) => {
         const storedUser = localStorage.getItem('authUser');
 
         if (storedUser) {
-            setUser(JSON.parse(storedUser));
-            setLoading(false);
-            return Promise.resolve(JSON.parse(storedUser));
+            try {
+                const parsedUser = JSON.parse(storedUser);
+
+                // 바로 상태 업데이트
+                setUser(parsedUser);
+                setLoading(false);
+
+                setTimeout(() => {
+                    console.error("사용자 상태 업데이트 확인:", {
+                        user: parsedUser,
+                        isLoggedIn: !!parsedUser,
+                        userType: parsedUser?.type,
+                        userData: parsedUser?.data
+                    });
+                }, 0);
+
+                return Promise.resolve(parsedUser);
+            } catch (e) {
+                localStorage.removeItem('authUser');
+            }
         }
 
         return axios.get('/api/auth/checkLogin', { withCredentials: true })
@@ -40,7 +56,6 @@ export const AuthProvider = ({ children }) => {
                 return null;
             })
             .catch(error => {
-                console.error('Login check failed:', error);
                 localStorage.removeItem('authUser');
                 setUser(null);
                 setLoading(false);
@@ -72,7 +87,7 @@ export const AuthProvider = ({ children }) => {
             .catch(error => {
                 return {
                     success: false,
-                    message: error.res?.data?.message || '로그인 중 오류가 발생했습니다'
+                    message: error.response?.data?.message || '로그인 중 오류가 발생했습니다'
                 };
             });
     };
@@ -85,7 +100,6 @@ export const AuthProvider = ({ children }) => {
                 return true;
             })
             .catch(error => {
-                console.error('Logout failed:', error);
                 localStorage.removeItem('authUser');
                 setUser(null);
                 return false;
@@ -93,7 +107,20 @@ export const AuthProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        checkAuth();
+
+        // 로컬 스토리지에서 직접 확인하여 로그인 상태 즉시 설정
+        const storedUser = localStorage.getItem('authUser');
+        if (storedUser) {
+            try {
+                const parsedUser = JSON.parse(storedUser);
+                setUser(parsedUser);
+                setLoading(false);
+            } catch (e) {
+                checkAuth();
+            }
+        } else {
+            checkAuth();
+        }
     }, []);
 
     const contextValue = {

@@ -32,6 +32,8 @@
 
     </insert>
 
+
+
     <!-- 유저 로그인 -->
     <select id="loginUser" parameterType="map">
         SELECT *
@@ -45,6 +47,12 @@
         SELECT *
         FROM USERS
         WHERE user_id = #{userId}
+    </select>
+
+    <select id="getUserByEmail">
+    SELECT *
+    FROM USERS
+    WHERE user_email = #{userEmail}
     </select>
 
     <!-- 마이페이지 - 사용자 정보 수정 -->
