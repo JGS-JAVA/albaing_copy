@@ -31,6 +31,7 @@ import ResumeEdit from './resume/ResumeEdit';
 import UserEdit from "./mypage/UserEdit";
 import NotFound from "../components/ NotFound";
 import RegisterPage from "./register/RegisterPage";
+import ProtectedRoute from "./ProtectedRoute";
 
 // 메인 레이아웃 컴포넌트
 const MainLayout = ({ children }) => (
@@ -82,7 +83,7 @@ function PathRoute() {
                 {/*<Route path="/jobs/:id/applications" element={<MainLayout><JobApplicationManager /></MainLayout>} /> /!* 채용공고 지원자 관리 페이지 *!/*/}
 
                 {/* 로그인한 모든 사용자 접근 가능 - ProtectedRoute 사용(타입 제한 없음) */}
-                <Route element={<ProtectedRoute />}>
+                <Route element={<ProtectedRoute  />}>
                     <Route path="/companies/:companyId/reviews/:reviewId" element={<MainLayout><CompanyReview /></MainLayout>} /> {/* 회사 리뷰 목록 페이지 */}
                 </Route>
 
