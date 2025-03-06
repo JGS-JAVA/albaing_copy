@@ -37,4 +37,10 @@ public class ResumeController {
     }
 
 
+    @GetMapping("/user/{userId}")
+    public Resume getResumeByUserId(@PathVariable int userId) {
+        return resumeService.getResumeByUserId(userId);
+    }
+
+
 }

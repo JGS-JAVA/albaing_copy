@@ -88,4 +88,10 @@ public class ResumeServiceImpl implements ResumeService {
             throw new RuntimeException("이력서 수정 중 오류가 발생했습니다.", e);
         }
     }
+
+    // 이력서 조회(유저 아이디로)
+    @Override
+    public Resume getResumeByUserId(int userId) {
+        return resumeMapper.getResumeByUserId(userId);
+    }
 }

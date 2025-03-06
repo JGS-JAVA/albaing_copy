@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useAuth } from '../../contexts/AuthContext';
 import EducationModal from '../../components/EducationModal';
 import CareerModal from '../../components/CareerModal';
+import apiResumeService from "./apiResumeService";
 
 const ResumeEdit = () => {
     const [resumeData, setResumeData] = useState({
@@ -25,18 +26,18 @@ const ResumeEdit = () => {
     const [showEducationModal, setShowEducationModal] = useState(false);
     const [showCareerModal, setShowCareerModal] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [saving, setSaving] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
+    const [formErrors, setFormErrors] = useState({});
 
-    const { isLoggedIn, userType, userData } = useAuth();
+    const { userData } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
 
-    // URL에서 resumeId 파라미터 가져오기
     const queryParams = new URLSearchParams(location.search);
     const resumeId = queryParams.get('resumeId');
 
-    // 학력/경력 분류 더미 데이터
     const jobCategories = [
         '외식/음료', '유통/판매', '문화/여가생활', '서비스', '사무/회계',
         '고객상담/리서치', '생산/건설/노무', 'IT/기술', '디자인', '미디어',
@@ -49,98 +50,130 @@ const ResumeEdit = () => {
     const shiftHours = ['무관', '오전(06:00~12:00)', '오후(12:00~18:00)', '저녁(18:00~24:00)', '새벽(00:00~06:00)'];
 
     useEffect(() => {
-        // 사용자 인증 체크
-        if (!isLoggedIn) {
-            navigate('/login');
-            return;
-        }
-
-        // 개인 회원 체크
-        if (userType !== 'personal') {
-            navigate('/');
-            return;
-        }
-
         const fetchResume = () => {
-            // URL에서 resumeId가 전달된 경우
+            setLoading(true);
+            setError(null);
+
             if (resumeId && resumeId !== 'undefined') {
-                setLoading(true);
-                axios.get(`/api/resume/${resumeId}`)
-                    .then(response => {
-                        setResumeData(response.data);
+                apiResumeService.getResume(resumeId)
+                    .then(data => {
+                        console.log("이력서 데이터 로드 성공:", data);
+                        setResumeData(data);
                         setLoading(false);
                     })
-                    .catch(error => {
-                        console.error('이력서 조회 오류:', error);
-                        setError('이력서를 불러오는 중 오류가 발생했습니다.');
-                        setLoading(false);
+                    .catch(err => {
+                        console.error('URL의 이력서 ID로 조회 오류:', err);
+                        fetchResumeByUserData();
                     });
+            } else {
+                fetchResumeByUserData();
             }
-            // 사용자 정보에서 resumeId를 가져오는 경우
-            else if (userData && userData.resumeId) {
-                setLoading(true);
-                axios.get(`/api/resume/${userData.resumeId}`)
-                    .then(response => {
-                        setResumeData(response.data);
+        };
+
+        const fetchResumeByUserData = () => {
+            if (userData && userData.resumeId) {
+                apiResumeService.getResume(userData.resumeId)
+                    .then(data => {
+                        console.log("사용자 정보의 이력서 ID로 데이터 로드 성공:", data);
+                        setResumeData(data);
                         setLoading(false);
                     })
-                    .catch(error => {
-                        console.error('이력서 조회 오류:', error);
-                        setError('이력서를 불러오는 중 오류가 발생했습니다.');
+                    .catch(err => {
+                        console.error('사용자 정보의 이력서 ID로 조회 오류:', err);
+
+                        fetchResumeByUserId();
+                    });
+            } else {
+                fetchResumeByUserId();
+            }
+        };
+
+        const fetchResumeByUserId = () => {
+            if (userData && userData.userId) {
+                apiResumeService.getResumeByUserId(userData.userId)
+                    .then(data => {
+                        console.log("userId로 이력서 데이터 로드 성공:", data);
+                        setResumeData(data);
+                        setLoading(false);
+                    })
+                    .catch(err => {
+                        console.error('userId로 이력서 조회 오류:', err);
+                        setError('이력서 정보를 찾을 수 없습니다. 관리자에게 문의하세요.');
                         setLoading(false);
                     });
             } else {
-                // 이력서 ID가 없는 경우 - 이 경우는 발생하지 않아야 함
-                // 회원가입 시 자동 생성되므로 기본적으로 항상 이력서가 있어야 함
                 setError('이력서 정보를 찾을 수 없습니다. 관리자에게 문의하세요.');
                 setLoading(false);
             }
         };
 
         fetchResume();
-    }, [isLoggedIn, userType, userData, navigate, resumeId]);
+    }, [userData, resumeId]);
 
-    // 입력값 변경 핸들러
+    const validateForm = () => {
+        const errors = {};
+
+        if (!resumeData.resumeTitle.trim()) {
+            errors.resumeTitle = '이력서 제목을 입력해주세요.';
+        }
+
+        if (!resumeData.resumeId) {
+            errors.resumeId = '이력서 ID가 없습니다. 다시 로그인 후 시도해주세요.';
+        }
+
+        setFormErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setResumeData(prev => ({
             ...prev,
             [name]: value
         }));
+
+        // Clear error for this field if it exists
+        if (formErrors[name]) {
+            setFormErrors(prev => ({
+                ...prev,
+                [name]: null
+            }));
+        }
     };
 
-    // 학력 정보 업데이트 핸들러
     const handleEducationUpdate = (educationData) => {
-        setResumeData(prev => ({
-            ...prev,
-            educationHistory: educationData
-        }));
+        console.log("학력 정보 업데이트 받음:", educationData);
+        setResumeData(prev => {
+            const updated = {
+                ...prev,
+                educationHistory: educationData
+            };
+            console.log("학력 정보 업데이트 후 이력서 데이터:", updated);
+            return updated;
+        });
         setShowEducationModal(false);
     };
 
-    // 경력 정보 업데이트 핸들러
     const handleCareerUpdate = (careerData) => {
-        setResumeData(prev => ({
-            ...prev,
-            careerHistory: careerData
-        }));
+        console.log("경력 정보 업데이트 받음:", careerData);
+        setResumeData(prev => {
+            const updated = {
+                ...prev,
+                careerHistory: careerData
+            };
+            console.log("경력 정보 업데이트 후 이력서 데이터:", updated);
+            return updated;
+        });
         setShowCareerModal(false);
     };
 
-    // 이력서 저장 핸들러
     const handleSaveResume = () => {
-        if (!resumeData.resumeTitle.trim()) {
-            setError('이력서 제목을 입력해주세요.');
+        if (!validateForm()) {
+            window.scrollTo(0, 0);
             return;
         }
 
-        // resumeId 확인
-        if (!resumeData.resumeId) {
-            setError('이력서 ID가 없습니다. 다시 로그인 후 시도해주세요.');
-            return;
-        }
-
-        setLoading(true);
+        setSaving(true);
         setError(null);
         setSuccess(false);
 
@@ -162,21 +195,25 @@ const ResumeEdit = () => {
             careerHistory: resumeData.careerHistory
         };
 
-        // 이력서 수정(백엔드 코드 기준으로는 생성 기능은 없음)
-        axios.put(`/api/resume/update/${resumeData.resumeId}`, requestData)
-            .then(response => {
-                setSuccess(true);
-                setLoading(false);
+        console.log("이력서 저장 요청 데이터:", requestData);
 
-                // 3초 후 이력서 조회 페이지로 이동
+        apiResumeService.updateResume(resumeData.resumeId, requestData)
+            .then(response => {
+                console.log("이력서 저장 성공:", response);
+                setSuccess(true);
+                setSaving(false);
+
                 setTimeout(() => {
                     navigate('/resumes');
                 }, 3000);
             })
             .catch(error => {
                 console.error('이력서 저장 오류:', error);
-                setError('이력서를 저장하는 중 오류가 발생했습니다.');
-                setLoading(false);
+                console.error('에러 상세 정보:', error.response?.data);
+                setError('이력서를 저장하는 중 오류가 발생했습니다: ' + (error.response?.data?.message || error.message));
+                setSaving(false);
+
+                window.scrollTo(0, 0);
             });
     };
 
@@ -212,7 +249,6 @@ const ResumeEdit = () => {
             )}
 
             <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8">
-                {/* 기본 정보 섹션 */}
                 <div className="p-6 border-b border-gray-200">
                     <h2 className="text-xl font-semibold text-gray-900 mb-4">기본 정보</h2>
 
