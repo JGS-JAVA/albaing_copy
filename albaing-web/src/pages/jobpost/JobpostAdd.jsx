@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 const JobPostAdd = () => {
     const navigate = useNavigate();
+
     const companyId = localStorage.getItem('companyId');
 
     const jobCategories = [
