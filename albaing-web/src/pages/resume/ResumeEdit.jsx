@@ -50,37 +50,51 @@ const ResumeEdit = () => {
     const shiftHours = ['무관', '오전(06:00~12:00)', '오후(12:00~18:00)', '저녁(18:00~24:00)', '새벽(00:00~06:00)'];
 
     useEffect(() => {
-        const fetchResume = async () => {
+        const fetchResume = () => {
             setLoading(true);
             setError(null);
 
-            try {
-                let data;
-                if (resumeId && resumeId !== 'undefined') {
-                    try {
-                        data = await apiResumeService.getResume(resumeId);
+            // resumeId가 있고 undefined가 아닌 경우
+            if (resumeId && resumeId !== 'undefined') {
+                apiResumeService.getResume(resumeId)
+                    .then(data => {
                         console.log("이력서 ID로 데이터 로드 성공:", data);
-                    } catch (error) {
+                        setResumeData(data || resumeData);
+                        setLoading(false);
+                    })
+                    .catch(error => {
                         console.error('이력서 ID로 조회 실패:', error);
                         if (userData?.userId) {
-                            data = await apiResumeService.getResumeByUserId(userData.userId);
-                            console.log("사용자 ID로 데이터 로드 성공:", data);
+                            apiResumeService.getResumeByUserId(userData.userId)
+                                .then(data => {
+                                    console.log("사용자 ID로 데이터 로드 성공:", data);
+                                    setResumeData(data || resumeData);
+                                    setLoading(false);
+                                })
+                                .catch(error => {
+                                    console.error('이력서 조회 오류:', error);
+                                    setError(`이력서 정보를 불러오는 중 오류가 발생했습니다: ${error.message}`);
+                                    setLoading(false);
+                                });
                         } else {
-                            throw new Error('사용자 정보를 찾을 수 없습니다.');
+                            setError('사용자 정보를 찾을 수 없습니다.');
+                            setLoading(false);
                         }
-                    }
-                } else if (userData?.userId) {
-                    data = await apiResumeService.getResumeByUserId(userData.userId);
-                    console.log("사용자 ID로 데이터 로드 성공:", data);
-                } else {
-                    throw new Error('사용자 정보를 찾을 수 없습니다.');
-                }
-
-                setResumeData(data || resumeData);
-            } catch (error) {
-                console.error('이력서 조회 오류:', error);
-                setError(`이력서 정보를 불러오는 중 오류가 발생했습니다: ${error.message}`);
-            } finally {
+                    });
+            } else if (userData?.userId) {
+                apiResumeService.getResumeByUserId(userData.userId)
+                    .then(data => {
+                        console.log("사용자 ID로 데이터 로드 성공:", data);
+                        setResumeData(data || resumeData);
+                        setLoading(false);
+                    })
+                    .catch(error => {
+                        console.error('이력서 조회 오류:', error);
+                        setError(`이력서 정보를 불러오는 중 오류가 발생했습니다: ${error.message}`);
+                        setLoading(false);
+                    });
+            } else {
+                setError('사용자 정보를 찾을 수 없습니다.');
                 setLoading(false);
             }
         };
@@ -151,7 +165,7 @@ const ResumeEdit = () => {
         setShowCareerModal(false);
     };
 
-    const handleSaveResume = async () => {
+    const handleSaveResume = () => {
         if (!validateForm()) {
             window.scrollTo(0, 0);
             return;
@@ -181,19 +195,21 @@ const ResumeEdit = () => {
 
         console.log("이력서 저장 요청 데이터:", requestData);
 
-        try {
-            await apiResumeService.updateResume(resumeData.resumeId, requestData);
-            setSuccess(true);
-            setTimeout(() => {
-                navigate('/resumes');
-            }, 2000);
-        } catch (error) {
-            console.error('이력서 저장 오류:', error);
-            setError('이력서를 저장하는 중 오류가 발생했습니다: ' + (error.response?.data?.message || error.message));
-            window.scrollTo(0, 0);
-        } finally {
-            setSaving(false);
-        }
+        apiResumeService.updateResume(resumeData.resumeId, requestData)
+            .then(() => {
+                setSuccess(true);
+                setTimeout(() => {
+                    navigate('/resumes');
+                }, 2000);
+            })
+            .catch(error => {
+                console.error('이력서 저장 오류:', error);
+                setError('이력서를 저장하는 중 오류가 발생했습니다: ' + (error.response?.data?.message || error.message));
+                window.scrollTo(0, 0);
+            })
+            .finally(() => {
+                setSaving(false);
+            });
     };
 
     if (loading) {
