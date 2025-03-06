@@ -4,7 +4,7 @@ import ReviewModal from "./ReviewModal";
 
 const ReviewList = ({reviews, currentPage, setCurrentPage, itemsPerPage}) => {
     const [showReviewModal, setShowReviewModal] = useState(false); // 모달 상태 추가
-
+    console.log("reviews.length = ",reviews.length);
     const currentReviews = reviews.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
     return (

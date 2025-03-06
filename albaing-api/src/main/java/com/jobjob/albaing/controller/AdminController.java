@@ -44,6 +44,5 @@ public class AdminController {
     }
 
 
-    @GetMapping("/companies")
-    public List<Company> adminSearchCompanies(@PathVariable String )
+
 }
