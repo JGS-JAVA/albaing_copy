@@ -13,7 +13,6 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Autowired
     private ResumeMapper resumeMapper;
-
     // 회원가입 시 이력서 생성
     @Override
     public void createResumeForUser(User user) {
@@ -58,6 +57,7 @@ public class ResumeServiceImpl implements ResumeService {
         careerHistory.setCareerIsCareer("신입");
         resumeMapper.createDefaultCareer(careerHistory);
     }
+
 
 
     // 이력서 상세 조회

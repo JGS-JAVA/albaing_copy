@@ -1,5 +1,8 @@
 package com.jobjob.albaing.mapper;
 
+import com.jobjob.albaing.dto.CareerHistory;
+import com.jobjob.albaing.dto.EducationHistory;
+import com.jobjob.albaing.dto.Resume;
 import com.jobjob.albaing.dto.User;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -9,6 +12,7 @@ import java.util.Map;
 
 @Mapper
 public interface UserMapper {
+
 
     // 유저 회원가입 (INSERT)
     void registerUser(User user);

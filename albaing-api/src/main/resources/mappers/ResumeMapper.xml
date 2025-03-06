@@ -60,7 +60,6 @@
             <result property="careerIsCareer" column="career_is_career"/>
         </association>
     </resultMap>
-
     <!-- 이력서 저장 (회원가입 시 자동 생성용) -->
     <insert id="createResumeForUser">
         INSERT INTO RESUMES (
@@ -127,6 +126,9 @@
                      #{careerIsCareer}
                  )
     </insert>
+
+
+
 
     <!-- 이력서 수정 -->
     <update id="updateResume">
