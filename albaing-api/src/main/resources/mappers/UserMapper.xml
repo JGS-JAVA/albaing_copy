@@ -39,6 +39,25 @@
         WHERE user_email = #{userEmail}
 
     </select>
+
+    <!-- 마이페이지 -사용자 정보 조회 -->
+    <select id="getUserById">
+        SELECT *
+        FROM USERS
+        WHERE user_id = #{userId}
+    </select>
+
+    <!-- 마이페이지 - 사용자 정보 수정 -->
+    <update id="updateUser">
+        UPDATE USERS
+        SET
+            user_gender = #{userGender},
+            user_birthdate = #{userBirthdate},
+            user_address = #{userAddress},
+            user_profile_image = #{userProfileImage}
+        WHERE user_id = #{userId}
+    </update>
+
     
     
 </mapper>

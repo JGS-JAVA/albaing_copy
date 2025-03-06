@@ -59,17 +59,6 @@ public class ResumeServiceImpl implements ResumeService {
         resumeMapper.createDefaultCareer(careerHistory);
     }
 
-    // 사용자 정보 조회
-    @Override
-    public User getUserById(int userId) {
-        return resumeMapper.getUserById(userId);
-    }
-
-    // 사용자 정보 수정
-    @Override
-    public void updateUser(int userId, String userEmail, String userAddress, String userProfileImage) {
-        resumeMapper.updateUser(userId, userEmail, userAddress, userProfileImage);
-    }
 
     // 이력서 상세 조회
     @Override

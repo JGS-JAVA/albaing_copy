@@ -1,8 +1,13 @@
+import Banner from "../../components/Banner";
+import JobpostList from "../jobpost/JobpostList";
 
 const Home = () => {
     return (
         <div>
-            <h1>Home</h1>
+            <Banner />
+            <JobpostList />
+
+
         </div>
     );
 }
