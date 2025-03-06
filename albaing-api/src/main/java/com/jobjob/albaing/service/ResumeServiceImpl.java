@@ -13,7 +13,6 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Autowired
     private ResumeMapper resumeMapper;
-
     // 회원가입 시 이력서 생성
     @Override
     public void createResumeForUser(User user) {
@@ -60,6 +59,7 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
 
+
     // 이력서 상세 조회
     @Override
     public Resume resumeDetails(int resumeId) {
@@ -87,5 +87,11 @@ public class ResumeServiceImpl implements ResumeService {
         } catch (Exception e) {
             throw new RuntimeException("이력서 수정 중 오류가 발생했습니다.", e);
         }
+    }
+
+    // 이력서 조회(유저 아이디로)
+    @Override
+    public Resume getResumeByUserId(int userId) {
+        return resumeMapper.getResumeByUserId(userId);
     }
 }
