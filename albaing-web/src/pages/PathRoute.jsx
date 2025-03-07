@@ -6,8 +6,8 @@ import Footer from '../components/Footer';
 
 
 import Home from './home/Home';
-import CompanyDetail from './company/CompanyDetail';
-import CompanyMain from './company/CompanyMain';
+import CompanyInfo from './company/CompanyInfo';
+import CompanyManage from './company/CompanyManage';
 import ReviewDetail from './review/user/ReviewDetail';
 import JobpostAdd from './jobpost/JobpostAdd';
 import JobpostDetail from './jobpost/JobpostDetail';
@@ -52,12 +52,12 @@ function PathRoute() {
                 {/*<Route path="/find/id/result" element={<MainLayout><FindIdResult /></MainLayout>} /> /!* 아이디 찾기 결과 페이지 *!/*/}
                 {/*<Route path="/find/password" element={<MainLayout><FindPassword /></MainLayout>} /> /!* 비밀번호 찾기 페이지 *!/*/}
                 {/*<Route path="/find/password/result" element={<MainLayout><FindPasswordResult /></MainLayout>} /> /!* 비밀번호 찾기 결과 페이지 *!/*/}
-                <Route path="/companies/:companyId" element={<MainLayout><CompanyDetail /></MainLayout>} /> {/* 회사 상세 정보 페이지 */}
+                <Route path="/companies/:companyId" element={<MainLayout><CompanyInfo /></MainLayout>} /> {/* 회사 상세 정보 페이지 */}
                 <Route path="/jobs" element={<MainLayout><JobpostList /></MainLayout>} /> {/* 채용공고 목록 페이지 */}
                 <Route path="/jobs/:id" element={<MainLayout><JobpostDetail /></MainLayout>} /> {/* 채용공고 상세 페이지 */}
 
                 {/* 일반 사용자만 접근 가능 */}
-                <Route element={<ProtectedRoute userTypeRequired="user"/> }>
+                <Route element={<ProtectedRoute userTypeRequired="personal"/> }>
                 {/*<Route path="/mypage" element={<MainLayout><MyPage /></MainLayout>} /> /!* 일반 사용자 마이페이지 메인 *!/*/}
                 {/*<Route path="/mypage/applications" element={<MainLayout><MyApplication /></MainLayout>} /> /!* 일반 사용자 지원 내역 페이지 *!/*/}
                 {/*<Route path="/mypage/scraps" element={<MainLayout><MyScrap /></MainLayout>} /> /!* 일반 사용자 스크랩 목록 페이지 *!/*/}
@@ -69,7 +69,7 @@ function PathRoute() {
 
                 {/* 기업 사용자만 접근 가능 */}
                 <Route element={<ProtectedRoute userTypeRequired="company"/> }>
-                <Route path="/company/manage/:companyId" element={<CompanyMain />} /> {/* 회사 관리 메인 페이지 */}
+                <Route path="/company/manage/:companyId" element={<CompanyManage />} /> {/* 회사 관리 메인 페이지 */}
                 <Route path="/company/:companyId/reviews/manage" element={<ReviewManagement />} /> {/* 회사 리뷰 관리 페이지 */}
                 <Route path="/company/:companyId/reviews/:reviewId" element={<ReviewDetail />} /> {/* 회사 리뷰 상세 페이지 */}
                 <Route path="/jobs/new" element={<MainLayout><JobpostAdd /></MainLayout>} /> {/* 채용공고 등록 페이지 */}
@@ -78,9 +78,9 @@ function PathRoute() {
                 {/*<Route path="/jobs/:id/applications" element={<MainLayout><JobApplicationManager /></MainLayout>} /> /!* 채용공고 지원자 관리 페이지 *!/*/}
                 </Route>
 
-                {/* 로그인한 모든 사용자 접근 가능 - ProtectedRoute 사용(타입 제한 없음) */}
-                <Route element={<ProtectedRoute userTypeRequired="admin"  /> }>
-                    <Route path="/companies/:companyId/reviews/:reviewId" element={<MainLayout><ReviewDetail /></MainLayout>} /> {/* 회사 리뷰 목록 페이지 */}
+                {/* 로그인한 모든 사용자 접근 가능 - ProtectedRoute 사용 */}
+                <Route element={<ProtectedRoute/> }>
+                <Route path="/companies/:companyId/reviews/:reviewId" element={<MainLayout><ReviewDetail /></MainLayout>} /> {/* 회사 리뷰 목록 페이지 */}
                 </Route>
 
                 {/* 관리자만 접근 가능 */}

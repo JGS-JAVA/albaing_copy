@@ -113,7 +113,7 @@ const ReviewModal = ({ companyId, onClose, onSubmit }) => {
     );
 };
 
-const CompanyDetail = () => {
+const CompanyInfo = () => {
     const { companyId } = useParams();
     const navigate = useNavigate();
     const { isLoggedIn, userType } = useAuth();
@@ -517,4 +517,4 @@ const CompanyDetail = () => {
     );
 };
 
-export default CompanyDetail;
+export default CompanyInfo;

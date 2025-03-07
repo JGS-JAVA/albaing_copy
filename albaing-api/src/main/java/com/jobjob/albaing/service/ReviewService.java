@@ -17,6 +17,9 @@ public interface ReviewService {
     //회사 리뷰 조회
     Review reviewCheck(long reviewId);
 
+    // 리뷰에 속한 댓글 목록 조회
+    List<Comment> getCommentsByReviewId(long reviewId);
+
     //회사 리뷰 삭제
     void deleteReview(long reviewId, long userId);
 

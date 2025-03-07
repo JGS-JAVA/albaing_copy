@@ -1,5 +1,5 @@
 import {Link} from "react-router-dom";
-import Pagination from "./Pagination";
+import Pagination from "../../../components/Pagination";
 
 const JobList = ({jobPosts, currentPage, setCurrentPage, itemsPerPage}) => {
     const currentJobs = jobPosts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);

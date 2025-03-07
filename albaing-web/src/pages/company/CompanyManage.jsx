@@ -4,7 +4,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import {useAuth} from "../../contexts/AuthContext";
 
 
-const CompanyMain = () => {
+const CompanyManage = () => {
     const { companyId } = useParams();
     const navigate = useNavigate();
 
@@ -479,4 +479,4 @@ const CompanyMain = () => {
     );
 };
 
-export default CompanyMain;
+export default CompanyManage;

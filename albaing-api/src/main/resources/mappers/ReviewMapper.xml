@@ -13,14 +13,14 @@
 
     <!-- 우리 회사 리뷰 댓글 상세 조회 -->
     <select id="selectCompanyReviewComments">
-        SELECT comment_id, review_id, review_content, review_created_at
-        FROM review_comments
+        SELECT comment_id, review_id, comment_content, comment_created_at
+        FROM comments
         WHERE review_id = #{reviewId}
-        ORDER BY review_ created_at DESC
+        ORDER BY comment_created_at DESC
     </select>
 
     <!-- 우리 회사 리뷰 삭제 -->
-    <delete id="deleteCompanyReview">
+    <delete id="deleteReviewByCompany">
         DELETE
         FROM reviews
         WHERE review_id = #{reviewId}
@@ -28,15 +28,14 @@
     </delete>
 
     <!-- 우리 회사 리뷰 댓글 삭제 -->
-    <delete id="deleteCompanyReviewComment">
+    <delete id="deleteCommentByCompany">
         DELETE rc
-  FROM review_comments rc
-  JOIN reviews r ON rc.review_id = r.review_id
-  WHERE rc.comment_id = #{commentId}
+        FROM comments rc
+        JOIN reviews r ON rc.review_id = r.review_id
+        WHERE rc.comment_id = #{commentId}
         AND rc.review_id = #{reviewId}
         AND r.company_id = #{companyId}
     </delete>
-
 
     <!-- 어드민 리뷰 상세 조회 -->
     <select id="selectReviewDetailAdmin">
@@ -47,104 +46,134 @@
 
     <!-- 어드민 리뷰 댓글 조회 -->
     <select id="selectReviewCommentsAdmin">
-        SELECT comment_id, review_id, review_content, review_created_at
-        FROM review_comments
+        SELECT comment_id, review_id, comment_content, comment_created_at
+        FROM comments
         WHERE review_id = #{reviewId}
-        ORDER BY review_created_at DESC
+        ORDER BY comment_created_at DESC
     </select>
 
     <!-- 어드민 리뷰 수정 -->
-    <update id="updateReview">
+    <update id="updateReviewByAdmin">
         UPDATE reviews
-        SET review_title = #{title},
-            review_content = #{content},
+        SET review_title = #{reviewTitle},
+            review_content = #{reviewContent},
             review_updated_at = NOW()
         WHERE review_id = #{reviewId}
     </update>
 
     <!-- 어드민 리뷰 삭제 -->
-    <delete id="deleteReviewAdmin">
+    <delete id="deleteReviewByAdmin">
         DELETE
         FROM reviews
         WHERE review_id = #{reviewId}
     </delete>
 
-
-    <!-- 어드민 리뷰 댓글 삭제 -->
-    <delete id="deleteReviewCommentAdmin">
+    <!-- 어드민 댓글 삭제 -->
+    <delete id="deleteCommentByAdmin">
         DELETE
-        FROM review_comments
-        WHERE review_id = #{reviewId}
-          AND comment_id = #{commentId}
+        FROM comments
+        WHERE comment_id = #{commentId}
     </delete>
 
     <!-- 상세 페이지 기업 채용 공고 출력 -->
     <select id="showPosts">
-         SELECT job_post_title, job_post_job_category,
-                job_post_job_type, job_post_work_place,
-                job_post_due_date, company_id
-         FROM job_posts
-         WHERE company_id = #{companyId}
-         AND job_post_due_date > CURRENT_DATE
-         ORDER BY job_post_due_date ASC
-         LIMIT 4
+        SELECT job_post_title, job_post_job_category,
+               job_post_job_type, job_post_work_place,
+               job_post_due_date, company_id
+        FROM job_posts
+        WHERE company_id = #{companyId}
+          AND job_post_due_date > CURRENT_DATE
+        ORDER BY job_post_due_date ASC
+            LIMIT 4
     </select>
 
     <!-- 상세 페이지 기업 리뷰 글 출력 -->
     <select id="showReviews">
-          SELECT review_title,
-                 review_id,
-                 review_created_at,company_id
-          FROM reviews
-          WHERE company_id = #{companyId}
-          ORDER BY review_created_at DESC
-          LIMIT 5
+        SELECT *
+        FROM reviews
+        WHERE company_id = #{companyId}
+        ORDER BY review_created_at DESC
     </select>
 
     <!-- 유저 리뷰 작성 -->
     <insert id="addReview">
-          INSERT INTO reviews (company_id, user_id, review_title, review_content)
-          VALUES (#{companyId}, #{userId}, #{reviewTitle}, #{reviewContent})
+        INSERT INTO reviews (company_id, user_id, review_title, review_content, review_created_at, review_updated_at)
+        VALUES (#{companyId}, #{userId}, #{reviewTitle}, #{reviewContent}, NOW(), NOW())
     </insert>
 
-    <!-- 리뷰 조회 + 작성된 댓글 출력 + 총 댓글 개수 표시 -->
-    <select id="reviewCheck">
+    <!-- 리뷰 조회 메서드 -->
+    <select id="reviewCheck" resultType="Review">
         SELECT
-            reviews.review_id,reviews.review_title,
-            reviews.review_content,reviews.user_id,reviews.review_created_at,
-            COUNT(comments.comment_id) AS comment_count,
-            comments.comment_id,
-            comments.comment_content,
-            comments.comment_created_at
-        FROM
-            REVIEWS
-                LEFT JOIN
-            COMMENTS ON reviews.review_id = comments.review_id
-        WHERE
-            reviews.review_id = #{reviewId}
-        GROUP BY
-            reviews.review_id, comments.comment_id
-        ORDER BY
-            comments.comment_created_at DESC
+            review_id,
+            user_id,
+            company_id,
+            review_title,
+            review_content,
+            review_created_at,
+            review_updated_at
+        FROM reviews
+        WHERE review_id = #{reviewId}
+    </select>
+
+    <!-- 리뷰에 속한 댓글 목록 조회 -->
+    <select id="getCommentsByReviewId" resultType="Comment">
+        SELECT
+            comment_id,
+            review_id,
+            user_id,
+            comment_content,
+            comment_created_at,
+            comment_updated_at
+        FROM comments
+        WHERE review_id = #{reviewId}
+        ORDER BY comment_created_at ASC
     </select>
 
     <!-- 댓글 작성 -->
     <insert id="addComment">
-          INSERT INTO comments(review_id, user_id, comment_content)
-          VALUES (#{reviewId},
-                 #{userId},
-                 #{commentContent});
+        INSERT INTO comments (review_id, user_id, comment_content, comment_created_at, comment_updated_at)
+        VALUES (#{reviewId},
+                #{userId},
+                #{commentContent},
+                NOW(),
+                NOW());
     </insert>
 
     <!-- 리뷰 삭제 -->
     <delete id="deleteReview">
-           DELETE FROM REVIEWS
-           WHERE review_id = #{reviewId} AND user_id = #{userId}
+        DELETE FROM reviews
+        WHERE review_id = #{reviewId} AND user_id = #{userId}
     </delete>
 
     <!-- 댓글 삭제 -->
     <delete id="deleteComment">
-           DELETE FROM COMMENTS
-           WHERE comment_id = #{commentId} AND user_id = #{userId}
+        DELETE FROM comments
+        WHERE comment_id = #{commentId} AND user_id = #{userId}
     </delete>
+
+    <!-- 리뷰 ID로 리뷰 가져오기 -->
+    <select id="getReviewById" resultType="Review">
+        SELECT *
+        FROM reviews
+        WHERE review_id = #{reviewId}
+    </select>
+
+    <!-- 회사 ID로 리뷰의 소속 확인 -->
+    <select id="checkCommentBelongsToCompany" parameterType="map" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM comments c
+                 JOIN reviews r ON c.review_id = r.review_id
+        WHERE c.comment_id = #{commentId}
+          AND c.review_id = #{reviewId}
+          AND r.company_id = #{companyId}
+    </select>
+
+    <!-- 어드민 - 모든 리뷰 조회 -->
+    <select id="getAllReviewsForAdmin" resultType="map">
+        SELECT r.*, u.user_name, c.company_name
+        FROM reviews r
+                 JOIN users u ON r.user_id = u.user_id
+                 JOIN companies c ON r.company_id = c.company_id
+        ORDER BY r.review_created_at DESC
+    </select>
 </mapper>
