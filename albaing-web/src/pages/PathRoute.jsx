@@ -23,6 +23,7 @@ import RegisterPage from "./public/register/RegisterPage";
 import ProtectedRoute from "./ProtectedRoute";
 import ReviewManagement from "./company/review/ReviewManagement";
 import CompanyDetail from "./user/companyView/CompanyDetail";
+import KakaoLogin from "./teach-kakao/KakaoLogin";
 
 // 메인 레이아웃 컴포넌트
 const MainLayout = ({ children }) => (
