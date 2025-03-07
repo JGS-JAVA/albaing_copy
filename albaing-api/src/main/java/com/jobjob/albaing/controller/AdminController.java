@@ -85,29 +85,35 @@ public class AdminController {
         return adminService.adminResumeDetail(resumeId);
     }
 
-    @DeleteMapping("/")
-    public void adminResumeDelete(@PathVariable String resumeId) {
-        adminService.adminResumeDelete(resumeId);
+    @DeleteMapping("/resumes/{userId}")
+    public void adminResumeDelete(@PathVariable String userId) {
+        adminService.adminResumeDelete(userId);
     }
 
+    @GetMapping("/companies/{companyId}")
     public Company adminCompanyDetail(@PathVariable String companyId) {
         return adminService.adminCompanyDetail(companyId);
     }
 
+    @DeleteMapping("/companies/{companyId}")
     public void adminCompanyDelete(@PathVariable String companyId) {
         adminService.adminCompanyDelete(companyId);
     }
 
+    @GetMapping("/job-posts/{jobPostId}")
     public JobPost adminJobPostDetail(@PathVariable String jobPostId) {
         return adminService.adminJobPostDetail(jobPostId);
     }
 
+    @DeleteMapping("/job-posts/{jobPostId}")
     public void adminJobPostDelete(@PathVariable String jobPostId) {
         adminService.adminJobPostDelete(jobPostId);
     }
 
+    @PostMapping("/job-posts/status/{companyId}")
     public void adminJobPostStatusChange(@PathVariable String companyId) {
         adminService.adminJobPostStatusChange(companyId);
     }
+
 
 }
