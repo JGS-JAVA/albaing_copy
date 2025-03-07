@@ -3,6 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jobjob.albaing.mapper.JobPostMapper">
 
+    <!-- 채용공고 등록 -->
     <insert id="insertJobPost" useGeneratedKeys="true" keyProperty="jobPostId">
         INSERT INTO job_posts (
             company_id,
@@ -37,17 +38,36 @@
                    #{jobPostWorkPlace},
                    #{jobPostStatus},
                    #{jobPostDueDate},
-                    NOW(),
-                    NOW()
+                   NOW(),
+                   NOW()
                )
     </insert>
 
-    <select id="selectJobPostById">
+    <!-- ID로 채용공고 조회 -->
+    <select id="selectJobPostById" resultType="JobPost">
         SELECT *
         FROM job_posts
         WHERE job_post_id = #{jobPostId}
     </select>
 
+    <!-- 기업별 채용공고 목록 조회 -->
+    <select id="getJobPostsByCompanyId" resultType="JobPost">
+        SELECT *
+        FROM job_posts
+        WHERE company_id = #{companyId}
+        ORDER BY job_post_created_at DESC
+    </select>
+
+    <!-- 채용공고 목록 조회 (검색 조건 포함) -->
+    <select id="selectJobPostList" resultType="JobPost">
+        SELECT *
+        FROM job_posts
+        <include refid="searchCriteria" />
+        ORDER BY job_post_created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <!-- 검색 조건 SQL -->
     <sql id="searchCriteria">
         <where>
             <if test="jobCategory != null and jobCategory != ''">
@@ -70,14 +90,7 @@
         </where>
     </sql>
 
-    <select id="selectJobPostList">
-        SELECT *
-        FROM job_posts
-        <include refid="searchCriteria" />
-        ORDER BY job_post_created_at DESC
-        LIMIT #{limit} OFFSET #{offset}
-    </select>
-
+    <!-- 채용공고 수정 -->
     <update id="updateJobPost">
         UPDATE job_posts
         SET
@@ -107,17 +120,9 @@
     </update>
 
     <!-- 채용공고 총 개수 조회 -->
-    <select id="countJobPost">
+    <select id="countJobPost" resultType="int">
         SELECT COUNT(*)
         FROM job_posts
         <include refid="searchCriteria" />
     </select>
-
-    <select id="getJobPostsByCompanyId">
-        SELECT *
-        FROM job_posts
-        WHERE company_id = #{companyId}
-        ORDER BY job_post_due_date ASC
-    </select>
-
 </mapper>
