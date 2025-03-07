@@ -51,7 +51,6 @@ export default function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
 
-    // Context에서 인증 정보 가져오기
     const { isLoggedIn, userType, userData, logout } = useAuth();
 
     // 로그아웃 처리
@@ -128,7 +127,7 @@ export default function Header() {
                     <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-4">
                         {isLoggedIn ? (
                             <>
-                                <Link to={userType === 'company' ? `/companies/${userData.companyId}` : "/mypage"} className="text-sm font-semibold text-gray-900">
+                                <Link to={userType === 'company' ? `/company/manage/${userData.companyId}` : "/mypage"} className="text-sm font-semibold text-gray-900">
                                     마이페이지
                                 </Link>
                                 <button
@@ -215,7 +214,7 @@ export default function Header() {
                                 {isLoggedIn ? (
                                     <>
                                         <Link
-                                            to={userType === 'company' ? `/companies/${userData.companyId}` : "/mypage"}
+                                            to={userType === 'company' ? `/company/manage/${userData.companyId}` : "/mypage"}
                                             className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold text-gray-900 hover:bg-gray-50"
                                             onClick={() => setMobileMenuOpen(false)}
                                         >
