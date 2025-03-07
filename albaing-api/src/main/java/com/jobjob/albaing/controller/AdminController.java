@@ -68,6 +68,14 @@ public class AdminController {
         return adminService.adminSearchJobPosts(companyName, jobPostTitle, jobPostStatus, sortOrderBy, isDESC);
     }
 
-    @GetMapping("/")
+    public User adminUserDetail(@PathVariable String userId) {
+        return adminService.adminUserDetail(userId);
+    }
+
+    public void adminUserDelete(@PathVariable String userId) {
+        adminService.adminUserDelete(userId);
+    }
+
+
 
 }
