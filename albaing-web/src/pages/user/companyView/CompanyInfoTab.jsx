@@ -1,12 +1,10 @@
-const CompanyInfo = ({company}) => {
-    const formatDate = (dateString) => {
-        if (!dateString) return "-";
-        const date = new Date(dateString);
-        return date.toLocaleDateString('ko-KR', {year: 'numeric', month: 'long', day: 'numeric'});
-    };
+import { formatDate } from '../../../utils/dateUtils';
+
+const CompanyInfoTab = ({ company }) => {
+    if (!company) return null;
 
     return (
-        <div className="p-6">
+        <div className="p-6 bg-white rounded-lg shadow-md">
             <h2 className="text-xl font-bold text-gray-900 mb-6">상세 정보</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -45,9 +43,7 @@ const CompanyInfo = ({company}) => {
                 <div className="mt-8">
                     <h3 className="text-sm font-medium text-gray-500 mb-2">회사 소개</h3>
                     <div className="p-4 bg-gray-50 rounded-md">
-                        <p className="text-base text-gray-900 whitespace-pre-line">
-                            {company.companyDescription}
-                        </p>
+                        <p className="text-base text-gray-900 whitespace-pre-line">{company.companyDescription}</p>
                     </div>
                 </div>
             )}
@@ -55,4 +51,4 @@ const CompanyInfo = ({company}) => {
     );
 };
 
-export default CompanyInfo;
+export default CompanyInfoTab;
