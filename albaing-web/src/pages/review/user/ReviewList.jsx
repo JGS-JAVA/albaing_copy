@@ -1,6 +1,6 @@
 import {useState} from "react";
-import Pagination from "./Pagination";
-import ReviewModal from "./ReviewModal";
+import Pagination from "../../../components/Pagination";
+import ReviewModal from "../../../components/ReviewModal";
 
 const ReviewList = ({reviews, currentPage, setCurrentPage, itemsPerPage}) => {
     const [showReviewModal, setShowReviewModal] = useState(false); // 모달 상태 추가
