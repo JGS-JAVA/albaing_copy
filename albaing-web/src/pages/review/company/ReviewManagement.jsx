@@ -54,28 +54,23 @@ const ReviewManagement = () => {
 
     // 권한 체크 및 초기 데이터 로딩
     useEffect(() => {
-        // 아직 로그인 상태를 확인할 수 없는 경우
         if (isLoggedIn === null || userData === null) return;
 
-        // 로그인 여부 체크
         if (!isLoggedIn) {
             navigate('/login');
             return;
         }
 
-        // 기업 사용자 여부 체크
         if (userType !== 'company') {
             navigate('/');
             return;
         }
 
-        // 본인 회사인지 체크
         if (userData && userData.companyId && parseInt(companyId) !== userData.companyId) {
             navigate(`/company/manage/${userData.companyId}`);
             return;
         }
 
-        // 리뷰 목록 불러오기
         fetchReviews();
     }, [companyId, isLoggedIn, navigate, userData, userType]);
 
