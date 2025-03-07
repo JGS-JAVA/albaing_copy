@@ -19,38 +19,41 @@ const RegisterPerson = () => {
     const [error, setError] = useState("");
 
     const navigate = useNavigate();
-
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
 
-        const nameParam = params.get("name");
         const nicknameParam = params.get("nickname");
-        setUserName(decodeURIComponent(nameParam || nicknameParam || ""));
-
-        setUserEmail(params.get("email") || "");
-
+        const email = params.get("email");
+        const kakaoId = params.get("kakaoId");
+        const genderParam = params.get("gender");
         const birthdayParam = params.get("birthday");
+        const profileImageParam = params.get("profileImage");
+
+        console.log("params:", params);
+        console.log("nickname:", nicknameParam);
+        console.log("email:", email);
+        console.log("kakaoId:", kakaoId);
+
+        setUserName(nicknameParam || "");
+        setUserEmail(email || "");
+        setUserProfileImage(profileImageParam || "");
+
+        if (email && kakaoId) {
+            console.log("✅ 카카오 로그인 사용자 감지 → 이메일 인증 자동 완료");
+            setEmailVerified(true);
+        }
+
+        if (genderParam) {
+            setUserGender(genderParam.toLowerCase() === "male" ? "male" : "female");
+        }
+
         if (birthdayParam) {
-            if (birthdayParam.length === 5) {
+            if (birthdayParam.length === 4) {
                 const currentYear = new Date().getFullYear();
-                setUserBirthdate(`${currentYear}-${birthdayParam.replace("-", "-")}`);
+                setUserBirthdate(`${currentYear}-${birthdayParam.slice(0, 2)}-${birthdayParam.slice(2, 4)}`);
             } else {
                 setUserBirthdate(birthdayParam);
             }
-        }
-
-        const genderParam = params.get("gender");
-        if (genderParam) {
-            setUserGender(genderParam === "M" ? "male" : genderParam === "F" ? "female" : genderParam);
-        }
-
-        const profileImageParam = params.get("profileImage") || params.get("profileImg");
-        if (profileImageParam) {
-            setUserProfileImage(decodeURIComponent(profileImageParam));
-        }
-
-        if (params.get("email")) {
-            setEmailVerified(true);
         }
     }, []);
 
@@ -63,10 +66,9 @@ const RegisterPerson = () => {
         setLoading(true);
         setError("");
 
-        axios.post("/api/auth/sendCode", {
-            email: userEmail
-        })
-            .then(response => {
+        axios
+            .post("/api/auth/sendCode", { email: userEmail })
+            .then(() => {
                 alert("인증번호가 이메일로 발송되었습니다.");
             })
             .catch(error => {
@@ -87,11 +89,9 @@ const RegisterPerson = () => {
         setLoading(true);
         setError("");
 
-        axios.post("/api/auth/checkCode", {
-            email: userEmail,
-            code: verificationCode
-        })
-            .then(response => {
+        axios
+            .post("/api/auth/checkCode", { email: userEmail, code: verificationCode })
+            .then(() => {
                 setEmailVerified(true);
                 alert("이메일 인증이 완료되었습니다.");
             })
@@ -120,13 +120,8 @@ const RegisterPerson = () => {
             return false;
         }
 
-        if (userPassword.length < 8) {
-            setError("비밀번호는 최소 8자 이상이어야 합니다.");
-            return false;
-        }
-
-        if (!/[0-9]/.test(userPassword) || !/[!@#$%^&*]/.test(userPassword)) {
-            setError("비밀번호는 숫자와 특수문자를 포함해야 합니다.");
+        if (userPassword.length < 8 || !/[0-9]/.test(userPassword) || !/[!@#$%^&*]/.test(userPassword)) {
+            setError("비밀번호는 최소 8자 이상이며 숫자와 특수문자를 포함해야 합니다.");
             return false;
         }
 
@@ -154,37 +149,43 @@ const RegisterPerson = () => {
     };
 
     const handleSignup = () => {
-        if (!validateInputs()) {
-            return;
-        }
+        if (!validateInputs()) return;
 
         setLoading(true);
         setError("");
 
-        axios.post("/api/auth/register/person", {
+        const kakaoId = new URLSearchParams(window.location.search).get("kakaoId");
+
+        const requestData = {
             userEmail,
             userPassword,
             userName,
-            userBirthdate: userBirthdate ? new Date(userBirthdate) : null,
+            userBirthdate: userBirthdate ? new Date(userBirthdate).toISOString().split("T")[0] : null,
             userGender,
             userPhone,
             userAddress,
             userProfileImage,
-            userTermsAgreement
-        })
-            .then(response => {
+            userTermsAgreement,
+            emailVerified: kakaoId ? true : emailVerified,
+            kakaoId
+        };
+
+        console.log("회원가입 요청 데이터:", requestData);
+
+        axios
+            .post("/api/auth/register/person", requestData)
+            .then(() => {
                 alert("회원가입이 성공적으로 완료되었습니다.");
                 navigate("/login");
             })
             .catch(error => {
+                console.error("회원가입 실패:", error.response?.data || error);
                 setError(`회원가입 실패: ${error.response?.data?.message || "알 수 없는 오류가 발생했습니다."}`);
-                console.error("회원가입 실패:", error);
             })
             .finally(() => {
                 setLoading(false);
             });
     };
-
     return (
         <div className="max-w-2xl mx-auto px-4 py-10">
             <div className="text-center mb-10">
