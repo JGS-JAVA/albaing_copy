@@ -1,17 +1,16 @@
 package com.jobjob.albaing.controller;
 
-import com.jobjob.albaing.dto.User;
-import com.jobjob.albaing.mapper.UserMapper;
+import com.jobjob.albaing.service.AuthServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -20,16 +19,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-import jakarta.servlet.http.HttpSession;
-
-@Controller
+@RestController
 @RequestMapping("/oauth/kakao")
 public class KakaoAPIController {
 
     @Autowired
-    private UserMapper userMapper;
+    private AuthServiceImpl authService;  // ✅ AuthService로 회원 존재 여부 확인
 
     @Value("${kakao.client-id}")
     private String kakaoClientId;
@@ -41,17 +36,20 @@ public class KakaoAPIController {
     private String kakaoClientSecret;
 
     @GetMapping("/login")
-    public ResponseEntity<?> getKakaoLoginUrl() {
-        String url = "https://kauth.kakao.com/oauth/authorize?response_type=code" +
-                "&client_id=" + kakaoClientId + "&redirect_uri=" + redirectUri;
-        return ResponseEntity.ok(url);
+    public RedirectView getKakaoLoginUrl() {
+        String kakaoAuthUrl = "https://kauth.kakao.com/oauth/authorize?response_type=code" +
+                "&client_id=" + kakaoClientId +
+                "&redirect_uri=" + redirectUri +
+                "&scope=profile_nickname,profile_image,account_email,name,gender,birthday";
+
+        return new RedirectView(kakaoAuthUrl);
     }
 
     @GetMapping("/callback")
     public RedirectView handleCallback(@RequestParam String code) {
         RestTemplate restTemplate = new RestTemplate();
 
-        // 1. 카카오 토큰 요청
+        // 1️⃣ 카카오 토큰 요청
         String tokenUrl = "https://kauth.kakao.com/oauth/token";
 
         LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
@@ -73,7 +71,7 @@ public class KakaoAPIController {
 
         String accessToken = (String) tokenResponse.get("access_token");
 
-        // 2. 카카오 사용자 정보 요청
+        // 2️⃣ 카카오 사용자 정보 요청
         String userInfoUrl = "https://kapi.kakao.com/v2/user/me";
         HttpHeaders userHeaders = new HttpHeaders();
         userHeaders.add("Authorization", "Bearer " + accessToken);
@@ -85,48 +83,49 @@ public class KakaoAPIController {
             return new RedirectView("http://localhost:3000/error?message=Failed to fetch user info");
         }
 
-        // 3. 사용자 정보 파싱
+        // 3️⃣ 사용자 정보 파싱
         Map<String, Object> userInfo = userResponse.getBody();
+        String kakaoId = userInfo.get("id").toString();  // ✅ 카카오 ID 값
         Map<String, Object> properties = (Map<String, Object>) userInfo.get("properties");
-        Map<String, Object> kakaoAccount = (Map<String, Object>) userInfo.get("kakao_account");
+        Map<String, Object> kakaoAccount = (userInfo.get("kakao_account") != null)
+                ? (Map<String, Object>) userInfo.get("kakao_account")
+                : new HashMap<>();
 
         String nickname = (String) properties.get("nickname");
         String profileImg = (String) properties.get("profile_image");
-        String email = (String) kakaoAccount.get("email");
-        String gender = kakaoAccount.containsKey("gender") ? (String) kakaoAccount.get("gender") : null;
-        String birthday = kakaoAccount.containsKey("birthday") ? (String) kakaoAccount.get("birthday") : null;
+        String email = kakaoAccount.getOrDefault("email", "").toString();
+        String gender = kakaoAccount.getOrDefault("gender", "").toString();
+        String birthday = kakaoAccount.getOrDefault("birthday", "").toString();
 
-        // 4. DB에서 사용자 존재 여부 확인
-        try {
-            Map<String, Object> param = new HashMap<>();
-            param.put("userEmail", email);
-            User existingUser = userMapper.loginUser(param);
+        // 4️⃣ DB에서 가입 여부 확인 (AuthService에서 처리)
+        /*
+        if (authService.isUserExists(email)) {
+            HttpSession session = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getSession();
+            session.setAttribute("userEmail", email);
+            return new RedirectView("http://localhost:3000/");
+        } else {
 
-            if (existingUser != null) {
-                HttpSession session = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getSession();
-                session.setAttribute("userSession", existingUser);
+         */
+        // ✅ `kakaoId` 포함하여 프론트로 전달
+        String frontendRedirectUri = "http://localhost:3000/register/person"
+                + "?nickname=" + URLEncoder.encode(nickname, StandardCharsets.UTF_8)
+                + "&email=" + email
+                + "&kakaoId=" + kakaoId;
 
-                return new RedirectView("http://localhost:3000/");
-            } else {
-                String frontendRedirectUri = "http://localhost:3000/register/person"
-                        + "?nickname=" + URLEncoder.encode(nickname, StandardCharsets.UTF_8)
-                        + "&email=" + email;
-
-                if (gender != null) {
-                    frontendRedirectUri += "&gender=" + gender;
-                }
-                if (birthday != null) {
-                    frontendRedirectUri += "&birthday=" + birthday;
-                }
-                if (profileImg != null) {
-                    frontendRedirectUri += "&profileImage=" + URLEncoder.encode(profileImg, StandardCharsets.UTF_8);
-                }
-
-                return new RedirectView(frontendRedirectUri);
-            }
-        } catch (Exception e) {
-            return new RedirectView("http://localhost:3000/error?message=Login failed: " + e.getMessage());
+        if (gender != null) {
+            frontendRedirectUri += "&gender=" + gender;
         }
-    }
+        if (birthday != null) {
+            frontendRedirectUri += "&birthday=" + birthday;
+        }
+        if (profileImg != null) {
+            frontendRedirectUri += "&profileImage=" + URLEncoder.encode(profileImg, StandardCharsets.UTF_8);
+        }
 
+        return new RedirectView(frontendRedirectUri);
+            /*
+                     }
+
+             */
+    }
 }
