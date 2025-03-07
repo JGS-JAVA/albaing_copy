@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+import {ErrorMessage} from "../../../components/common";
 
 const RegisterCompany = () => {
     const [companyName, setCompanyName] = useState("");
@@ -183,12 +184,7 @@ const RegisterCompany = () => {
                 <p className="mt-2 text-gray-600">알바잉에 가입하고 인재를 모집해보세요.</p>
             </div>
 
-            {error && (
-                <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
-                    <p className="font-medium">오류</p>
-                    <p>{error}</p>
-                </div>
-            )}
+            {error && <ErrorMessage message={error} />}
 
             <div className="bg-white shadow-md rounded-lg p-6 mb-8">
                 <div className="space-y-6">

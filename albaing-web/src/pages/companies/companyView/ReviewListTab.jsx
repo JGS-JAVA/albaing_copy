@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Pagination from '../../../components/Pagination';
-import ReviewModal from '../../../components/ReviewModal';
+import Pagination from '../../../components/common/Pagination';
+import ReviewModal from '../../../components/modal/ReviewModal';
 import { formatDate } from '../../../utils/dateUtils';
 
 const ReviewListTab = ({ reviews, companyId, onReviewAdded }) => {
