@@ -37,8 +37,7 @@ public class AdminController {
 
         return adminService.adminSearchResumes(resumeTitle, resumeCategory, resumeJobType, sortOrderBy, isDESC);
     }
-
-
+  
     @GetMapping("/job-applications")
     public List<JobApplication> adminSearchJobApplications(@PathVariable String userName,
                                                            @PathVariable String companyName,

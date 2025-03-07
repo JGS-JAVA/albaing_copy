@@ -51,5 +51,6 @@ public interface ReviewMapper {
 
     // 자회사 댓글 삭제
     Integer checkCommentBelongsToCompany(Map<String, Object> params);
+
     int deleteCommentByCompany(Map<String, Object> params);
 }
