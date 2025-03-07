@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 
 const ReviewModal = ({ companyId, onClose, onSubmit }) => {
     const [reviewTitle, setReviewTitle] = useState("");
@@ -22,10 +23,41 @@ const ReviewModal = ({ companyId, onClose, onSubmit }) => {
         setError("");
 
         try {
-            await onSubmit({ reviewTitle, reviewContent, companyId });
+            console.log("리뷰 작성 요청 데이터:", {
+                companyId: parseInt(companyId),
+                reviewTitle,
+                reviewContent
+            });
+
+            // 직접 API 호출
+            const response = await axios.post(`/api/companies/${companyId}/reviews`, {
+                companyId: parseInt(companyId),
+                reviewTitle,
+                reviewContent
+            }, {
+                withCredentials: true
+            });
+
+            console.log("리뷰 작성 응답:", response.data);
+
+            if (typeof onSubmit === 'function') {
+                await onSubmit({
+                    companyId: parseInt(companyId),
+                    reviewTitle,
+                    reviewContent
+                });
+            }
+
             onClose();
         } catch (err) {
-            setError(err.message || "리뷰 작성 중 오류가 발생했습니다.");
+            console.error("리뷰 작성 오류:", err);
+            console.error("오류 응답:", err.response);
+
+            if (err.response?.status === 401) {
+                setError("리뷰를 작성하려면 로그인이 필요합니다.");
+            } else {
+                setError(err.response?.data?.message || "리뷰 작성 중 오류가 발생했습니다.");
+            }
             setLoading(false);
         }
     };
@@ -39,7 +71,11 @@ const ReviewModal = ({ companyId, onClose, onSubmit }) => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="p-6">
-                    {error && <div className="mb-4 text-red-700">{error}</div>}
+                    {error && (
+                        <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
+                            {error}
+                        </div>
+                    )}
 
                     <input
                         type="text"

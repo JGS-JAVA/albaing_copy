@@ -74,16 +74,16 @@ const ReviewManagement = () => {
         fetchReviews();
     }, [companyId, isLoggedIn, navigate, userData, userType]);
 
-    // 댓글 작성
+// 댓글 작성
     const handleCommentSubmit = (e) => {
         e.preventDefault();
         if (!commentInput.trim() || !selectedReview) return;
 
         axios.post(`/api/companies/${companyId}/reviews/${selectedReview.reviewId}/comments`, {
+            reviewId: selectedReview.reviewId,
             commentContent: commentInput
         }, { withCredentials: true })
             .then(() => {
-                // 새로고침하여 새 댓글 반영
                 fetchReviewDetails(selectedReview.reviewId);
                 setCommentInput('');
             })
