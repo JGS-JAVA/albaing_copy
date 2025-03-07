@@ -3,7 +3,7 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 
 
-const CompanyReview = () => {
+const ReviewDetail = () => {
     const {companyId,reviewId} = useParams();
     const [review, setReview] = useState(null);
     const [comments, setComments] = useState([]);
@@ -79,4 +79,4 @@ const CompanyReview = () => {
     );
 };
 
-export default CompanyReview;
+export default ReviewDetail;
