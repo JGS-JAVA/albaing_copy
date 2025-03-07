@@ -23,111 +23,126 @@ public class AuthServiceImpl implements AuthService {
     private CompanyMapper companyMapper;
 
     @Autowired
-    private ResumeService resumeService;
-
-    @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
     private VerificationServiceImpl verificationService;
 
-    // 유저 로그인
     @Override
     public Map<String, Object> loginUser(String userEmail, String userPassword) {
         Map<String, Object> result = new HashMap<>();
+        Map<String, Object> param = new HashMap<>();
+        param.put("userEmail", userEmail);
 
-        try {
-            Map<String, Object> param = new HashMap<>();
-            param.put("userEmail", userEmail);
+        // ✅ 기존의 loginUser 사용
+        User loggedInUser = userMapper.loginUser(param);
 
-            User loggedInUser = userMapper.loginUser(param);
-
-            // 사용자가 존재하지 않는 경우
-            if (loggedInUser == null) {
-                result.put("status", "fail");
-                result.put("message", "존재하지 않는 사용자입니다.");
-                return result;
-            }
-
-            boolean matches = passwordEncoder.matches(userPassword, loggedInUser.getUserPassword());
-
-            if (matches) {
-                result.put("status", "success");
-                result.put("user", loggedInUser);
-            } else {
-                result.put("status", "fail");
-                result.put("message", "이메일 또는 비밀번호가 올바르지 않습니다.");
-            }
-        } catch (Exception e) {
-            result.put("status", "error");
-            result.put("message", "로그인 중 오류가 발생했습니다: " + e.getMessage());
+        if (loggedInUser == null) {
+            result.put("status", "fail");
+            result.put("message", "존재하지 않는 사용자입니다.");
+            return result;
         }
 
+        if (!passwordEncoder.matches(userPassword, loggedInUser.getUserPassword())) {
+            result.put("status", "fail");
+            result.put("message", "이메일 또는 비밀번호가 올바르지 않습니다.");
+            return result;
+        }
+
+        result.put("status", "success");
+        result.put("user", loggedInUser);
         return result;
     }
 
-    // 기업 로그인
     @Override
     public Map<String, Object> loginCompany(String companyEmail, String companyPassword) {
         Map<String, Object> result = new HashMap<>();
+        Map<String, Object> param = new HashMap<>();
+        param.put("companyEmail", companyEmail);
 
-        try {
-            Map<String, Object> param = new HashMap<>();
-            param.put("companyEmail", companyEmail);
+        Company loggedInCompany = companyMapper.loginCompany(param);
 
-            Company loggedInCompany = companyMapper.loginCompany(param);
-
-            if (loggedInCompany == null) {
-                result.put("status", "fail");
-                result.put("message", "존재하지 않는 기업 계정입니다.");
-                return result;
-            }
-
-
-
-            boolean matches = passwordEncoder.matches(companyPassword, loggedInCompany.getCompanyPassword());
-
-            if (matches) {
-                result.put("status", "success");
-                result.put("company", loggedInCompany);
-            } else {
-                result.put("status", "fail");
-                result.put("message", "이메일 또는 비밀번호가 올바르지 않습니다.");
-            }
-        } catch (Exception e) {
-            result.put("status", "error");
-            result.put("message", "로그인 중 오류가 발생했습니다: " + e.getMessage());
+        if (loggedInCompany == null) {
+            result.put("status", "fail");
+            result.put("message", "존재하지 않는 기업 계정입니다.");
+            return result;
         }
 
+        if (!passwordEncoder.matches(companyPassword, loggedInCompany.getCompanyPassword())) {
+            result.put("status", "fail");
+            result.put("message", "이메일 또는 비밀번호가 올바르지 않습니다.");
+            return result;
+        }
+
+        result.put("status", "success");
+        result.put("company", loggedInCompany);
         return result;
     }
 
-    // 유저 회원가입
     @Override
-    public void registerUser(User user) {
+    public Map<String, Object> registerUser(User user) {
+        Map<String, Object> response = new HashMap<>();
+
+        if (user.getUserEmail() == null || user.getUserEmail().trim().isEmpty()) {
+            response.put("status", "fail");
+            response.put("message", "이메일은 필수 입력값입니다.");
+            return response;
+        }
+        if (user.getUserPassword() == null || user.getUserPassword().trim().isEmpty()) {
+            response.put("status", "fail");
+            response.put("message", "비밀번호는 필수 입력값입니다.");
+            return response;
+        }
+        if (user.getUserName() == null || user.getUserName().trim().isEmpty()) {
+            response.put("status", "fail");
+            response.put("message", "이름은 필수 입력값입니다.");
+            return response;
+        }
+
+        if (user.getKakaoId() != null && !user.getKakaoId().trim().isEmpty()) {
+            verificationService.markEmailAsVerified(user.getUserEmail());
+        }
+
         if (!verificationService.isEmailVerified(user.getUserEmail())) {
-            throw new IllegalArgumentException("이메일 인증이 완료되지 않았습니다.");
+            response.put("status", "fail");
+            response.put("message", "이메일 인증이 완료되지 않았습니다. 인증을 먼저 완료해주세요.");
+            return response;
         }
 
-        validateUserInput(user);
+        try {
+            // 기본값 설정
+            if (user.getUserCreatedAt() == null) {
+                user.setUserCreatedAt(LocalDateTime.now());
+            }
+            if (user.getUserUpdatedAt() == null) {
+                user.setUserUpdatedAt(LocalDateTime.now());
+            }
+            if (user.getUserIsAdmin() == null) {
+                user.setUserIsAdmin(false);
+            }
 
-        String encodedPassword = passwordEncoder.encode(user.getUserPassword());
-        user.setUserPassword(encodedPassword);
+            // 비밀번호 암호화 후 저장
+            String encodedPassword = passwordEncoder.encode(user.getUserPassword());
+            user.setUserPassword(encodedPassword);
 
-        LocalDateTime now = LocalDateTime.now();
-        user.setUserCreatedAt(now);
-        user.setUserUpdatedAt(now);
+            // 회원가입 실행
+            userMapper.registerUser(user);
 
-        if (user.getUserIsAdmin() == null) {
-            user.setUserIsAdmin(false);
+            // 회원가입 완료 후 이메일 인증 정보 삭제
+            verificationService.removeEmailVerification(user.getUserEmail());
+
+            response.put("status", "success");
+            response.put("message", "회원가입이 성공적으로 완료되었습니다.");
+        } catch (Exception e) {
+            response.put("status", "error");
+            response.put("message", "회원가입 중 오류가 발생했습니다: " + e.getMessage());
+
+            e.printStackTrace();
         }
 
-        userMapper.registerUser(user);
-
-        resumeService.createResumeForUser(user);
+        return response;
     }
 
-    // 기업 회원가입
     @Override
     public void registerCompany(Company company) {
         if (!verificationService.isEmailVerified(company.getCompanyEmail())) {
@@ -150,7 +165,6 @@ public class AuthServiceImpl implements AuthService {
         companyMapper.registerCompany(company);
     }
 
-    // 유저 입력값 검증
     private void validateUserInput(User user) {
         if (user.getUserEmail() == null || user.getUserEmail().trim().isEmpty()) {
             throw new IllegalArgumentException("이메일은 필수 입력 사항입니다.");
@@ -187,7 +201,7 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-    // 기업 입력값 검증
+    // ✅ 기업 입력값 검증
     private void validateCompanyInput(Company company) {
         if (company.getCompanyRegistrationNumber() == null || company.getCompanyRegistrationNumber().trim().isEmpty()) {
             throw new IllegalArgumentException("사업자 등록번호는 필수 입력 사항입니다.");
@@ -211,35 +225,9 @@ public class AuthServiceImpl implements AuthService {
             throw new IllegalArgumentException("사업장 주소는 필수 입력 사항입니다.");
         }
 
-        // 사업자 등록번호 형식 검증
         String registrationNumberRegex = "^\\d{3}-\\d{2}-\\d{5}$";
         if (!company.getCompanyRegistrationNumber().matches(registrationNumberRegex)) {
             throw new IllegalArgumentException("유효하지 않은 사업자 등록번호 형식입니다. (예: 123-45-67890)");
-        }
-
-        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
-        if (!company.getCompanyEmail().matches(emailRegex)) {
-            throw new IllegalArgumentException("유효하지 않은 이메일 형식입니다.");
-        }
-
-        String passwordRegex = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{8,}$";
-        if (!company.getCompanyPassword().matches(passwordRegex)) {
-            throw new IllegalArgumentException("비밀번호는 최소 8자 이상이며, 숫자와 특수문자를 포함해야 합니다.");
-        }
-
-        String nameRegex = "^[가-힣]{2,}$";
-        if (!company.getCompanyOwnerName().matches(nameRegex)) {
-            throw new IllegalArgumentException("대표자 이름은 최소 2자 이상 한글이어야 합니다.");
-        }
-
-        Date today = new Date();
-        if (company.getCompanyOpenDate().after(today)) {
-            throw new IllegalArgumentException("개업일은 미래 날짜일 수 없습니다.");
-        }
-
-        String phoneRegex = "^\\d{2,3}-\\d{3,4}-\\d{4}$";
-        if (!company.getCompanyPhone().matches(phoneRegex)) {
-            throw new IllegalArgumentException("유효하지 않은 전화번호 형식입니다. (예: 02-1234-5678)");
         }
     }
 }

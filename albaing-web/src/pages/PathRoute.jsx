@@ -42,6 +42,8 @@ function PathRoute() {
         <BrowserRouter>
             <Routes>
                 {/* 모든 사용자 접근 가능 */}
+
+                <Route path="/k" element={<MainLayout><KakaoLogin /></MainLayout>} /> {/* 메인 홈페이지 */}
                 <Route path="/" element={<MainLayout><Home /></MainLayout>} /> {/* 메인 홈페이지 */}
                 <Route path="/login" element={<MainLayout><Login /></MainLayout>} /> {/* 로그인 페이지 */}
                 <Route path="/register" element={<MainLayout><RegisterPage /></MainLayout>} /> {/* 회원가입 선택 페이지 */}

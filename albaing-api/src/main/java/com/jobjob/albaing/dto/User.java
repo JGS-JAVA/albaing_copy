@@ -29,6 +29,7 @@ public class User {
     private LocalDateTime userUpdatedAt;
     private Boolean userTermsAgreement;
     private Boolean userIsAdmin;
+    private String kakaoId;
 
     public enum Gender {
         male, female
