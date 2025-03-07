@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {useNavigate, useParams} from "react-router-dom";
 import {useAuth} from "../../contexts/AuthContext";
+import {ErrorMessage, LoadingSpinner} from "../../components/common";
 
 
 const CompanyManage = () => {
@@ -83,14 +84,8 @@ const CompanyManage = () => {
         window.location.href = '/jobs/new';
     };
 
-    if (loading) {
-        return <div className="flex justify-center items-center h-screen">Loading...</div>;
-    }
-
-    if (error) {
-        return <div className="flex justify-center items-center h-screen text-red-500">{error}</div>;
-    }
-
+    if (loading) return <LoadingSpinner message="로딩 중..." fullScreen={false} />
+    if (error) return <ErrorMessage message={error} />
     return (
         <div className="flex h-screen bg-gray-100">
             {/* 사이드바 */}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import {ErrorMessage, LoadingSpinner} from "../../components/common";
 
 
 export default function JobPostDetail() {
@@ -32,16 +33,9 @@ export default function JobPostDetail() {
             });
     }, [jobPostId]);
 
-    if (loading)
-        return <p className="text-center text-gray-500 mt-8">로딩 중...</p>;
-    if (error)
-        return <p className="text-center text-red-500 mt-8">{error}</p>;
-    if (!jobPost)
-        return (
-            <p className="text-center text-gray-500 mt-8">
-                해당 공고를 찾을 수 없습니다.
-            </p>
-        );
+    if (loading) return <LoadingSpinner message="로딩 중..." fullScreen={false} />
+    if (error) return <ErrorMessage message={error} />
+    if (!jobPost) return <div className="text-center py-10">해당 공고를 찾을 수 없습니다.</div>
 
     return (
         <div className="p-6 max-w-4xl mx-auto bg-white rounded shadow-md mt-10">

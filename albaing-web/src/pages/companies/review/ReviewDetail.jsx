@@ -1,6 +1,7 @@
 import {useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import axios from "axios";
+import {ErrorMessage, LoadingSpinner} from "../../../components/common";
 
 
 const ReviewDetail = () => {
@@ -118,11 +119,10 @@ const ReviewDetail = () => {
         }
     };
 
-    if (loading) return <div className="text-center py-10">로딩 중...</div>;
+    if (loading) return <LoadingSpinner message="로딩 중..." />
+    if (error) return <ErrorMessage message={error} />
+    if (!review) return <div className="text-center py-10">리뷰를 찾을 수 없습니다.</div>
 
-    if (error) return <div className="text-center py-10 text-red-500">{error}</div>;
-
-    if (!review) return <div className="text-center py-10">리뷰를 찾을 수 없습니다.</div>;
 
     return (
         <div className="max-w-3xl mx-auto px-4 py-8">
