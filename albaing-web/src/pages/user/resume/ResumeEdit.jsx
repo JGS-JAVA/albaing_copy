@@ -1,9 +1,10 @@
 import {useState, useEffect} from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
 import {useAuth} from '../../../contexts/AuthContext';
-import EducationModal from '../../../components/EducationModal';
-import CareerModal from '../../../components/CareerModal';
+import EducationModal from '../../../components/modal/EducationModal';
+import CareerModal from '../../../components/modal/CareerModal';
 import apiResumeService from "../../../service/apiResumeService";
+import {ErrorMessage, LoadingSpinner, SuccessMessage} from "../../../components/common";
 
 const ResumeEdit = () => {
     const [resumeData, setResumeData] = useState({
@@ -213,12 +214,7 @@ const ResumeEdit = () => {
     };
 
     if (loading) {
-        return (
-            <div className="flex justify-center items-center min-h-screen">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-                <p className="ml-3 text-lg text-gray-700">이력서 정보를 불러오는 중...</p>
-            </div>
-        );
+        return <LoadingSpinner message="이력서 정보를 불러오는 중..." />;
     }
 
     return (
@@ -228,41 +224,8 @@ const ResumeEdit = () => {
                 <p className="text-gray-600">이력서를 수정하여 다양한 일자리에 지원해보세요.</p>
             </div>
 
-            {error && (
-                <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
-                    <div className="flex">
-                        <div className="flex-shrink-0">
-                            <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd"
-                                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                                      clipRule="evenodd"/>
-                            </svg>
-                        </div>
-                        <div className="ml-3">
-                            <p className="font-medium">오류가 발생했습니다</p>
-                            <p>{error}</p>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {success && (
-                <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 rounded">
-                    <div className="flex">
-                        <div className="flex-shrink-0">
-                            <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd"
-                                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                      clipRule="evenodd"/>
-                            </svg>
-                        </div>
-                        <div className="ml-3">
-                            <p className="font-medium">저장 완료!</p>
-                            <p>이력서가 성공적으로 저장되었습니다. 잠시 후 이력서 페이지로 이동합니다.</p>
-                        </div>
-                    </div>
-                </div>
-            )}
+            {error && <ErrorMessage message={error} />}
+            {success && <SuccessMessage message="이력서가 성공적으로 저장되었습니다. 잠시 후 이력서 페이지로 이동합니다." />}
 
             {/* 섹션 네비게이션 */}
             <div className="mb-8 bg-white rounded-lg shadow-sm p-2 flex flex-wrap justify-between">

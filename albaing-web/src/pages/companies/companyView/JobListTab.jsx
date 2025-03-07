@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import Pagination from '../../../components/Pagination';
+import Pagination from '../../../components/common/Pagination';
 import { formatDate } from '../../../utils/dateUtils';
 
 const JobListTab = ({ jobPosts }) => {
