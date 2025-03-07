@@ -24,8 +24,7 @@ public class AdminController {
                                        @PathVariable String sortOrderBy,
                                        @PathVariable Boolean isDESC) {
 
-        List<User> usersSearchResults = adminService.adminSearchUsers(userName, userEmail, userPhone, sortOrderBy, isDESC);
-        return usersSearchResults;
+        return adminService.adminSearchUsers(userName, userEmail, userPhone, sortOrderBy, isDESC);
     }
 
     // 이력서 검색
@@ -35,8 +34,8 @@ public class AdminController {
                                            @PathVariable String resumeJobType,
                                            @PathVariable String sortOrderBy,
                                            @PathVariable Boolean isDESC) {
-        List<Resume> resumesSearchResults = adminService.adminSearchResumes(resumeTitle, resumeCategory, resumeJobType, sortOrderBy, isDESC);
-        return resumesSearchResults;
+
+        return adminService.adminSearchResumes(resumeTitle, resumeCategory, resumeJobType, sortOrderBy, isDESC);
     }
 
 
@@ -47,8 +46,7 @@ public class AdminController {
                                                            @PathVariable String sortOrderBy,
                                                            @PathVariable Boolean isDESC) {
 
-        List<JobApplication> jobApplicationsSearchResults = adminService.adminSearchJobApplications(userName, companyName, jobPostTitle, sortOrderBy, isDESC);
-        return jobApplicationsSearchResults;
+        return adminService.adminSearchJobApplications(userName, companyName, jobPostTitle, sortOrderBy, isDESC);;
     }
 
     @GetMapping("/companies")
@@ -59,12 +57,7 @@ public class AdminController {
                                               @PathVariable String sortOrderBy,
                                               @PathVariable Boolean isDESC) {
 
-        List<Company> companiesSearchResults = adminService.adminSearchCompanies(companyName, companyOwnerName, companyPhone, companyRegistrationNumber, sortOrderBy, isDESC);
-        return companiesSearchResults;
-
-        // 최적화를 생각하면서 다시 짜야하나?
-        // SQL 에서 이중으로 JOIN 문 사용과 단순 SELECT 3번 조회와 어느쪽이 더 
-
+        return adminService.adminSearchCompanies(companyName, companyOwnerName, companyPhone, companyRegistrationNumber, sortOrderBy, isDESC);
     }
 
     @GetMapping("/job-posts")
@@ -73,8 +66,9 @@ public class AdminController {
                                              @PathVariable String jobPostStatus,
                                              @PathVariable String sortOrderBy,
                                              @PathVariable Boolean isDESC) {
-
-        List<JobPost> jobPostsSearchResults = adminService.adminSearchJobPosts(companyName, jobPostTitle, jobPostStatus, sortOrderBy, isDESC);
-        return jobPostsSearchResults;
+        return adminService.adminSearchJobPosts(companyName, jobPostTitle, jobPostStatus, sortOrderBy, isDESC);
     }
+
+    @GetMapping("/")
+
 }
