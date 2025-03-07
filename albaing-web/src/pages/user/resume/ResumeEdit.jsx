@@ -3,7 +3,7 @@ import {useNavigate, useLocation} from 'react-router-dom';
 import {useAuth} from '../../../contexts/AuthContext';
 import EducationModal from '../../../components/EducationModal';
 import CareerModal from '../../../components/CareerModal';
-import apiResumeService from "./apiResumeService";
+import apiResumeService from "../../../service/apiResumeService";
 
 const ResumeEdit = () => {
     const [resumeData, setResumeData] = useState({
