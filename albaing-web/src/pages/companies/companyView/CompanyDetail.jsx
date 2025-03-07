@@ -5,7 +5,7 @@ import CompanyTabs from './CompanyTabs';
 import CompanyInfoTab from './CompanyInfoTab';
 import JobListTab from './JobListTab';
 import ReviewListTab from './ReviewListTab';
-import companyService from './companyService';
+import companyService from '../../../service/companyService';
 
 const CompanyDetail = () => {
     const { companyId } = useParams();
