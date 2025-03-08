@@ -33,9 +33,7 @@ export default function JobPostDetail() {
                 if (response.data) {
                     setJobPost(response.data);
                     if (isLoggedIn && userType === "personal") {
-                        const scrapedPosts = JSON.parse(
-                            localStorage.getItem("scrapedPosts") || "[]"
-                        );
+                        const scrapedPosts = JSON.parse(localStorage.getItem("scrapedPosts") || "[]");
                         if (scrapedPosts.includes(Number(jobPostId))) {
                             setIsScraped(true);
                         }
@@ -84,8 +82,7 @@ export default function JobPostDetail() {
             .then((response) => {
                 if (response.data && Array.isArray(response.data)) {
                     const hasApplied = response.data.some(
-                        (application) =>
-                            Number(application.jobPostId) === Number(jobPostId)
+                        (application) => Number(application.jobPostId) === Number(jobPostId)
                     );
                     setAlreadyApplied(hasApplied);
                 }
@@ -108,6 +105,7 @@ export default function JobPostDetail() {
         navigate("/resumes");
     };
 
+    // 지원하기 버튼 클릭 시
     const handleApply = () => {
         if (!isLoggedIn) {
             showModal("로그인 후 이용 가능합니다.", "alert");
@@ -117,6 +115,14 @@ export default function JobPostDetail() {
             showModal("기업 회원은 지원할 수 없습니다.", "alert");
             return;
         }
+
+        // 추가: 공고가 비활성화거나 마감일이 지났다면 alert
+        // jobPostStatus가 false이거나, 마감일이 현재보다 이전/같으면 비활성화로 간주
+        if (!jobPost?.jobPostStatus || new Date(jobPost.jobPostDueDate) <= new Date()) {
+            showModal("비활성화되거나 마감된 공고입니다.", "alert");
+            return;
+        }
+
         if (!resumeId) {
             showModal("이력서가 없습니다. 작성하러 가시겠습니까?", "resume-confirm");
             return;
@@ -131,7 +137,6 @@ export default function JobPostDetail() {
     const confirmApply = () => {
         closeModal();
         if (!isLoggedIn || userType !== "personal" || !resumeId) return;
-        // jobPostId와 resumeId만 전송 (applicationAt, approveStatus 제거)
         const applicationData = {
             jobPostId: Number(jobPostId),
             resumeId: Number(resumeId)
@@ -150,7 +155,6 @@ export default function JobPostDetail() {
             .catch((error) => {
                 console.error("지원 API 오류:", error);
                 let errorMessage = "지원 중 오류가 발생했습니다. 다시 시도해주세요.";
-                // 서버에서 JSON 형태로 { message: "이미 지원한 공고입니다." } 반환 시 사용
                 if (error.response && error.response.data && error.response.data.message) {
                     errorMessage = error.response.data.message;
                 }
@@ -181,15 +185,12 @@ export default function JobPostDetail() {
         setIsScraped(!isScraped);
     };
 
-    if (loading)
-        return <LoadingSpinner message="로딩 중..." fullScreen={false} />;
+    if (loading) return <LoadingSpinner message="로딩 중..." fullScreen={false} />;
     if (error) return <ErrorMessage message={error} />;
-    if (!jobPost)
-        return <div className="text-center py-10">해당 공고를 찾을 수 없습니다.</div>;
+    if (!jobPost) return <div className="text-center py-10">해당 공고를 찾을 수 없습니다.</div>;
 
     return (
         <div className="max-w-4xl mx-auto px-4 py-8 relative">
-            {/* 개인 사용자 전용 스크랩 버튼 */}
             {isLoggedIn && userType === "personal" && (
                 <button
                     className={`absolute top-10 right-6 p-2 rounded-full ${
@@ -218,7 +219,6 @@ export default function JobPostDetail() {
             )}
 
             <div className="bg-white rounded-lg shadow p-6">
-                {/* 상단: 제목 및 주요 정보 */}
                 <div className="border-b pb-4 mb-4">
                     <h2 className="text-3xl font-bold text-gray-800 mb-2">
                         {jobPost.jobPostTitle || "제목 없음"}
@@ -245,7 +245,6 @@ export default function JobPostDetail() {
                     </div>
                 </div>
 
-                {/* 세부 정보 */}
                 <div className="mb-4 space-y-1 text-sm text-gray-600">
                     <p>
                         <strong>기업 ID:</strong> {jobPost.companyId || "-"}
@@ -264,7 +263,6 @@ export default function JobPostDetail() {
                     </p>
                 </div>
 
-                {/* 이미지 영역 */}
                 {jobPost.jobPostOptionalImage && (
                     <div className="mt-4">
                         <img
@@ -280,7 +278,6 @@ export default function JobPostDetail() {
                     </div>
                 )}
 
-                {/* 지원하기 버튼 */}
                 <div className="mt-6 flex justify-center">
                     <button
                         onClick={handleApply}
@@ -295,7 +292,6 @@ export default function JobPostDetail() {
                 </div>
             </div>
 
-            {/* 모달 */}
             {modal.show && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg p-6 max-w-md w-full">
