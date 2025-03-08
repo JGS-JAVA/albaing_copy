@@ -36,4 +36,26 @@
         WHERE resume_id = #{resumeId}
         AND approve_status = #{approveStatus}
     </select>
+
+    <!-- 기업 사용자가 채용공고별 지원자 목록 조회 -->
+    <select id="getJobApplicationsByJobPostId">
+        SELECT *
+        FROM JOB_APPLICATIONS
+        WHERE job_post_id = #{jobPostId}
+    </select>
+
+    <!-- 지원 상태 변경 -->
+    <update id="updateJobApplicationStatus">
+        UPDATE JOB_APPLICATIONS
+        SET approve_status = #{approveStatus}
+        WHERE job_application_id = #{jobApplicationId}
+    </update>
+
+    <!-- (선택사항) 채용공고별 지원자 수 조회 -->
+    <select id="countApplicationsByJobPost" resultType="int">
+        SELECT COUNT(*)
+        FROM JOB_APPLICATIONS
+        WHERE job_post_id = #{jobPostId}
+    </select>
+
 </mapper>
