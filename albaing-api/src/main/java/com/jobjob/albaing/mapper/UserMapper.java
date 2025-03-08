@@ -1,8 +1,5 @@
 package com.jobjob.albaing.mapper;
 
-import com.jobjob.albaing.dto.CareerHistory;
-import com.jobjob.albaing.dto.EducationHistory;
-import com.jobjob.albaing.dto.Resume;
 import com.jobjob.albaing.dto.User;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -19,6 +16,9 @@ public interface UserMapper {
 
     // 유저 로그인
     User loginUser(Map<String, Object> param);
+
+    // 유저 존재여부 확인
+    boolean isUserExist(String email);
 
     // 마이페이지- 사용자 정보 조회
     User getUserById(int userId);
