@@ -1,5 +1,6 @@
 package com.jobjob.albaing.controller;
 
+import com.jobjob.albaing.dto.User;
 import com.jobjob.albaing.service.AuthServiceImpl;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpServletRequest;
@@ -102,35 +103,40 @@ public class KakaoAPIController {
         String birthday = kakaoAccount.getOrDefault("birthday", "").toString();
 
         // 4️⃣ DB에서 가입 여부 확인 (AuthService에서 처리)
-
         if (authService.isUserExist(email)) {
-            HttpSession session = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getSession();
-            session.setAttribute("userEmail", email);
-            return new RedirectView("http://localhost:3000/"); // 가입한 사용자는 세션 가지고 메인으로 리다이렉트
-        } else {
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if (attributes != null) {
+                HttpServletRequest request = attributes.getRequest();
+                HttpSession session = request.getSession();
 
+                // ✅ 로그인한 사용자 정보 가져오기
+                User loggedInUser = authService.getUserByEmail(email);
 
-            // ✅ `kakaoId` 포함하여 프론트로 전달
-            String frontendRedirectUri = "http://localhost:3000/register/person"
-                    + "?nickname=" + URLEncoder.encode(nickname, StandardCharsets.UTF_8)
-                    + "&email=" + email
-                    + "&kakaoId=" + kakaoId;
+                // ✅ 세션에 사용자 정보 저장 (일반 로그인과 동일)
+                session.setAttribute("userSession", loggedInUser);
 
-            if (gender != null) {
-                frontendRedirectUri += "&gender=" + gender;
+                return new RedirectView("http://localhost:3000/"); // 가입한 사용자는 메인으로 리다이렉트
             }
-            if (birthday != null) {
-                frontendRedirectUri += "&birthday=" + birthday;
-            }
-            if (profileImg != null) {
-                frontendRedirectUri += "&profileImage=" + URLEncoder.encode(profileImg, StandardCharsets.UTF_8);
-            }
-
-            return new RedirectView(frontendRedirectUri); // 미가입 사용자는 회원가입으로 리다이렉트
-            /*
-                     }
-
-             */
         }
+
+        // ✅ `kakaoId` 포함하여 프론트로 전달
+        String frontendRedirectUri = "http://localhost:3000/register/person"
+                + "?nickname=" + URLEncoder.encode(nickname, StandardCharsets.UTF_8)
+                + "&email=" + email
+                + "&kakaoId=" + kakaoId;
+
+        if (!gender.isEmpty()) {
+            frontendRedirectUri += "&gender=" + gender;
+        }
+        if (!birthday.isEmpty()) {
+            frontendRedirectUri += "&birthday=" + birthday;
+        }
+        if (!profileImg.isEmpty()) {
+            frontendRedirectUri += "&profileImage=" + URLEncoder.encode(profileImg, StandardCharsets.UTF_8);
+        }
+
+        return new RedirectView(frontendRedirectUri); // 미가입 사용자는 회원가입으로 리다이렉트
     }
 }
+
+

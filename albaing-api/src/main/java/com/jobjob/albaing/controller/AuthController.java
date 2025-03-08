@@ -106,4 +106,19 @@ public class AuthController {
         response.put("message", "로그아웃 되었습니다.");
         return ResponseEntity.ok(response);
     }
+
+    // 계정 로그인 상태확인 (세션)
+    @GetMapping("/checkLogin")
+    public ResponseEntity<?> checkLogin(HttpSession session) {
+        User loginUser = (User) session.getAttribute("userSession");
+        Company loginCompany = (Company) session.getAttribute("companySession");
+
+        if (loginUser != null) {
+            return ResponseEntity.ok(loginUser);
+        } else if (loginCompany != null) {
+            return ResponseEntity.ok(loginCompany);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "로그인 상태가 아닙니다."));
+        }
+    }
 }

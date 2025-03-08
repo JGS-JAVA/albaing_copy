@@ -35,4 +35,6 @@ public interface AuthService {
     void registerCompany(Company company);
 
     boolean isUserExist(String email);
+
+    User getUserByEmail(String email);
 }
