@@ -33,4 +33,8 @@ public interface AuthService {
      * @param company 회원가입할 기업 객체
      */
     void registerCompany(Company company);
+
+    boolean isUserExist(String email);
+
+    User getUserByEmail(String email);
 }

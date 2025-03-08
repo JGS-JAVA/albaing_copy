@@ -165,6 +165,17 @@ public class AuthServiceImpl implements AuthService {
         companyMapper.registerCompany(company);
     }
 
+    // 유저 존재유무 확인
+    @Override
+    public boolean isUserExist(String email) {
+        return userMapper.isUserExist(email);
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        return userMapper.getUserByEmail(email);
+    }
+
     private void validateUserInput(User user) {
         if (user.getUserEmail() == null || user.getUserEmail().trim().isEmpty()) {
             throw new IllegalArgumentException("이메일은 필수 입력 사항입니다.");
