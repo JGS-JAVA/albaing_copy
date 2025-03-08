@@ -24,6 +24,14 @@ public class JobApplicationServiceImpl implements JobApplicationService {
 
     @Override
     public void userApplyForJob(JobApplication jobApplication) {
+        // 중복 지원 체크: 같은 job_post_id와 resume_id 조합이 이미 존재하는지 확인
+        int count = jobApplicationMapper.countByJobPostIdAndResumeId(
+                jobApplication.getJobPostId(),
+                jobApplication.getResumeId());
+        if(count > 0) {
+            // 중복 지원이면 예외 발생, 컨트롤러의 ExceptionHandler에서 JSON 응답으로 전환됨
+            throw new RuntimeException("이미 지원한 공고입니다.");
+        }
         jobApplicationMapper.userApplyForJob(jobApplication);
     }
 
@@ -36,4 +44,10 @@ public class JobApplicationServiceImpl implements JobApplicationService {
     public int countApplicationsByJobPost(int jobPostId) {
         return jobApplicationMapper.countApplicationsByJobPost(jobPostId);
     }
+
+    @Override
+    public List<JobApplication> getApplicationsByCompany(int companyId) {
+        return jobApplicationMapper.getApplicationsByCompany(companyId);
+    }
+    
 }

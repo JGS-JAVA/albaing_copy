@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {Link, useNavigate, useParams} from "react-router-dom";
-import {useAuth} from "../../contexts/AuthContext";
-import {ErrorMessage, LoadingSpinner} from "../../components/common";
-
+import { ErrorMessage, LoadingSpinner } from "../../components/common";
+import { useAuth } from "../../contexts/AuthContext";
 
 const CompanyManage = () => {
     const { companyId } = useParams();
     const navigate = useNavigate();
-
     const { isLoggedIn, userType, userData } = useAuth();
 
     const [activeTab, setActiveTab] = useState('dashboard');
@@ -19,59 +17,39 @@ const CompanyManage = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        // 아직 로그인 상태를 확인할 수 없는 경우, 리턴하여 네비게이션 방지
+        // 로그인 및 기업 사용자 여부 체크
         if (isLoggedIn === null || userData === null) return;
-
-        // 로그인 여부 체크
         if (!isLoggedIn) {
             navigate('/login');
             return;
         }
-
-        // 기업 사용자 여부 체크
         if (userType !== 'company') {
             navigate('/');
             return;
         }
-
-        // 본인 회사인지 체크 (userData가 로딩될 때까지 대기)
         if (userData && userData.companyId && parseInt(companyId) !== userData.companyId) {
             navigate(`/company/manage/${userData.companyId}`);
             return;
         }
 
-        // 데이터 로딩 시작
         setLoading(true);
-        axios.get(`/api/companies/${companyId}`, { withCredentials: true })
+        axios.get(`http://localhost:8080/api/companies/${companyId}`, { withCredentials: true })
             .then(companyRes => {
                 setCompanyData(companyRes.data);
-
-                return axios.get(`/api/jobs/company/${companyId}`, { withCredentials: true })
-                    .catch(jobError => jobError.response?.status === 404 ? { data: [] } : Promise.reject(jobError));
+                return axios.get(`http://localhost:8080/api/jobs/company/${companyId}`, { withCredentials: true });
             })
-            .then(jobsRes => {
-                setJobPosts(jobsRes.data);
-
-                return axios.get(`/api/applications/company/${companyId}`, { withCredentials: true })
-                    .catch(appError => appError.response?.status === 404 ? { data: [] } : Promise.reject(appError));
+            .then(jobRes => {
+                setJobPosts(jobRes.data);
+                // 회사 기준 지원자 목록 조회
+                return axios.get(`http://localhost:8080/api/applications/company/${companyId}`, { withCredentials: true });
             })
-            .then(appsRes => {
-                setApplications(appsRes.data);
+            .then(appRes => {
+                setApplications(appRes.data); // JobApplication 리스트 (조인 필드 포함)
                 setLoading(false);
             })
             .catch(err => {
                 console.error("데이터 로딩 오류:", err);
-                setError(
-                    err.response
-                        ? ({
-                            404: '요청한 회사 정보를 찾을 수 없습니다.',
-                            403: '해당 회사 정보에 접근 권한이 없습니다.',
-                            500: '서버 내부 오류가 발생했습니다.'
-                        }[err.response.status] || '데이터를 불러오는 중 예상치 못한 오류가 발생했습니다.')
-                        : err.request
-                            ? '서버로부터 응답을 받지 못했습니다. 네트워크 연결을 확인해주세요.'
-                            : '데이터 처리 중 오류가 발생했습니다.'
-                );
+                setError("데이터를 불러오는 중 오류가 발생했습니다.");
                 setLoading(false);
             });
     }, [companyId, isLoggedIn, navigate, userData, userType]);
@@ -84,8 +62,26 @@ const CompanyManage = () => {
         window.location.href = '/jobs/new';
     };
 
+    const updateApplicantStatus = (applicationId, newStatus) => {
+        axios.put(`http://localhost:8080/api/applications/${applicationId}`, { approveStatus: newStatus }, { withCredentials: true })
+            .then(() => {
+                setApplications(prev =>
+                    prev.map(app =>
+                        app.jobApplicationId === applicationId
+                            ? { ...app, approveStatus: newStatus }
+                            : app
+                    )
+                );
+            })
+            .catch(err => {
+                console.error("지원자 상태 업데이트 오류:", err);
+            });
+    };
+
+
     if (loading) return <LoadingSpinner message="로딩 중..." fullScreen={false} />
     if (error) return <ErrorMessage message={error} />
+
     return (
         <div className="flex h-screen bg-gray-100">
             {/* 사이드바 */}
@@ -315,7 +311,7 @@ const CompanyManage = () => {
                                                     onClick={() => {
                                                         const newStatus = !job.jobPostStatus;
                                                         axios
-                                                            .patch(`/api/jobs/${job.jobPostId}/status?status=${newStatus}`)
+                                                            .patch(`http://localhost:8080/api/jobs/${job.jobPostId}/status?status=${newStatus}`)
                                                             .then(() => {
                                                                 // 상태 업데이트
                                                                 const updatedJobs = [...jobPosts];
@@ -348,19 +344,17 @@ const CompanyManage = () => {
                     </div>
                 )}
 
-                {/* 지원자 관리 탭 */}
                 {activeTab === 'applications' && (
                     <div>
                         <h1 className="text-3xl font-bold text-gray-800 mb-6">지원자 관리</h1>
-
                         {applications.length > 0 ? (
                             <div className="bg-white rounded-lg shadow overflow-hidden">
                                 <table className="min-w-full divide-y divide-gray-200">
                                     <thead>
                                     <tr>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">지원자 성함</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">제목</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">지원하신 날짜</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">공고 제목</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">지원 날짜</th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상태</th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                     </tr>
@@ -369,38 +363,61 @@ const CompanyManage = () => {
                                     {applications.map((app, index) => (
                                         <tr
                                             key={index}
-                                            className={app.viewed ? 'hover:bg-gray-50' : 'bg-blue-50 hover:bg-blue-100'}
+                                            className="hover:bg-gray-50" // viewed 여부 대신 상태나 다른 조건에 따라 색칠 가능
                                         >
+                                            {/* 지원자 이름 */}
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                                 {app.applicantName}
                                             </td>
+
+                                            {/* 공고 제목 */}
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 {app.jobPostTitle}
                                             </td>
+
+                                            {/* 지원 날짜: applicationAt 사용 */}
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {new Date(app.appliedDate).toLocaleDateString()}
+                                                {new Date(app.applicationAt).toLocaleDateString()}
                                             </td>
+
+                                            {/* 상태: approveStatus 사용 */}
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                    <span
-                                                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                                            app.status === 'PENDING'
-                                                                ? 'bg-yellow-100 text-yellow-800'
-                                                                : app.status === 'INTERVIEW'
-                                                                    ? 'bg-blue-100 text-blue-800'
-                                                                    : app.status === 'ACCEPTED'
-                                                                        ? 'bg-green-100 text-green-800'
-                                                                        : 'bg-red-100 text-red-800'
-                                                        }`}
-                                                    >
-                                                        {app.status}
-                                                    </span>
+                  <span
+                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          app.approveStatus === 'approving'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : app.approveStatus === 'approved'
+                                  ? 'bg-green-100 text-green-800'
+                                  : 'bg-red-100 text-red-800'
+                      }`}
+                  >
+                    {app.approveStatus === 'approving'
+                        ? '대기중'
+                        : app.approveStatus === 'approved'
+                            ? '합격'
+                            : '불합격'}
+                  </span>
                                             </td>
+
+                                            {/* Actions */}
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 <button
-                                                    onClick={() => window.location.href = `/company/applications/${app.applicationId}`}
+                                                    onClick={() => updateApplicantStatus(app.jobApplicationId, 'approved')}
+                                                    className="text-green-600 hover:text-green-800 mr-2"
+                                                >
+                                                    합격 처리
+                                                </button>
+                                                <button
+                                                    onClick={() => updateApplicantStatus(app.jobApplicationId, 'denied')}
+                                                    className="text-red-600 hover:text-red-800 mr-2"
+                                                >
+                                                    불합격 처리
+                                                </button>
+                                                <button
+                                                    onClick={() => window.location.href = `/company/applications/${app.jobApplicationId}`}
                                                     className="text-blue-600 hover:text-blue-900"
                                                 >
-                                                    View Details
+                                                    상세보기
                                                 </button>
                                             </td>
                                         </tr>

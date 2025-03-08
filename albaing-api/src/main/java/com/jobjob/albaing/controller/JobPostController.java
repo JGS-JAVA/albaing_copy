@@ -38,8 +38,8 @@ public class JobPostController {
 
     @PatchMapping("/{jobPostId}/status")
     public ResponseEntity<Void> updateJobPostStatus(
-        @PathVariable int jobPostId,
-        @RequestParam Boolean status
+            @PathVariable("jobPostId") int jobPostId,
+            @RequestParam("status") Boolean status
     ) {
         if (status == null) {
             return ResponseEntity.badRequest().build();
@@ -57,10 +57,9 @@ public class JobPostController {
 
     @PutMapping("/{jobPostId}")
     public ResponseEntity<JobPost> updateJobPost(
-            @PathVariable long jobPostId,
+            @PathVariable("jobPostId") long jobPostId,  // <-- 이름 명시
             @RequestBody JobPost updatedJobPost
     ) {
-        // 채용공고 수정 로직
         JobPost jobPost = jobPostService.updateJobPost(jobPostId, updatedJobPost);
         return ResponseEntity.ok(jobPost);
     }

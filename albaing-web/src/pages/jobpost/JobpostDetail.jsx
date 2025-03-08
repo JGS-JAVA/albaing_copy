@@ -5,26 +5,20 @@ import { ErrorMessage, LoadingSpinner } from "../../components/common";
 import { useAuth } from "../../contexts/AuthContext";
 
 export default function JobPostDetail() {
-    const { id: jobPostId } = useParams();
+    const { jobPostId } = useParams();
     const navigate = useNavigate();
     const { isLoggedIn, userType, userData } = useAuth();
 
     const [jobPost, setJobPost] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
-    // 모달 상태 관리
-    const [showModal, setShowModal] = useState(false);
-    const [modalMessage, setModalMessage] = useState("");
-    const [modalType, setModalType] = useState(""); // "confirm" 또는 "result"
+    const [resumeId, setResumeId] = useState(null);
+    const [modal, setModal] = useState({ show: false, message: "", type: "" });
     const [isScraped, setIsScraped] = useState(false);
+    const [alreadyApplied, setAlreadyApplied] = useState(false);
     const [applicationResult, setApplicationResult] = useState(null);
 
-    // 이미 지원한 공고인지 확인하는 상태
-    const [alreadyApplied, setAlreadyApplied] = useState(false);
-
     useEffect(() => {
-        // 채용공고 정보 불러오기
         if (!jobPostId) {
             console.error("jobPostId가 존재하지 않습니다.");
             setError("잘못된 접근입니다.");
@@ -32,17 +26,12 @@ export default function JobPostDetail() {
             return;
         }
 
-        // 로딩 상태를 먼저 설정
         setLoading(true);
-
-        // API 요청 시 오류 처리 개선
         axios
             .get(`http://localhost:8080/api/jobs/${jobPostId}`)
             .then((response) => {
                 if (response.data) {
                     setJobPost(response.data);
-
-                    // 스크랩 상태 확인 (개인 사용자만)
                     if (isLoggedIn && userType === "personal") {
                         const scrapedPosts = JSON.parse(
                             localStorage.getItem("scrapedPosts") || "[]"
@@ -50,14 +39,7 @@ export default function JobPostDetail() {
                         if (scrapedPosts.includes(Number(jobPostId))) {
                             setIsScraped(true);
                         }
-
-                        // 별도의 try-catch로 감싸서 이 부분에서 오류가 발생해도
-                        // 메인 화면 로딩에는 영향을 주지 않도록 함
-                        try {
-                            checkIfAlreadyApplied();
-                        } catch (err) {
-                            console.error("지원 내역 확인 중 오류:", err);
-                        }
+                        fetchResumeAndCheckApplication();
                     }
                 } else {
                     setError("공고 정보가 없습니다.");
@@ -71,166 +53,132 @@ export default function JobPostDetail() {
             });
     }, [jobPostId, isLoggedIn, userType, userData]);
 
-    // 이미 지원한 공고인지 확인하는 함수
-    const checkIfAlreadyApplied = () => {
-        if (!isLoggedIn || userType !== "personal" || !userData) {
+    function fetchResumeAndCheckApplication() {
+        if (!isLoggedIn || userType !== "personal" || !userData) return;
+        const userId = userData.data?.userId || userData.userId;
+        if (!userId) {
+            console.error("사용자 ID를 찾을 수 없습니다.");
             return;
         }
-
-        // userData 객체 구조 확인 로깅 추가
-        console.log("userData 구조:", userData);
-
-        // userData 구조에 따라 안전하게 접근
-        let resumeId;
-        if (userData.data && (userData.data.resumeId || userData.data.userId)) {
-            resumeId = userData.data.resumeId || userData.data.userId;
-        } else if (userData.resumeId || userData.userId) {
-            resumeId = userData.resumeId || userData.userId;
-        } else {
-            console.error("이력서 ID를 찾을 수 없습니다.");
-            return; // 이력서 ID가 없으면 API 호출하지 않음
-        }
-
         axios
-            .get(`http://localhost:8080/api/applications/check`, {
-                params: {
-                    resumeId: resumeId,
-                    jobPostId: jobPostId,
-                },
-            })
+            .get(`http://localhost:8080/api/resume/user/${userId}`)
             .then((response) => {
-                // 예: { applied: true } 형태의 응답 가정
-                if (response.data && response.data.applied) {
-                    setAlreadyApplied(true);
+                if (response.data && response.data.resumeId) {
+                    setResumeId(response.data.resumeId);
+                    checkAlreadyApplied(response.data.resumeId);
+                } else {
+                    console.log("이력서가 없습니다.");
+                    setResumeId(null);
+                }
+            })
+            .catch((error) => {
+                console.error("이력서 정보 확인 중 오류 발생:", error);
+                setResumeId(null);
+            });
+    }
+
+    function checkAlreadyApplied(currentResumeId) {
+        if (!currentResumeId || !jobPostId) return;
+        axios
+            .get(`http://localhost:8080/api/applications/resume/${currentResumeId}`)
+            .then((response) => {
+                if (response.data && Array.isArray(response.data)) {
+                    const hasApplied = response.data.some(
+                        (application) =>
+                            Number(application.jobPostId) === Number(jobPostId)
+                    );
+                    setAlreadyApplied(hasApplied);
                 }
             })
             .catch((error) => {
                 console.error("지원 내역 확인 중 오류 발생:", error);
-                // 에러가 발생해도 페이지 로딩은 계속 진행되도록 함
             });
+    }
+
+    const showModal = (message, type) => {
+        setModal({ show: true, message, type });
     };
 
-    // 지원하기 함수
+    const closeModal = () => {
+        setModal({ show: false, message: "", type: "" });
+    };
+
+    const goToResumeCreation = () => {
+        closeModal();
+        navigate("/resumes");
+    };
+
     const handleApply = () => {
         if (!isLoggedIn) {
-            setModalMessage("로그인 후 이용 가능합니다.");
-            setModalType("alert");
-            setShowModal(true);
+            showModal("로그인 후 이용 가능합니다.", "alert");
             return;
         }
-
         if (userType === "company") {
-            setModalMessage("기업 회원은 지원할 수 없습니다.");
-            setModalType("alert");
-            setShowModal(true);
+            showModal("기업 회원은 지원할 수 없습니다.", "alert");
             return;
         }
-
-        // 개인 유저인데 이력서 정보가 없으면 이력서 작성 페이지로 리디렉션
-        if (!userData?.data?.resumeId) {
-            navigate("/resumes/new");
+        if (!resumeId) {
+            showModal("이력서가 없습니다. 작성하러 가시겠습니까?", "resume-confirm");
             return;
         }
-
         if (alreadyApplied) {
-            setModalMessage("이미 지원한 공고입니다.");
-            setModalType("alert");
-            setShowModal(true);
+            showModal("이미 지원한 공고입니다.", "alert");
             return;
         }
-
-        // 지원 확인 모달 표시
-        setModalMessage("정말 이 공고에 지원하시겠습니까?");
-        setModalType("confirm");
-        setShowModal(true);
+        showModal("정말 이 공고에 지원하시겠습니까?", "confirm");
     };
 
-    // 지원 확인 처리
     const confirmApply = () => {
-        setShowModal(false);
-
-        if (!isLoggedIn || userType !== "personal" || !userData) {
-            return;
-        }
-
-        let resumeId;
-        if (userData.data && (userData.data.resumeId || userData.data.userId)) {
-            resumeId = userData.data.resumeId || userData.data.userId;
-        } else if (userData.resumeId || userData.userId) {
-            resumeId = userData.resumeId || userData.userId;
-        } else {
-            setApplicationResult({
-                success: false,
-                message: "이력서 정보를 찾을 수 없습니다.",
-            });
-            setModalType("result");
-            setShowModal(true);
-            return;
-        }
-
+        closeModal();
+        if (!isLoggedIn || userType !== "personal" || !resumeId) return;
+        // jobPostId와 resumeId만 전송 (applicationAt, approveStatus 제거)
         const applicationData = {
-            jobPostId: jobPostId,
-            resumeId: resumeId,
-            applicationAt: new Date().toISOString(),
-            approveStatus: "PENDING", // 초기 상태는 대기중
+            jobPostId: Number(jobPostId),
+            resumeId: Number(resumeId)
         };
-
         axios
             .post("http://localhost:8080/api/applications", applicationData)
             .then((response) => {
+                console.log("지원 성공:", response.data);
                 setAlreadyApplied(true);
                 setApplicationResult({
                     success: true,
-                    message: "지원 성공! 건투를 빕니다.",
+                    message: "지원 성공! 건투를 빕니다."
                 });
-                setModalType("result");
-                setShowModal(true);
+                setModal({ show: true, message: "", type: "result" });
             })
             .catch((error) => {
                 console.error("지원 API 오류:", error);
+                let errorMessage = "지원 중 오류가 발생했습니다. 다시 시도해주세요.";
+                // 서버에서 JSON 형태로 { message: "이미 지원한 공고입니다." } 반환 시 사용
+                if (error.response && error.response.data && error.response.data.message) {
+                    errorMessage = error.response.data.message;
+                }
                 setApplicationResult({
                     success: false,
-                    message: "지원 중 오류가 발생했습니다. 다시 시도해주세요.",
+                    message: errorMessage
                 });
-                setModalType("result");
-                setShowModal(true);
+                setModal({ show: true, message: "", type: "result" });
             });
     };
 
-    // 스크랩 토글 함수
     const toggleScrap = () => {
         if (!isLoggedIn) {
-            setModalMessage("로그인 후 이용 가능합니다.");
-            setModalType("alert");
-            setShowModal(true);
+            showModal("로그인 후 이용 가능합니다.", "alert");
             return;
         }
-
         if (userType !== "personal") {
-            setModalMessage("개인 회원만 스크랩할 수 있습니다.");
-            setModalType("alert");
-            setShowModal(true);
+            showModal("개인 회원만 스크랩할 수 있습니다.", "alert");
             return;
         }
-
-        const scrapedPosts = JSON.parse(localStorage.getItem("scrapedPosts") || "[]");
-
+        let scrapedPosts = JSON.parse(localStorage.getItem("scrapedPosts") || "[]");
         if (isScraped) {
-            const updatedScraps = scrapedPosts.filter(
-                (id) => id !== Number(jobPostId)
-            );
-            localStorage.setItem("scrapedPosts", JSON.stringify(updatedScraps));
-            setIsScraped(false);
+            scrapedPosts = scrapedPosts.filter((id) => id !== Number(jobPostId));
         } else {
             scrapedPosts.push(Number(jobPostId));
-            localStorage.setItem("scrapedPosts", JSON.stringify(scrapedPosts));
-            setIsScraped(true);
         }
-    };
-
-    // 모달 닫기 함수
-    const closeModal = () => {
-        setShowModal(false);
+        localStorage.setItem("scrapedPosts", JSON.stringify(scrapedPosts));
+        setIsScraped(!isScraped);
     };
 
     if (loading)
@@ -241,10 +189,10 @@ export default function JobPostDetail() {
 
     return (
         <div className="max-w-4xl mx-auto px-4 py-8 relative">
-            {/* 스크랩 버튼 (개인 사용자 전용) */}
+            {/* 개인 사용자 전용 스크랩 버튼 */}
             {isLoggedIn && userType === "personal" && (
                 <button
-                    className={`absolute top-10 left-6 p-2 rounded-full ${
+                    className={`absolute top-10 right-6 p-2 rounded-full ${
                         isScraped
                             ? "bg-yellow-400 text-white"
                             : "bg-gray-200 text-gray-600"
@@ -348,13 +296,13 @@ export default function JobPostDetail() {
             </div>
 
             {/* 모달 */}
-            {showModal && (
+            {modal.show && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg p-6 max-w-md w-full">
-                        {modalType === "confirm" ? (
+                        {modal.type === "confirm" && (
                             <>
                                 <h3 className="text-xl font-semibold mb-4">지원 확인</h3>
-                                <p className="mb-6">{modalMessage}</p>
+                                <p className="mb-6">{modal.message}</p>
                                 <div className="flex justify-end space-x-3">
                                     <button
                                         className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition"
@@ -370,11 +318,34 @@ export default function JobPostDetail() {
                                     </button>
                                 </div>
                             </>
-                        ) : modalType === "result" ? (
+                        )}
+                        {modal.type === "resume-confirm" && (
+                            <>
+                                <h3 className="text-xl font-semibold mb-4">이력서 확인</h3>
+                                <p className="mb-6">{modal.message}</p>
+                                <div className="flex justify-end space-x-3">
+                                    <button
+                                        className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition"
+                                        onClick={closeModal}
+                                    >
+                                        아니오
+                                    </button>
+                                    <button
+                                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                                        onClick={goToResumeCreation}
+                                    >
+                                        예
+                                    </button>
+                                </div>
+                            </>
+                        )}
+                        {modal.type === "result" && (
                             <>
                                 <h3
                                     className={`text-xl font-semibold mb-4 ${
-                                        applicationResult?.success ? "text-green-500" : "text-red-500"
+                                        applicationResult?.success
+                                            ? "text-green-500"
+                                            : "text-red-500"
                                     }`}
                                 >
                                     {applicationResult?.success ? "지원 완료" : "지원 실패"}
@@ -389,10 +360,11 @@ export default function JobPostDetail() {
                                     </button>
                                 </div>
                             </>
-                        ) : (
+                        )}
+                        {modal.type === "alert" && (
                             <>
                                 <h3 className="text-xl font-semibold mb-4">알림</h3>
-                                <p className="mb-6">{modalMessage}</p>
+                                <p className="mb-6">{modal.message}</p>
                                 <div className="flex justify-end">
                                     <button
                                         className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
