@@ -163,7 +163,9 @@ const RegisterPerson = () => {
         setLoading(true);
         setError("");
 
-        const kakaoId = new URLSearchParams(window.location.search).get("kakaoId");
+        const params = new URLSearchParams(window.location.search);
+        const kakaoId = params.get("kakaoId");
+        const naverId = params.get("naverId");
 
         const requestData = {
             userEmail,
@@ -175,8 +177,9 @@ const RegisterPerson = () => {
             userAddress,
             userProfileImage,
             userTermsAgreement,
-            emailVerified: kakaoId ? true : emailVerified,
-            kakaoId
+            emailVerified: kakaoId || naverId ? true : emailVerified,
+            kakaoId,
+            naverId
         };
 
         console.log("회원가입 요청 데이터:", requestData);
