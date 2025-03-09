@@ -1,18 +1,22 @@
 package com.jobjob.albaing.controller;
 
 import com.jobjob.albaing.dto.User;
-import com.jobjob.albaing.mapper.UserMapper;
+import com.jobjob.albaing.service.AuthServiceImpl;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.net.URLEncoder;
@@ -20,115 +24,119 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-import jakarta.servlet.http.HttpSession;
-
-@Controller
+@RestController
 @RequestMapping("/oauth/naver")
 public class NaverAPIController {
 
     @Autowired
-    private UserMapper userMapper;
+    private AuthServiceImpl authService;
 
     @Value("${naver.client-id}")
     private String naverClientId;
 
+    @Value("${naver.redirect-url}")
+    private String redirectUrl;
+
     @Value("${naver.client-secret}")
     private String naverClientSecret;
 
-    @Value("${naver.redirect-url}")
-    private String naverRedirectUrl;
-
     @GetMapping("/login")
-    public ResponseEntity<?> getNaverLoginUrl() {
-        String url = "https://nid.naver.com/oauth2.0/authorize?response_type=code" +
-                "&client_id=" + naverClientId + "&redirect_uri=" + naverRedirectUrl +
-                "&state=xyz123";
-        return ResponseEntity.ok(url);
+    public RedirectView getNaverLoginUrl() {
+        String naverAuthUrl = "https://nid.naver.com/oauth2.0/authorize?response_type=code" +
+                "&client_id=" + naverClientId +
+                "&redirect_uri=" + redirectUrl +
+                "&scope=profile_nickname,profile_image,account_email,name,gender,birthday";
+
+        return new RedirectView(naverAuthUrl);
     }
 
     @GetMapping("/callback")
-    public RedirectView handleCallback(@RequestParam("code") String code,
-                                       @RequestParam("state") String state) {
-        try {
-            RestTemplate restTemplate = new RestTemplate();
+    public RedirectView handleCallback(@RequestParam("code") String code) {
+        RestTemplate restTemplate = new RestTemplate();
 
-            // 1. 네이버에서 액세스 토큰 요청
-            String tokenUrl = "https://nid.naver.com/oauth2.0/token"
-                    + "?grant_type=authorization_code"
-                    + "&client_id=" + naverClientId
-                    + "&client_secret=" + naverClientSecret
-                    + "&code=" + code
-                    + "&state=" + state;
+        // 1️⃣ 네이버 토큰 요청
+        String tokenUrl = "https://nid.naver.com/oauth2.0/token";
 
-            ResponseEntity<Map> tokenResponse = restTemplate.getForEntity(tokenUrl, Map.class);
+        LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("grant_type", "authorization_code");
+        params.add("client_id", naverClientId);
+        params.add("redirect_uri", redirectUrl);
+        params.add("code", code);
+        params.add("client_secret", naverClientSecret);
 
-            if (tokenResponse.getBody() == null || !tokenResponse.getBody().containsKey("access_token")) {
-                return new RedirectView("http://localhost:3000/error?message=Failed to get access token");
-            }
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/x-www-form-urlencoded");
 
-            String accessToken = (String) tokenResponse.getBody().get("access_token");
+        HttpEntity<LinkedMultiValueMap<String, String>> tokenRequest = new HttpEntity<>(params, headers);
+        Map<String, Object> tokenResponse = restTemplate.postForObject(tokenUrl, tokenRequest, Map.class);
 
-            // 2. 네이버 사용자 정보 요청
-            String userInfoUrl = "https://openapi.naver.com/v1/nid/me";
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Authorization", "Bearer " + accessToken);
-
-            HttpEntity<String> userRequest = new HttpEntity<>(headers);
-            ResponseEntity<Map> userResponse = restTemplate.postForEntity(userInfoUrl, userRequest, Map.class);
-
-            if (userResponse.getBody() == null || !userResponse.getBody().containsKey("response")) {
-                return new RedirectView("http://localhost:3000/error?message=Failed to fetch user info");
-            }
-
-            Map<String, Object> userInfo = (Map<String, Object>) userResponse.getBody().get("response");
-
-            // 3. 사용자 정보 파싱
-            String name = (String) userInfo.get("name");
-            String nickname = (String) userInfo.get("nickname");
-            String email = (String) userInfo.get("email");
-            String gender = (String) userInfo.get("gender");
-            String birthday = (String) userInfo.get("birthday");
-            String profileImage = (String) userInfo.get("profile_image");
-
-            // 4. DB에서 사용자 존재 여부 확인
-            try {
-                Map<String, Object> param = new HashMap<>();
-                param.put("userEmail", email);
-                User existingUser = userMapper.loginUser(param);
-
-                if (existingUser != null) {
-                    HttpSession session = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getSession();
-                    session.setAttribute("userSession", existingUser);
-                    return new RedirectView("http://localhost:3000/");
-                } else {
-                    StringBuilder frontendRedirectUri = new StringBuilder("http://localhost:3000/register/person");
-                    frontendRedirectUri.append("?name=").append(URLEncoder.encode(name, StandardCharsets.UTF_8));
-                    frontendRedirectUri.append("&email=").append(email);
-
-                    if (nickname != null && !nickname.isEmpty()) {
-                        frontendRedirectUri.append("&nickname=").append(URLEncoder.encode(nickname, StandardCharsets.UTF_8));
-                    }
-                    if (gender != null && !gender.isEmpty()) {
-                        frontendRedirectUri.append("&gender=").append(gender);
-                    }
-                    if (birthday != null && !birthday.isEmpty()) {
-                        frontendRedirectUri.append("&birthday=").append(birthday);
-                    }
-                    if (profileImage != null && !profileImage.isEmpty()) {
-                        frontendRedirectUri.append("&profileImage=").append(URLEncoder.encode(profileImage, StandardCharsets.UTF_8));
-                    }
-
-                    return new RedirectView(frontendRedirectUri.toString());
-                }
-            } catch (Exception e) {
-                return new RedirectView("http://localhost:3000/error?message=Login failed: " + e.getMessage());
-            }
-        } catch (Exception e) {
-            System.err.println("🚨 네이버 로그인 처리 중 오류 발생: " + e.getMessage());
-            e.printStackTrace();
-            return new RedirectView("/error?message=네이버 로그인 오류 발생");
+        if (tokenResponse == null || !tokenResponse.containsKey("access_token")) {
+            return new RedirectView("http://localhost:3000/error?message=Failed to get access token");
         }
+
+        String accessToken = (String) tokenResponse.get("access_token");
+
+        // 2️⃣ 네이버 사용자 정보 요청
+        String userInfoUrl = "https://openapi.naver.com/v1/nid/me";
+        HttpHeaders userHeaders = new HttpHeaders();
+        userHeaders.add("Authorization", "Bearer " + accessToken);
+
+        HttpEntity<String> userRequest = new HttpEntity<>(userHeaders);
+        ResponseEntity<Map> userResponse = restTemplate.postForEntity(userInfoUrl, userRequest, Map.class);
+
+        if (userResponse.getBody() == null || !userResponse.getBody().containsKey("response")) {
+            return new RedirectView("http://localhost:3000/error?message=Failed to fetch user info");
+        }
+
+        // 3️⃣ 사용자 정보 파싱
+        Map<String, Object> userInfo = userResponse.getBody();
+        Map<String, Object> response = (Map<String, Object>) userInfo.get("response"); // ✅ response 키에서 데이터 가져오기
+
+        if (response == null) {
+            return new RedirectView("http://localhost:3000/error?message=Failed to parse user info");
+        }
+
+        String naverId = response.get("id") != null ? response.get("id").toString() : ""; // ✅ Null 체크
+        String nickname = response.get("nickname") != null ? response.get("nickname").toString() : "";
+        String profileImg = response.get("profile_image") != null ? response.get("profile_image").toString() : "";
+        String email = response.get("email") != null ? response.get("email").toString() : "";
+        String gender = response.get("gender") != null ? response.get("gender").toString() : "";
+        String birthday = response.get("birthday") != null ? response.get("birthday").toString() : "";
+
+// 4️⃣ DB에서 가입 여부 확인
+        if (authService.isUserExist(email)) {
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if (attributes != null) {
+                HttpServletRequest request = attributes.getRequest();
+                HttpSession session = request.getSession();
+
+                // ✅ 로그인한 사용자 정보 가져오기
+                User loggedInUser = authService.getUserByEmail(email);
+
+                // ✅ 세션에 사용자 정보 저장 (일반 로그인과 동일)
+                session.setAttribute("userSession", loggedInUser);
+
+                return new RedirectView("http://localhost:3000/"); // 가입한 사용자는 메인으로 리다이렉트
+            }
+        }
+
+// ✅ `naverId` 포함하여 프론트로 전달
+        String frontendRedirectUri = "http://localhost:3000/register/person"
+                + "?nickname=" + URLEncoder.encode(nickname, StandardCharsets.UTF_8)
+                + "&email=" + email
+                + "&naverId=" + naverId;
+
+        if (!gender.isEmpty()) {
+            frontendRedirectUri += "&gender=" + gender;
+        }
+        if (!birthday.isEmpty()) {
+            frontendRedirectUri += "&birthday=" + birthday;
+        }
+        if (!profileImg.isEmpty()) {
+            frontendRedirectUri += "&profileImage=" + URLEncoder.encode(profileImg, StandardCharsets.UTF_8);
+        }
+
+        return new RedirectView(frontendRedirectUri);
+
     }
 }
