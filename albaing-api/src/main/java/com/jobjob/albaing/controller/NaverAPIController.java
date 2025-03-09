@@ -45,14 +45,13 @@ public class NaverAPIController {
         String naverAuthUrl = "https://nid.naver.com/oauth2.0/authorize?response_type=code" +
                 "&client_id=" + naverClientId +
                 "&redirect_uri=" + redirectUrl +
-                "&state=xyz123";
+                "&scope=profile_nickname,profile_image,account_email,name,gender,birthday";
 
         return new RedirectView(naverAuthUrl);
     }
 
     @GetMapping("/callback")
-    public RedirectView handleCallback(@RequestParam("code") String code,
-                                       @RequestParam("state") String state) {
+    public RedirectView handleCallback(@RequestParam("code") String code) {
         RestTemplate restTemplate = new RestTemplate();
 
         // 1️⃣ 네이버 토큰 요청
@@ -61,9 +60,9 @@ public class NaverAPIController {
         LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
         params.add("client_id", naverClientId);
-        params.add("client_secret", naverClientSecret);
+        params.add("redirect_uri", redirectUrl);
         params.add("code", code);
-        params.add("state", state);
+        params.add("client_secret", naverClientSecret);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/x-www-form-urlencoded");
@@ -90,46 +89,54 @@ public class NaverAPIController {
         }
 
         // 3️⃣ 사용자 정보 파싱
-        Map<String, Object> userInfo = (Map<String, Object>) userResponse.getBody().get("response");
-        String naverId = userInfo.get("id").toString();
-        String name = (String) userInfo.get("name");
-        String nickname = (String) userInfo.getOrDefault("nickname", "");
-        String email = (String) userInfo.getOrDefault("email", "");
-        String gender = (String) userInfo.getOrDefault("gender", "");
-        String birthday = (String) userInfo.getOrDefault("birthday", "");
-        String profileImage = (String) userInfo.getOrDefault("profile_image", "");
+        Map<String, Object> userInfo = userResponse.getBody();
+        Map<String, Object> response = (Map<String, Object>) userInfo.get("response"); // ✅ response 키에서 데이터 가져오기
 
-        // 4️⃣ DB에서 가입 여부 확인
+        if (response == null) {
+            return new RedirectView("http://localhost:3000/error?message=Failed to parse user info");
+        }
+
+        String naverId = response.get("id") != null ? response.get("id").toString() : ""; // ✅ Null 체크
+        String nickname = response.get("nickname") != null ? response.get("nickname").toString() : "";
+        String profileImg = response.get("profile_image") != null ? response.get("profile_image").toString() : "";
+        String email = response.get("email") != null ? response.get("email").toString() : "";
+        String gender = response.get("gender") != null ? response.get("gender").toString() : "";
+        String birthday = response.get("birthday") != null ? response.get("birthday").toString() : "";
+
+// 4️⃣ DB에서 가입 여부 확인
         if (authService.isUserExist(email)) {
             ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
             if (attributes != null) {
                 HttpServletRequest request = attributes.getRequest();
                 HttpSession session = request.getSession();
+
+                // ✅ 로그인한 사용자 정보 가져오기
                 User loggedInUser = authService.getUserByEmail(email);
+
+                // ✅ 세션에 사용자 정보 저장 (일반 로그인과 동일)
                 session.setAttribute("userSession", loggedInUser);
-                return new RedirectView("http://localhost:3000/");
+
+                return new RedirectView("http://localhost:3000/"); // 가입한 사용자는 메인으로 리다이렉트
             }
         }
 
-        // ✅ `naverId` 포함하여 프론트로 전달
+// ✅ `naverId` 포함하여 프론트로 전달
         String frontendRedirectUri = "http://localhost:3000/register/person"
-                + "?name=" + URLEncoder.encode(name, StandardCharsets.UTF_8)
+                + "?nickname=" + URLEncoder.encode(nickname, StandardCharsets.UTF_8)
                 + "&email=" + email
                 + "&naverId=" + naverId;
 
-        if (!nickname.isEmpty()) {
-            frontendRedirectUri += "&nickname=" + URLEncoder.encode(nickname, StandardCharsets.UTF_8);
-        }
         if (!gender.isEmpty()) {
             frontendRedirectUri += "&gender=" + gender;
         }
         if (!birthday.isEmpty()) {
             frontendRedirectUri += "&birthday=" + birthday;
         }
-        if (!profileImage.isEmpty()) {
-            frontendRedirectUri += "&profileImage=" + URLEncoder.encode(profileImage, StandardCharsets.UTF_8);
+        if (!profileImg.isEmpty()) {
+            frontendRedirectUri += "&profileImage=" + URLEncoder.encode(profileImg, StandardCharsets.UTF_8);
         }
 
         return new RedirectView(frontendRedirectUri);
+
     }
 }

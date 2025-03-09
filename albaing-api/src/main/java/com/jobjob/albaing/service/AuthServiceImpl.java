@@ -115,6 +115,10 @@ public class AuthServiceImpl implements AuthService {
             verificationService.markEmailAsVerified(user.getUserEmail());
         }
 
+        if (user.getNaverId() != null && !user.getNaverId().trim().isEmpty()) {
+            verificationService.markEmailAsVerified(user.getUserEmail());
+        }
+
         if (!verificationService.isEmailVerified(user.getUserEmail())) {
             response.put("status", "fail");
             response.put("message", "이메일 인증이 완료되지 않았습니다. 인증을 먼저 완료해주세요.");
