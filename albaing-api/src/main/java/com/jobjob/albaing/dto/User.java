@@ -30,6 +30,7 @@ public class User {
     private Boolean userTermsAgreement;
     private Boolean userIsAdmin;
     private String kakaoId;
+    private String naverId;
 
     public enum Gender {
         male, female

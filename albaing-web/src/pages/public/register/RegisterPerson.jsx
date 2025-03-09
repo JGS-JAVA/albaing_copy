@@ -4,6 +4,7 @@ import axios from "axios";
 import {ErrorMessage} from "../../../components/common";
 
 const RegisterPerson = () => {
+
     const [userName, setUserName] = useState("");
     const [userEmail, setUserEmail] = useState("");
     const [userPassword, setUserPassword] = useState("");
@@ -18,14 +19,15 @@ const RegisterPerson = () => {
     const [verificationCode, setVerificationCode] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-
     const navigate = useNavigate();
+
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
 
         const nicknameParam = params.get("nickname");
         const email = params.get("email");
         const kakaoId = params.get("kakaoId");
+        const naverId = params.get("naverId");
         const genderParam = params.get("gender");
         const birthdayParam = params.get("birthday");
         const profileImageParam = params.get("profileImage");
@@ -34,6 +36,7 @@ const RegisterPerson = () => {
         console.log("nickname:", nicknameParam);
         console.log("email:", email);
         console.log("kakaoId:", kakaoId);
+        console.log("naverId:", naverId);
 
         setUserName(nicknameParam || "");
         setUserEmail(email || "");
@@ -41,6 +44,11 @@ const RegisterPerson = () => {
 
         if (email && kakaoId) {
             console.log("✅ 카카오 로그인 사용자 감지 → 이메일 인증 자동 완료");
+            setEmailVerified(true);
+        }
+
+        if (email && naverId) {
+            console.log("✅ 네이버 로그인 사용자 감지 → 이메일 인증 자동 완료");
             setEmailVerified(true);
         }
 
@@ -73,7 +81,7 @@ const RegisterPerson = () => {
                 alert("인증번호가 이메일로 발송되었습니다.");
             })
             .catch(error => {
-                setError(`인증번호 발송 실패: ${error.response?.data?.message || "알 수 없는 오류가 발생했습니다."}`);
+                setError(`RegisterPerson : 인증번호 발송 실패: ${error.response?.data?.message || "알 수 없는 오류가 발생했습니다."}`);
                 console.error("인증번호 발송 오류:", error);
             })
             .finally(() => {
@@ -155,7 +163,9 @@ const RegisterPerson = () => {
         setLoading(true);
         setError("");
 
-        const kakaoId = new URLSearchParams(window.location.search).get("kakaoId");
+        const params = new URLSearchParams(window.location.search);
+        const kakaoId = params.get("kakaoId");
+        const naverId = params.get("naverId");
 
         const requestData = {
             userEmail,
@@ -167,8 +177,9 @@ const RegisterPerson = () => {
             userAddress,
             userProfileImage,
             userTermsAgreement,
-            emailVerified: kakaoId ? true : emailVerified,
-            kakaoId
+            emailVerified: kakaoId || naverId ? true : emailVerified,
+            kakaoId,
+            naverId
         };
 
         console.log("회원가입 요청 데이터:", requestData);

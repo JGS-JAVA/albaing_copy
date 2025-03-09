@@ -5,6 +5,7 @@ import com.jobjob.albaing.dto.User;
 import com.jobjob.albaing.mapper.CompanyMapper;
 import com.jobjob.albaing.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,14 +19,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private UserMapper userMapper;
-
     @Autowired
     private CompanyMapper companyMapper;
-
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
-
     @Autowired
+    @Lazy
     private VerificationServiceImpl verificationService;
 
     @Override
@@ -34,7 +33,6 @@ public class AuthServiceImpl implements AuthService {
         Map<String, Object> param = new HashMap<>();
         param.put("userEmail", userEmail);
 
-        // ✅ 기존의 loginUser 사용
         User loggedInUser = userMapper.loginUser(param);
 
         if (loggedInUser == null) {
@@ -83,6 +81,20 @@ public class AuthServiceImpl implements AuthService {
     public Map<String, Object> registerUser(User user) {
         Map<String, Object> response = new HashMap<>();
 
+        // ✅ 이메일 중복 체크
+        if (isUserExist(user.getUserEmail())) {
+            response.put("status", "fail");
+            response.put("message", "이미 가입한 이메일입니다.");
+            return response;
+        }
+
+        // ✅ 전화번호 중복 체크
+        if (isUserPhoneExist(user.getUserPhone())) {
+            response.put("status", "fail");
+            response.put("message", "이미 가입한 전화번호입니다.");
+            return response;
+        }
+
         if (user.getUserEmail() == null || user.getUserEmail().trim().isEmpty()) {
             response.put("status", "fail");
             response.put("message", "이메일은 필수 입력값입니다.");
@@ -100,6 +112,10 @@ public class AuthServiceImpl implements AuthService {
         }
 
         if (user.getKakaoId() != null && !user.getKakaoId().trim().isEmpty()) {
+            verificationService.markEmailAsVerified(user.getUserEmail());
+        }
+
+        if (user.getNaverId() != null && !user.getNaverId().trim().isEmpty()) {
             verificationService.markEmailAsVerified(user.getUserEmail());
         }
 
@@ -145,6 +161,17 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void registerCompany(Company company) {
+
+        // ✅ 이메일 중복 체크
+        if (companyMapper.isCompanyExist(company.getCompanyEmail())) {
+            throw new IllegalArgumentException("이미 가입한 이메일입니다.");
+        }
+
+        // ✅ 전화번호 중복 체크
+        if (companyMapper.isCompanyPhoneExist(company.getCompanyPhone())) {
+            throw new IllegalArgumentException("이미 가입한 전화번호입니다.");
+        }
+
         if (!verificationService.isEmailVerified(company.getCompanyEmail())) {
             throw new IllegalArgumentException("이메일 인증이 완료되지 않았습니다.");
         }
@@ -163,6 +190,32 @@ public class AuthServiceImpl implements AuthService {
         }
 
         companyMapper.registerCompany(company);
+    }
+
+
+    @Override
+    public boolean isUserExist(String email) {
+        return userMapper.isUserExist(email);
+    }
+
+    @Override
+    public boolean isCompanyExist(String email) {
+        return companyMapper.isCompanyExist(email);
+    }
+
+    @Override
+    public boolean isUserPhoneExist(String userPhone) {
+        return userMapper.isUserPhoneExist(userPhone);
+    }
+
+    @Override
+    public boolean isCompanyPhoneExist(String companyPhone) {
+        return companyMapper.isCompanyPhoneExist(companyPhone);
+    }
+
+    @Override
+    public User getUserByEmail(String email) { // KakaoAPIController 에서 필요
+        return userMapper.getUserByEmail(email);
     }
 
     private void validateUserInput(User user) {
