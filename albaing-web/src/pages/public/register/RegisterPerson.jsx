@@ -27,6 +27,7 @@ const RegisterPerson = () => {
         const nicknameParam = params.get("nickname");
         const email = params.get("email");
         const kakaoId = params.get("kakaoId");
+        const naverId = params.get("naverId");
         const genderParam = params.get("gender");
         const birthdayParam = params.get("birthday");
         const profileImageParam = params.get("profileImage");
@@ -35,6 +36,7 @@ const RegisterPerson = () => {
         console.log("nickname:", nicknameParam);
         console.log("email:", email);
         console.log("kakaoId:", kakaoId);
+        console.log("naverId:", naverId);
 
         setUserName(nicknameParam || "");
         setUserEmail(email || "");
@@ -42,6 +44,11 @@ const RegisterPerson = () => {
 
         if (email && kakaoId) {
             console.log("✅ 카카오 로그인 사용자 감지 → 이메일 인증 자동 완료");
+            setEmailVerified(true);
+        }
+
+        if (email && naverId) {
+            console.log("✅ 네이버 로그인 사용자 감지 → 이메일 인증 자동 완료");
             setEmailVerified(true);
         }
 
