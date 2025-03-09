@@ -39,7 +39,6 @@
         SELECT user_id, user_email, user_password, user_name
         FROM users
         WHERE user_email = #{userEmail}
-
     </select>
 
     <!-- 유저 존재여부 확인 -->
@@ -49,11 +48,19 @@
         WHERE user_email = #{userEmail}
     </select>
 
-    <!-- 전화번호 존재여부 확인 -->
+    <!-- 유저 전화번호 존재여부 확인 -->
     <select id="isUserPhoneExist" resultType="boolean">
         SELECT COUNT(*) > 0
         FROM users
         WHERE user_phone = #{userPhone}
+    </select>
+
+    <!-- 유저 이메일 찾기 -->
+    <select id="findUserEmail">
+        SELECT user_email
+        FROM users
+        WHERE user_name = #{userName}
+        AND user_phone = #{userPhone}
     </select>
 
 

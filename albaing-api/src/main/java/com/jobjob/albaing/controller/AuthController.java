@@ -3,8 +3,7 @@ package com.jobjob.albaing.controller;
 import com.jobjob.albaing.dto.Company;
 import com.jobjob.albaing.dto.User;
 import com.jobjob.albaing.model.vo.VerificationRequest;
-import com.jobjob.albaing.service.AuthService;
-import com.jobjob.albaing.service.VerificationService;
+import com.jobjob.albaing.service.AuthServiceImpl;
 import com.jobjob.albaing.service.VerificationServiceImpl;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,7 @@ import java.util.Map;
 public class AuthController {
 
     @Autowired
-    private AuthService authService;
+    private AuthServiceImpl authService;
 
     @Autowired
     private VerificationServiceImpl verificationService;
@@ -30,7 +29,7 @@ public class AuthController {
     public ResponseEntity<Map<String, Object>> registerUser(@RequestBody User user) {
         System.out.println("🚀 회원가입 요청: " + user);
 
-        // 📌 AuthService에서 회원가입 처리 (이메일 인증 포함)
+        // 📌 AuthServiceImpl 에서 회원가입 처리 (이메일 인증 포함)
         Map<String, Object> response = authService.registerUser(user);
 
         if ("success".equals(response.get("status"))) {
