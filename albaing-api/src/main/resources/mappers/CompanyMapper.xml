@@ -49,11 +49,19 @@
         WHERE company_email = #{companyEmail}
     </select>
 
-    <!-- 전화번호 존재여부 확인 -->
+    <!-- 기업 전화번호 존재여부 확인 -->
     <select id="isCompanyPhoneExist" resultType="boolean">
         SELECT COUNT(*) > 0
         FROM companies
         WHERE company_phone = #{companyPhone}
+    </select>
+
+    <!-- 기업 이메일 찾기 -->
+    <select id="findCompanyEmail">
+        SELECT company_email
+        FROM companies
+        WHERE company_name = #{companyName}
+          AND company_phone = #{companyPhone}
     </select>
 
     <!-- 기업 상세 정보 불러오기 -->

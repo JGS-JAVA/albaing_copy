@@ -21,6 +21,9 @@ public interface CompanyMapper {
     // 회사 전화번호 존재여부 확인
     boolean isCompanyPhoneExist(String companyPhone);
 
+    // 회사 이메일 찾기
+    Company findCompanyEmail(String companyName, String companyPhone);
+
     // 회사 상세 정보 불러오기
     Company companyDetail(long companyId);
   
