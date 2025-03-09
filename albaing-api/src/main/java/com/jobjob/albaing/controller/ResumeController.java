@@ -13,7 +13,6 @@ public class ResumeController {
     @Autowired
     private ResumeServiceImpl resumeService;
 
-
     // 2. 이력서 수정
     @PutMapping("/update/{resumeId}")
     public void updateResume(
@@ -31,11 +30,9 @@ public class ResumeController {
         return resumeService.resumeDetails(resumeId);
     }
 
-
     @GetMapping("/user/{userId}")
-    public Resume getResumeByUserId(@PathVariable int userId) {
+    public Resume getResumeByUserId(@PathVariable("userId") int userId) {
         return resumeService.getResumeByUserId(userId);
     }
-
 
 }

@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../contexts/AuthContext";
 
 export default function JobPostManage() {
     const [jobPosts, setJobPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+    const { userData } = useAuth();
 
     useEffect(() => {
         // 로그인한 회사의 채용공고만 가져오기
