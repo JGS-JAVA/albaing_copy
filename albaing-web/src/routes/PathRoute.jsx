@@ -15,13 +15,14 @@ import JobpostList from '../pages/jobpost/JobpostList';
 import Login from '../pages/auth/login/Login';
 import RegisterCompany from '../pages/auth/register/RegisterCompany';
 import RegisterPerson from '../pages/auth/register/RegisterPerson';
+import FindId from '../pages/auth/find/FindId';
+import ChangePassword from '../pages/auth/find/ChangePassword';
 import Resume from '../pages/user/resume/Resume';
 import ResumeEdit from '../pages/user/resume/ResumeEdit';
 import UserEdit from "../pages/user/mypage/UserEdit";
 import NotFound from "../components/layout/NotFound";
 import RegisterPage from "../pages/auth/register/RegisterPage";
 import ProtectedRoute from "./ProtectedRoute";
-import ReviewManage from "../pages/company/manage/reviews/ReviewManage";
 import CompanyDetail from "../pages/company/public/CompanyDetail";
 import KakaoLogin from "../pages/auth/teach-kakao/KakaoLogin";
 import NaverLogin from "../pages/auth/teach-naver/NaverLogin";
@@ -44,16 +45,19 @@ function PathRoute() {
         <BrowserRouter>
             <Routes>
                 {/* 모든 사용자 접근 가능 */}
-                <Route path="/k" element={<MainLayout><KakaoLogin /></MainLayout>} /> {/* 메인 홈페이지 */}
-                <Route path="/n" element={<MainLayout><NaverLogin /></MainLayout>} /> {/* 메인 홈페이지 */}
+                <Route path="/k" element={<MainLayout><KakaoLogin /></MainLayout>} /> {/* 메인 홈페이지에 카카오 로그인버튼 */}
+                <Route path="/n" element={<MainLayout><NaverLogin /></MainLayout>} /> {/* 메인 홈페이지에 네이버 로그인버튼 */}
                 <Route path="/" element={<MainLayout><Home /></MainLayout>} /> {/* 메인 홈페이지 */}
                 <Route path="/login" element={<MainLayout><Login /></MainLayout>} /> {/* 로그인 페이지 */}
                 <Route path="/register" element={<MainLayout><RegisterPage /></MainLayout>} /> {/* 회원가입 선택 페이지 */}
                 <Route path="/register/person" element={<MainLayout><RegisterPerson /></MainLayout>} /> {/* 개인 회원가입 페이지 */}
                 <Route path="/register/company" element={<MainLayout><RegisterCompany /></MainLayout>} /> {/* 기업 회원가입 페이지 */}
+                <Route path="/find/findId" element={<MainLayout><FindId /></MainLayout>} /> {/* 아이디 찾기 페이지 */}
+                <Route path="/find/changePassword" element={<MainLayout><ChangePassword /></MainLayout>} /> {/* 비밀번호 변경 페이지 */}
 
                 {/* 로그인한 모든 사용자 접근 가능 */}
                 <Route element={<ProtectedRoute/>}>
+                    <Route path="/find/findId" element={<MainLayout><FindId/></MainLayout>}/> {/* 아아디 찾기 페이지 */}
                     <Route path="/resumes" element={<MainLayout><Resume/></MainLayout>}/> {/* 이력서 조회 페이지 */}
                     <Route path="/companies/:companyId" element={<MainLayout><CompanyDetail/></MainLayout>}/> {/* 회사 상세 정보 페이지 */}
                     <Route path="/jobs" element={<MainLayout><JobpostList/></MainLayout>}/> {/* 채용공고 목록 페이지 */}
@@ -74,7 +78,6 @@ function PathRoute() {
                 {/* 기업 사용자만 접근 가능 */}
                 <Route element={<ProtectedRoute userTypeRequired="company"/>}>
                     <Route path="/company/manage/:companyId" element={<CompanyManage/>}/> {/* 회사 관리 메인 페이지 */}
-                    <Route path="/company/:companyId/reviews/manage" element={<ReviewManage/>}/> {/* 회사 리뷰 관리 페이지 */}
                     <Route path="/company/:companyId/reviews/:reviewId" element={<ReviewDetail/>}/> {/* 회사 리뷰 상세 페이지 */}
                     <Route path="/jobs/new" element={<MainLayout><JobpostAdd/></MainLayout>}/> {/* 채용공고 등록 페이지 */}
                     <Route path="/jobs/edit/:jobPostId" element={<MainLayout><JobpostEdit/></MainLayout>}/> {/* 채용공고 수정 페이지 */}

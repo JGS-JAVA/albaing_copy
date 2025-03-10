@@ -64,6 +64,14 @@
           AND company_phone = #{companyPhone}
     </select>
 
+    <!-- 기업 비밀번호 바꾸기 -->
+    <update id="updateCompanyPassword">
+        UPDATE companies
+        SET company_password = #{encodedPassword}
+        WHERE company_email = #{companyEmail}
+          AND company_phone = #{companyPhone}
+    </update>
+
     <!-- 기업 상세 정보 불러오기 -->
     <select id="companyDetail" resultType="Company">
         SELECT *

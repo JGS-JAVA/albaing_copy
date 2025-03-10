@@ -9,4 +9,8 @@ public interface FindService {
 
     Company findCompanyEmail(String companyName, String companyPhone);
 
+    void resetUserPassword(String userEmail, String userPhone, String newPassword);
+
+    void resetCompanyPassword(String companyEmail, String companyPhone, String newPassword);
+
 }

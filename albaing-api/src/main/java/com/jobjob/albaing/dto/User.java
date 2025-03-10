@@ -31,6 +31,7 @@ public class User {
     private Boolean userIsAdmin;
     private String kakaoId;
     private String naverId;
+    private String newPassword;
 
     public enum Gender {
         male, female

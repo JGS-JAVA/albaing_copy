@@ -63,6 +63,13 @@
         AND user_phone = #{userPhone}
     </select>
 
+    <!-- 유저 비밀번호 바꾸기 -->
+    <update id="updateUserPassword">
+        UPDATE users
+        SET user_password = #{encodedPassword}
+        WHERE user_email = #{userEmail}
+          AND user_phone = #{userPhone}
+    </update>
 
     <!-- 마이페이지 -사용자 정보 조회 -->
     <select id="getUserById">
