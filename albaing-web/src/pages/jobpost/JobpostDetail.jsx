@@ -32,11 +32,27 @@ export default function JobPostDetail() {
     // 채용 공고 데이터 로드
     function loadJobPostData() {
         setLoading(true);
+
+        // 채용공고 상세 정보 조회
         axios.get(`/api/jobs/${jobPostId}`, { withCredentials: true })
             .then((response) => {
                 if (response.data) {
-                    setJobPost(response.data);
-                    // 로그인한 개인 사용자라면 스크랩 여부 및 이력서/지원 정보 확인
+                    const jobData = response.data;
+                    setJobPost(jobData);
+
+                    if (jobData.companyId) {
+                        axios.get(`/api/companies/${jobData.companyId}`, { withCredentials: true })
+                            .then((companyResponse) => {
+                                if (companyResponse.data && companyResponse.data.companyName) {
+                                    setCompanyName(companyResponse.data.companyName);
+                                }
+                            })
+                            .catch(() => {
+                                // 회사 정보 조회 실패 시 기본값 유지
+                            });
+                    }
+
+                    // 로그인한 개인 사용자인 경우 스크랩 여부 확인 및 이력서/지원 정보 불러오기
                     if (isLoggedIn && userType === "personal") {
                         const scrapedPosts = JSON.parse(localStorage.getItem("scrapedPosts") || "[]");
                         if (scrapedPosts.includes(Number(jobPostId))) {
