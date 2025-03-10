@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './assets/styles/index.css';
-import PathRoute from "./pages/routes/PathRoute";
+import PathRoute from "./routes/PathRoute";
 import {AuthProvider} from "./contexts/AuthContext";
 
 

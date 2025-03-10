@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {Link, useNavigate, useParams} from "react-router-dom";
-import { ErrorMessage, LoadingSpinner } from "../../components/common";
-import { useAuth } from "../../contexts/AuthContext";
+import { ErrorMessage, LoadingSpinner } from "../../../components/common";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const CompanyManage = () => {
     const { companyId } = useParams();
