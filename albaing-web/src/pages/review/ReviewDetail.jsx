@@ -1,7 +1,7 @@
 import {useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import axios from "axios";
-import {ErrorMessage, LoadingSpinner} from "../../../components/common";
+import {ErrorMessage, LoadingSpinner} from "../../components/common";
 
 
 const ReviewDetail = () => {

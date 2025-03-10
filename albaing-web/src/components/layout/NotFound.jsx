@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import albaingLogo from '../assets/svg/albaing_logo.svg';
+import albaingLogo from '../../assets/svg/albaing_logo.svg';
 
 export default function NotFound() {
     return (

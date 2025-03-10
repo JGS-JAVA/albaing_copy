@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../../contexts/AuthContext';
+import { useAuth } from '../../../../contexts/AuthContext';
 
-const ReviewManagement = () => {
+const ReviewManage = () => {
     const { companyId } = useParams();
     const navigate = useNavigate();
     const { isLoggedIn, userType, userData } = useAuth();
@@ -317,4 +317,4 @@ const ReviewManagement = () => {
     );
 };
 
-export default ReviewManagement;
+export default ReviewManage;

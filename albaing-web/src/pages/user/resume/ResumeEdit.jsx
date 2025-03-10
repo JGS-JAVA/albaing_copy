@@ -1,8 +1,8 @@
 import {useState, useEffect} from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
 import {useAuth} from '../../../contexts/AuthContext';
-import EducationModal from '../../../components/modal/EducationModal';
-import CareerModal from '../../../components/modal/CareerModal';
+import EducationModal from '../../../components/modals/EducationModal';
+import CareerModal from '../../../components/modals/CareerModal';
 import apiResumeService from "../../../service/apiResumeService";
 import {ErrorMessage, LoadingSpinner, SuccessMessage} from "../../../components/common";
 
