@@ -17,21 +17,26 @@ export default function JobPostDetail() {
     const [isScraped, setIsScraped] = useState(false);
     const [alreadyApplied, setAlreadyApplied] = useState(false);
     const [applicationResult, setApplicationResult] = useState(null);
+    const [companyName, setCompanyName] = useState("");
 
     useEffect(() => {
         if (!jobPostId) {
-            console.error("jobPostId가 존재하지 않습니다.");
             setError("잘못된 접근입니다.");
             setLoading(false);
             return;
         }
 
+        loadJobPostData();
+    }, [jobPostId, isLoggedIn, userType, userData]);
+
+    // 채용 공고 데이터 로드
+    function loadJobPostData() {
         setLoading(true);
-        axios
-            .get(`/api/jobs/${jobPostId}`, { withCredentials: true })
+        axios.get(`/api/jobs/${jobPostId}`, { withCredentials: true })
             .then((response) => {
                 if (response.data) {
                     setJobPost(response.data);
+                    // 로그인한 개인 사용자라면 스크랩 여부 및 이력서/지원 정보 확인
                     if (isLoggedIn && userType === "personal") {
                         const scrapedPosts = JSON.parse(localStorage.getItem("scrapedPosts") || "[]");
                         if (scrapedPosts.includes(Number(jobPostId))) {
@@ -44,51 +49,40 @@ export default function JobPostDetail() {
                 }
                 setLoading(false);
             })
-            .catch((error) => {
-                console.error("API 오류:", error);
-                if (error.response) {
-                    if (error.response.status === 404) {
-                        setError("해당 채용 공고를 찾을 수 없습니다.");
-                    } else {
-                        setError(`채용 공고 정보를 불러오는 중 오류가 발생했습니다. (${error.response.status})`);
-                    }
-                } else if (error.request) {
-                    setError("서버 연결에 실패했습니다. 네트워크 연결을 확인해주세요.");
-                } else {
-                    setError("요청 중 오류가 발생했습니다: " + error.message);
-                }
+            .catch(() => {
+                setError("채용 공고 정보를 불러올 수 없습니다. 잠시 후 다시 시도해주세요.");
                 setLoading(false);
             });
-    }, [jobPostId, isLoggedIn, userType, userData]);
+    }
 
+    // 이력서 및 지원 내역 확인
     function fetchResumeAndCheckApplication() {
         if (!isLoggedIn || userType !== "personal" || !userData) return;
+
         const userId = userData.userId || userData.data?.userId;
         if (!userId) {
-            console.error("사용자 ID를 찾을 수 없습니다.");
             return;
         }
-        axios
-            .get(`/api/resume/user/${userId}`, { withCredentials: true })
+
+        axios.get(`/api/resume/user/${userId}`, { withCredentials: true })
             .then((response) => {
                 if (response.data && response.data.resumeId) {
                     setResumeId(response.data.resumeId);
                     checkAlreadyApplied(response.data.resumeId);
                 } else {
-                    console.log("이력서가 없습니다.");
                     setResumeId(null);
                 }
             })
             .catch((error) => {
-                console.error("이력서 정보 확인 중 오류 발생:", error);
                 setResumeId(null);
             });
     }
 
+    // 지원 여부 확인
     function checkAlreadyApplied(currentResumeId) {
         if (!currentResumeId || !jobPostId) return;
-        axios
-            .get(`/api/applications/resume/${currentResumeId}`, { withCredentials: true })
+
+        axios.get(`/api/applications/resume/${currentResumeId}`, { withCredentials: true })
             .then((response) => {
                 if (response.data && Array.isArray(response.data)) {
                     const hasApplied = response.data.some(
@@ -97,8 +91,8 @@ export default function JobPostDetail() {
                     setAlreadyApplied(hasApplied);
                 }
             })
-            .catch((error) => {
-                console.error("지원 내역 확인 중 오류 발생:", error);
+            .catch(() => {
+                // 조회 실패 시 특별한 처리 없음
             });
     }
 
@@ -126,7 +120,6 @@ export default function JobPostDetail() {
             return;
         }
 
-        // 공고가 비활성화거나 마감일이 지났다면 alert
         if (!jobPost?.jobPostStatus || new Date(jobPost.jobPostDueDate) <= new Date()) {
             showModal("비활성화되거나 마감된 공고입니다.", "alert");
             return;
@@ -143,38 +136,35 @@ export default function JobPostDetail() {
         showModal("정말 이 공고에 지원하시겠습니까?", "confirm");
     };
 
+    // 지원 확인 모달에서 확인 시
     const confirmApply = () => {
         closeModal();
         if (!isLoggedIn || userType !== "personal" || !resumeId) return;
+
         const applicationData = {
             jobPostId: Number(jobPostId),
             resumeId: Number(resumeId)
         };
-        axios
-            .post("/api/applications", applicationData, { withCredentials: true })
-            .then((response) => {
-                console.log("지원 성공:", response.data);
+
+        axios.post("/api/applications", applicationData, { withCredentials: true })
+            .then(() => {
                 setAlreadyApplied(true);
                 setApplicationResult({
                     success: true,
-                    message: "지원 성공! 건투를 빕니다."
+                    message: "지원 성공! 행운을 빕니다."
                 });
                 setModal({ show: true, message: "", type: "result" });
             })
-            .catch((error) => {
-                console.error("지원 API 오류:", error);
-                let errorMessage = "지원 중 오류가 발생했습니다. 다시 시도해주세요.";
-                if (error.response && error.response.data && error.response.data.message) {
-                    errorMessage = error.response.data.message;
-                }
+            .catch(() => {
                 setApplicationResult({
                     success: false,
-                    message: errorMessage
+                    message: "지원 중 오류가 발생했습니다. 다시 시도해주세요."
                 });
                 setModal({ show: true, message: "", type: "result" });
             });
     };
 
+    // 스크랩 토글
     const toggleScrap = () => {
         if (!isLoggedIn) {
             showModal("로그인 후 이용 가능합니다.", "alert");
@@ -185,7 +175,6 @@ export default function JobPostDetail() {
             return;
         }
 
-        // 현재 상태 저장
         let scrapedPosts = JSON.parse(localStorage.getItem("scrapedPosts") || "[]");
 
         if (isScraped) {
@@ -195,7 +184,7 @@ export default function JobPostDetail() {
             // API 호출 (사용자 ID가 있는 경우)
             if (userData && userData.userId) {
                 axios.delete(`/api/scrap/remove/${userData.userId}/${jobPostId}`, { withCredentials: true })
-                    .catch(error => console.error("스크랩 삭제 오류:", error));
+                    .catch(() => {/* 실패 시 특별한 처리 없음 */});
             }
         } else {
             // 스크랩 추가
@@ -204,7 +193,7 @@ export default function JobPostDetail() {
             // API 호출 (사용자 ID가 있는 경우)
             if (userData && userData.userId) {
                 axios.post(`/api/scrap/add/${userData.userId}/${jobPostId}`, {}, { withCredentials: true })
-                    .catch(error => console.error("스크랩 추가 오류:", error));
+                    .catch(() => {/* 실패 시 특별한 처리 없음 */});
             }
         }
 
@@ -224,14 +213,13 @@ export default function JobPostDetail() {
                 day: '2-digit'
             });
         } catch (e) {
-            console.error('날짜 변환 오류:', e);
             return dateString;
         }
     };
 
-    if (loading) return <LoadingSpinner message="채용 공고를 불러오는 중..." />;
-    if (error) return <ErrorMessage message={error} />;
-    if (!jobPost) return <div className="text-center py-10">해당 공고를 찾을 수 없습니다.</div>;
+    if (loading) return <LoadingSpinner message="채용 공고를 불러오는 중..." />
+    if (error) return <ErrorMessage message={error} />
+    if (!jobPost) return <div className="text-center py-10">해당 공고를 찾을 수 없습니다.</div>
 
     return (
         <div className="bg-gray-50 py-12">
@@ -271,10 +259,10 @@ export default function JobPostDetail() {
                 <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8">
                     <div className="flex items-center p-6 border-b border-gray-200">
                         <div className="flex-shrink-0 h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-2xl font-bold">
-                            {jobPost.companyName ? jobPost.companyName.charAt(0) : 'C'}
+                            {companyName ? companyName.charAt(0) : 'C'}
                         </div>
                         <div className="ml-6 flex-1">
-                            <h1 className="text-2xl font-bold text-gray-900">{jobPost.companyName || "회사명 미지정"}</h1>
+                            <h1 className="text-2xl font-bold text-gray-900">{companyName || "회사명 미지정"}</h1>
                             <div className="flex flex-wrap gap-2 mt-2">
                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                     {jobPost.jobPostJobCategory || "미분류"}

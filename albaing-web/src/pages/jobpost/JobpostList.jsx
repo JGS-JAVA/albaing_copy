@@ -31,6 +31,7 @@ const locations = [
 export default function JobpostList() {
     // 상태 관리
     const [jobListings, setJobListings] = useState([]);
+    const [companyNames, setCompanyNames] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedCategory, setSelectedCategory] = useState('all');
@@ -42,39 +43,87 @@ export default function JobpostList() {
 
     // 초기 데이터 로드 및 필터링 조건 변경 시 데이터 새로 로드
     useEffect(() => {
-        const fetchJobListings = async () => {
-            setLoading(true);
-            setError(null);
+        fetchJobListings();
+    }, [currentPage, selectedCategory, selectedLocation, searchQuery]);
 
-            try {
-                // API 요청 준비
-                let endpoint = '/api/jobs';
+    // 회사명 데이터 불러오기
+    useEffect(() => {
+        if (jobListings.length > 0) {
+            fetchCompanyNames();
+        }
+    }, [jobListings]);
 
-                // API 요청 파라미터 구성
-                const params = {
-                    page: currentPage,
-                    size: itemsPerPage
-                };
+    // 회사명 데이터 조회
+    const fetchCompanyNames = async () => {
+        // 중복 제거를 위해 Set 사용
+        const uniqueCompanyIds = [...new Set(
+            jobListings
+                .filter(job => job.companyId)
+                .map(job => job.companyId)
+        )];
 
-                if (selectedCategory && selectedCategory !== 'all') {
-                    params.jobCategory = selectedCategory;
+        // 이미 가져온 회사명 제외
+        const idsToFetch = uniqueCompanyIds.filter(id => !companyNames[id]);
+
+        if (idsToFetch.length === 0) return;
+
+        // 회사명 조회
+        const newCompanyNames = { ...companyNames };
+
+        await Promise.all(
+            idsToFetch.map(async (companyId) => {
+                try {
+                    const response = await axios.get(`/api/companies/${companyId}`, { withCredentials: true });
+                    if (response.data && response.data.companyName) {
+                        newCompanyNames[companyId] = response.data.companyName;
+                    }
+                } catch (error) {
+                    // 회사명 조회 실패 시 처리하지 않음
                 }
+            })
+        );
 
-                if (selectedLocation && selectedLocation !== 'all') {
-                    params.location = selectedLocation;
-                }
+        setCompanyNames(newCompanyNames);
+    };
 
-                if (searchQuery.trim()) {
-                    params.keyword = searchQuery.trim();
-                }
+    // 회사명 가져오기
+    const getCompanyName = (job) => {
+        if (job.companyName) return job.companyName;
+        if (job.companyId && companyNames[job.companyId]) return companyNames[job.companyId];
+        return "회사명 미지정";
+    };
 
-                // API 요청 실행
-                const response = await axios.get(endpoint, {
-                    params,
-                    withCredentials: true
-                });
+    const fetchJobListings = () => {
+        setLoading(true);
+        setError(null);
 
-                // 응답 데이터 처리
+        // API 요청 준비
+        const endpoint = '/api/jobs';
+
+        // API 요청 파라미터 구성
+        const params = {
+            page: currentPage,
+            size: itemsPerPage
+        };
+
+        if (selectedCategory && selectedCategory !== 'all') {
+            params.jobCategory = selectedCategory;
+        }
+
+        if (selectedLocation && selectedLocation !== 'all') {
+            params.location = selectedLocation;
+        }
+
+        if (searchQuery.trim()) {
+            params.keyword = searchQuery.trim();
+        }
+
+        // API 요청 실행
+        axios.get(endpoint, {
+            params,
+            withCredentials: true
+        })
+            .then(response => {
                 if (response.data) {
                     const jobPosts = Array.isArray(response.data) ? response.data :
                         (response.data.content ? response.data.content : []);
@@ -92,35 +141,15 @@ export default function JobpostList() {
                     setJobListings([]);
                     setTotalItems(0);
                 }
-            } catch (err) {
-                console.error('채용 공고 목록을 불러오는 중 오류가 발생했습니다:', err);
-
-                if (err.response) {
-                    if (err.response.status === 401) {
-                        setError('인증이 필요합니다. 로그인 후 이용해주세요.');
-                    } else if (err.response.status === 403) {
-                        setError('접근 권한이 없습니다.');
-                    } else if (err.response.status === 404) {
-                        setError('요청한 정보를 찾을 수 없습니다.');
-                    } else if (err.response.status === 405) {
-                        setError('서버에서 해당 요청 메서드를 지원하지 않습니다.');
-                    } else {
-                        setError(`서버 오류가 발생했습니다. (${err.response.status})`);
-                    }
-                } else if (err.request) {
-                    setError('서버 연결에 실패했습니다. 네트워크 연결을 확인해주세요.');
-                } else {
-                    setError('요청 중 오류가 발생했습니다: ' + err.message);
-                }
+                setLoading(false);
+            })
+            .catch(() => {
+                setError('채용 공고를 불러오는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
                 setJobListings([]);
                 setTotalItems(0);
-            } finally {
                 setLoading(false);
-            }
-        };
-
-        fetchJobListings();
-    }, [currentPage, selectedCategory, selectedLocation, searchQuery]);
+            });
+    };
 
     // 검색하기 버튼 클릭 시
     const handleSearch = () => {
@@ -146,7 +175,6 @@ export default function JobpostList() {
                 day: '2-digit'
             });
         } catch (e) {
-            console.error('날짜 변환 오류:', e);
             return dateString;
         }
     };
@@ -238,7 +266,7 @@ export default function JobpostList() {
                                                 <div className="flex items-start">
                                                     <div className="flex-shrink-0">
                                                         <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
-                                                            {job.companyName ? job.companyName.charAt(0) : 'C'}
+                                                            {getCompanyName(job).charAt(0)}
                                                         </div>
                                                     </div>
                                                     <div className="ml-4 flex-1">
@@ -248,7 +276,7 @@ export default function JobpostList() {
                                                                 {job.jobPostJobType || '미지정'}
                                                             </span>
                                                         </div>
-                                                        <p className="mt-1 text-sm text-gray-500">{job.companyName || '회사명 미지정'}</p>
+                                                        <p className="mt-1 text-sm text-gray-500">{getCompanyName(job)}</p>
                                                         <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
                                                             <div className="flex items-center text-sm text-gray-500">
                                                                 <svg className="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
