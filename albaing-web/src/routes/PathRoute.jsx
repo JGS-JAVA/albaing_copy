@@ -5,7 +5,7 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 
 
-import Home from '../pages/auth/home/Home';
+import Home from '../pages/home/Home';
 import CompanyManage from '../pages/company/manage/CompanyManage';
 import ReviewDetail from '../pages/review/ReviewDetail';
 import JobpostAdd from '../pages/company/manage/jobposts/JobpostAdd';
@@ -15,6 +15,9 @@ import JobpostList from '../pages/jobpost/JobpostList';
 import Login from '../pages/auth/login/Login';
 import RegisterCompany from '../pages/auth/register/RegisterCompany';
 import RegisterPerson from '../pages/auth/register/RegisterPerson';
+import FindId from '../pages/auth/find/FindId';
+import ChangePasswordCheck from '../pages/auth/find/ChangePasswordCheck';
+import ChangePasswordSet from '../pages/auth/find/ChangePasswordSet';
 import Resume from '../pages/user/resume/Resume';
 import ResumeEdit from '../pages/user/resume/ResumeEdit';
 import UserEdit from "../pages/user/mypage/UserEdit";
@@ -60,6 +63,9 @@ function PathRoute() {
                 <Route path="/register" element={<MainLayout><RegisterPage /></MainLayout>} /> {/* 회원가입 선택 페이지 */}
                 <Route path="/register/person" element={<MainLayout><RegisterPerson /></MainLayout>} /> {/* 개인 회원가입 페이지 */}
                 <Route path="/register/company" element={<MainLayout><RegisterCompany /></MainLayout>} /> {/* 기업 회원가입 페이지 */}
+                <Route path="/find/findId" element={<MainLayout><FindId /></MainLayout>} /> {/* 아이디 찾기 페이지 */}
+                <Route path="/find/changePasswordCheck" element={<MainLayout><ChangePasswordCheck /></MainLayout>} /> {/* 비밀번호 변경 페이지 */}
+                <Route path="/find/changePasswordSet" element={<MainLayout><ChangePasswordSet /></MainLayout>} /> {/* 비밀번호 변경 페이지 */}
 
                 {/* 로그인한 모든 사용자 접근 가능 */}
                 <Route element={<ProtectedRoute/>}>

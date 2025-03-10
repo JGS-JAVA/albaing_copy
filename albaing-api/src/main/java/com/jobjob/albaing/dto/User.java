@@ -37,7 +37,4 @@ public class User {
         male, female
     }
 
-    public String getUserEmail() {
-        return userEmail;
-    }
 }
