@@ -23,4 +23,18 @@ public class FindController {
         return findService.findCompanyEmail(companyName, companyPhone);
     }
 
+    // 비밀번호 변경 엔드포인트
+    @PostMapping("/update/user/password")
+    public String updateUserPassword(@RequestBody User request) {
+        findService.resetUserPassword(request.getUserEmail(), request.getUserPhone(), request.getNewPassword());
+        return "비밀번호가 성공적으로 변경되었습니다.";
+    }
+
+    // 비밀번호 변경 엔드포인트
+    @PostMapping("/update/company/password")
+    public String updateCompanyPassword(@RequestBody Company request) {
+        findService.resetCompanyPassword(request.getCompanyEmail(), request.getCompanyPhone(), request.getNewPassword());
+        return "비밀번호가 성공적으로 변경되었습니다.";
+    }
+
 }
