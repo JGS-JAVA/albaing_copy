@@ -39,4 +39,14 @@ public class FindServiceImpl implements FindService {
         // 암호화된 비밀번호 저장
         userMapper.updateUserPassword(userEmail, userPhone, encodedPassword);
     }
+
+    @Override
+    public void resetCompanyPassword(String companyEmail, String companyPhone, String newPassword) {
+
+        // 비밀번호 암호화
+        String encodedPassword = passwordEncoder.encode(newPassword);
+
+        // 암호화된 비밀번호 저장
+        companyMapper.updateCompanyPassword(companyEmail, companyPhone, encodedPassword);
+    }
 }

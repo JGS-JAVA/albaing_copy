@@ -11,4 +11,6 @@ public interface FindService {
 
     void resetUserPassword(String userEmail, String userPhone, String newPassword);
 
+    void resetCompanyPassword(String companyEmail, String companyPhone, String newPassword);
+
 }
