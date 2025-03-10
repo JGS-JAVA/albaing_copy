@@ -21,7 +21,6 @@ import UserEdit from "../pages/user/mypage/UserEdit";
 import NotFound from "../components/layout/NotFound";
 import RegisterPage from "../pages/auth/register/RegisterPage";
 import ProtectedRoute from "./ProtectedRoute";
-import ReviewManage from "../pages/company/manage/reviews/ReviewManage";
 import CompanyDetail from "../pages/company/public/CompanyDetail";
 import KakaoLogin from "../pages/auth/teach-kakao/KakaoLogin";
 import NaverLogin from "../pages/auth/teach-naver/NaverLogin";
@@ -74,7 +73,6 @@ function PathRoute() {
                 {/* 기업 사용자만 접근 가능 */}
                 <Route element={<ProtectedRoute userTypeRequired="company"/>}>
                     <Route path="/company/manage/:companyId" element={<CompanyManage/>}/> {/* 회사 관리 메인 페이지 */}
-                    <Route path="/company/:companyId/reviews/manage" element={<ReviewManage/>}/> {/* 회사 리뷰 관리 페이지 */}
                     <Route path="/company/:companyId/reviews/:reviewId" element={<ReviewDetail/>}/> {/* 회사 리뷰 상세 페이지 */}
                     <Route path="/jobs/new" element={<MainLayout><JobpostAdd/></MainLayout>}/> {/* 채용공고 등록 페이지 */}
                     <Route path="/jobs/edit/:jobPostId" element={<MainLayout><JobpostEdit/></MainLayout>}/> {/* 채용공고 수정 페이지 */}
