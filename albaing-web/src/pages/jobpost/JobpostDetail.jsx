@@ -28,7 +28,7 @@ export default function JobPostDetail() {
 
         setLoading(true);
         axios
-            .get(`http://localhost:8080/api/jobs/${jobPostId}`)
+            .get(`/api/jobs/${jobPostId}`, { withCredentials: true })
             .then((response) => {
                 if (response.data) {
                     setJobPost(response.data);
@@ -46,20 +46,30 @@ export default function JobPostDetail() {
             })
             .catch((error) => {
                 console.error("API 오류:", error);
-                setError("채용 공고 정보를 불러오는 중 오류가 발생했습니다.");
+                if (error.response) {
+                    if (error.response.status === 404) {
+                        setError("해당 채용 공고를 찾을 수 없습니다.");
+                    } else {
+                        setError(`채용 공고 정보를 불러오는 중 오류가 발생했습니다. (${error.response.status})`);
+                    }
+                } else if (error.request) {
+                    setError("서버 연결에 실패했습니다. 네트워크 연결을 확인해주세요.");
+                } else {
+                    setError("요청 중 오류가 발생했습니다: " + error.message);
+                }
                 setLoading(false);
             });
     }, [jobPostId, isLoggedIn, userType, userData]);
 
     function fetchResumeAndCheckApplication() {
         if (!isLoggedIn || userType !== "personal" || !userData) return;
-        const userId = userData.data?.userId || userData.userId;
+        const userId = userData.userId || userData.data?.userId;
         if (!userId) {
             console.error("사용자 ID를 찾을 수 없습니다.");
             return;
         }
         axios
-            .get(`http://localhost:8080/api/resume/user/${userId}`)
+            .get(`/api/resume/user/${userId}`, { withCredentials: true })
             .then((response) => {
                 if (response.data && response.data.resumeId) {
                     setResumeId(response.data.resumeId);
@@ -78,7 +88,7 @@ export default function JobPostDetail() {
     function checkAlreadyApplied(currentResumeId) {
         if (!currentResumeId || !jobPostId) return;
         axios
-            .get(`http://localhost:8080/api/applications/resume/${currentResumeId}`)
+            .get(`/api/applications/resume/${currentResumeId}`, { withCredentials: true })
             .then((response) => {
                 if (response.data && Array.isArray(response.data)) {
                     const hasApplied = response.data.some(
@@ -116,8 +126,7 @@ export default function JobPostDetail() {
             return;
         }
 
-        // 추가: 공고가 비활성화거나 마감일이 지났다면 alert
-        // jobPostStatus가 false이거나, 마감일이 현재보다 이전/같으면 비활성화로 간주
+        // 공고가 비활성화거나 마감일이 지났다면 alert
         if (!jobPost?.jobPostStatus || new Date(jobPost.jobPostDueDate) <= new Date()) {
             showModal("비활성화되거나 마감된 공고입니다.", "alert");
             return;
@@ -142,7 +151,7 @@ export default function JobPostDetail() {
             resumeId: Number(resumeId)
         };
         axios
-            .post("http://localhost:8080/api/applications", applicationData)
+            .post("/api/applications", applicationData, { withCredentials: true })
             .then((response) => {
                 console.log("지원 성공:", response.data);
                 setAlreadyApplied(true);
@@ -175,123 +184,223 @@ export default function JobPostDetail() {
             showModal("개인 회원만 스크랩할 수 있습니다.", "alert");
             return;
         }
+
+        // 현재 상태 저장
         let scrapedPosts = JSON.parse(localStorage.getItem("scrapedPosts") || "[]");
+
         if (isScraped) {
+            // 스크랩 취소
             scrapedPosts = scrapedPosts.filter((id) => id !== Number(jobPostId));
+
+            // API 호출 (사용자 ID가 있는 경우)
+            if (userData && userData.userId) {
+                axios.delete(`/api/scrap/remove/${userData.userId}/${jobPostId}`, { withCredentials: true })
+                    .catch(error => console.error("스크랩 삭제 오류:", error));
+            }
         } else {
+            // 스크랩 추가
             scrapedPosts.push(Number(jobPostId));
+
+            // API 호출 (사용자 ID가 있는 경우)
+            if (userData && userData.userId) {
+                axios.post(`/api/scrap/add/${userData.userId}/${jobPostId}`, {}, { withCredentials: true })
+                    .catch(error => console.error("스크랩 추가 오류:", error));
+            }
         }
+
         localStorage.setItem("scrapedPosts", JSON.stringify(scrapedPosts));
         setIsScraped(!isScraped);
     };
 
-    if (loading) return <LoadingSpinner message="로딩 중..." fullScreen={false} />;
+    // 날짜 포맷팅 함수
+    const formatDate = (dateString) => {
+        if (!dateString) return '-';
+
+        try {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ko-KR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
+        } catch (e) {
+            console.error('날짜 변환 오류:', e);
+            return dateString;
+        }
+    };
+
+    if (loading) return <LoadingSpinner message="채용 공고를 불러오는 중..." />;
     if (error) return <ErrorMessage message={error} />;
     if (!jobPost) return <div className="text-center py-10">해당 공고를 찾을 수 없습니다.</div>;
 
     return (
-        <div className="max-w-4xl mx-auto px-4 py-8 relative">
-            {isLoggedIn && userType === "personal" && (
-                <button
-                    className={`absolute top-10 right-6 p-2 rounded-full ${
-                        isScraped
-                            ? "bg-yellow-400 text-white"
-                            : "bg-gray-200 text-gray-600"
-                    }`}
-                    onClick={toggleScrap}
-                    aria-label={isScraped ? "스크랩 취소" : "스크랩하기"}
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-6 w-6"
-                        fill={isScraped ? "currentColor" : "none"}
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-                        />
-                    </svg>
-                </button>
-            )}
-
-            <div className="bg-white rounded-lg shadow p-6">
-                <div className="border-b pb-4 mb-4">
-                    <h2 className="text-3xl font-bold text-gray-800 mb-2">
-                        {jobPost.jobPostTitle || "제목 없음"}
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-gray-600 text-sm">
-                        <div>
-                            <strong>직종 카테고리:</strong> {jobPost.jobPostJobCategory || "-"}
-                        </div>
-                        <div>
-                            <strong>고용형태:</strong> {jobPost.jobPostJobType || "-"}
-                        </div>
-                        <div>
-                            <strong>근무기간:</strong> {jobPost.jobPostWorkingPeriod || "-"}
-                        </div>
-                        <div>
-                            <strong>근무요일:</strong> {jobPost.jobWorkSchedule || "-"}
-                        </div>
-                        <div>
-                            <strong>근무시간:</strong> {jobPost.jobPostShiftHours || "-"}
-                        </div>
-                        <div>
-                            <strong>급여:</strong> {jobPost.jobPostSalary || "-"}
-                        </div>
-                    </div>
-                </div>
-
-                <div className="mb-4 space-y-1 text-sm text-gray-600">
-                    <p>
-                        <strong>기업 ID:</strong> {jobPost.companyId || "-"}
-                    </p>
-                    <p>
-                        <strong>근무지:</strong> {jobPost.jobPostWorkPlace || "-"}
-                    </p>
-                    <p>
-                        <strong>마감일:</strong> {jobPost.jobPostDueDate || "-"}
-                    </p>
-                    <p>
-                        <strong>연락처:</strong> {jobPost.jobPostContactNumber || "-"}
-                    </p>
-                    <p>
-                        <strong>학력요건:</strong> {jobPost.jobPostRequiredEducations || "-"}
-                    </p>
-                </div>
-
-                {jobPost.jobPostOptionalImage && (
-                    <div className="mt-4">
-                        <img
-                            src={jobPost.jobPostOptionalImage}
-                            alt="채용공고 이미지"
-                            className="w-full h-auto object-contain rounded"
-                            onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.src =
-                                    "https://via.placeholder.com/600x400?text=No+Image";
-                            }}
-                        />
+        <div className="bg-gray-50 py-12">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                {/* 스크랩 버튼 */}
+                {isLoggedIn && userType === "personal" && (
+                    <div className="flex justify-end mb-4">
+                        <button
+                            className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${
+                                isScraped
+                                    ? "bg-yellow-400 text-white hover:bg-yellow-500"
+                                    : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+                            }`}
+                            onClick={toggleScrap}
+                            aria-label={isScraped ? "스크랩 취소" : "스크랩하기"}
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5"
+                                fill={isScraped ? "currentColor" : "none"}
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+                                />
+                            </svg>
+                            {isScraped ? "스크랩됨" : "스크랩"}
+                        </button>
                     </div>
                 )}
 
-                <div className="mt-6 flex justify-center">
+                {/* 기업 정보 섹션 */}
+                <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+                    <div className="flex items-center p-6 border-b border-gray-200">
+                        <div className="flex-shrink-0 h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-2xl font-bold">
+                            {jobPost.companyName ? jobPost.companyName.charAt(0) : 'C'}
+                        </div>
+                        <div className="ml-6 flex-1">
+                            <h1 className="text-2xl font-bold text-gray-900">{jobPost.companyName || "회사명 미지정"}</h1>
+                            <div className="flex flex-wrap gap-2 mt-2">
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    {jobPost.jobPostJobCategory || "미분류"}
+                                </span>
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    {jobPost.jobPostWorkPlace ? jobPost.jobPostWorkPlace.split(' ')[0] : "지역 미지정"}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 채용 정보 섹션 */}
+                <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+                    <div className="p-6 border-b border-gray-200">
+                        <h2 className="text-xl font-bold text-gray-900 mb-4">채용 정보</h2>
+                        <div className="flex flex-col sm:flex-row justify-between mb-4">
+                            <div className="mb-4 sm:mb-0">
+                                <h3 className="text-2xl font-bold text-gray-800 mb-1">{jobPost.jobPostTitle || "제목 없음"}</h3>
+                                <p className="text-sm text-gray-500">
+                                    등록일: {formatDate(jobPost.jobPostCreatedAt)} | 마감일: <span className="text-red-600 font-medium">{formatDate(jobPost.jobPostDueDate)}</span>
+                                </p>
+                            </div>
+
+                            <div className="flex items-center">
+                                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                                    new Date(jobPost.jobPostDueDate) > new Date() && jobPost.jobPostStatus
+                                        ? "bg-green-100 text-green-800"
+                                        : "bg-red-100 text-red-800"
+                                }`}>
+                                    {new Date(jobPost.jobPostDueDate) > new Date() && jobPost.jobPostStatus
+                                        ? "채용중"
+                                        : "마감됨"}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="p-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <h3 className="text-lg font-medium text-gray-900 mb-4 pb-2 border-b border-gray-200">근무 조건</h3>
+                                <ul className="space-y-3">
+                                    <li className="flex items-start">
+                                        <div className="flex-shrink-0 w-28 text-sm font-medium text-gray-500">고용형태</div>
+                                        <div className="flex-1 text-sm text-gray-900">{jobPost.jobPostJobType || "-"}</div>
+                                    </li>
+                                    <li className="flex items-start">
+                                        <div className="flex-shrink-0 w-28 text-sm font-medium text-gray-500">근무기간</div>
+                                        <div className="flex-1 text-sm text-gray-900">{jobPost.jobPostWorkingPeriod || "-"}</div>
+                                    </li>
+                                    <li className="flex items-start">
+                                        <div className="flex-shrink-0 w-28 text-sm font-medium text-gray-500">근무요일</div>
+                                        <div className="flex-1 text-sm text-gray-900">{jobPost.jobWorkSchedule || "-"}</div>
+                                    </li>
+                                    <li className="flex items-start">
+                                        <div className="flex-shrink-0 w-28 text-sm font-medium text-gray-500">근무시간</div>
+                                        <div className="flex-1 text-sm text-gray-900">{jobPost.jobPostShiftHours || "-"}</div>
+                                    </li>
+                                    <li className="flex items-start">
+                                        <div className="flex-shrink-0 w-28 text-sm font-medium text-gray-500">급여</div>
+                                        <div className="flex-1 text-sm text-gray-900 font-medium">{jobPost.jobPostSalary || "-"}</div>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div>
+                                <h3 className="text-lg font-medium text-gray-900 mb-4 pb-2 border-b border-gray-200">근무 정보</h3>
+                                <ul className="space-y-3">
+                                    <li className="flex items-start">
+                                        <div className="flex-shrink-0 w-28 text-sm font-medium text-gray-500">근무지</div>
+                                        <div className="flex-1 text-sm text-gray-900">{jobPost.jobPostWorkPlace || "-"}</div>
+                                    </li>
+                                    <li className="flex items-start">
+                                        <div className="flex-shrink-0 w-28 text-sm font-medium text-gray-500">학력요건</div>
+                                        <div className="flex-1 text-sm text-gray-900">{jobPost.jobPostRequiredEducations || "제한 없음"}</div>
+                                    </li>
+                                    <li className="flex items-start">
+                                        <div className="flex-shrink-0 w-28 text-sm font-medium text-gray-500">연락처</div>
+                                        <div className="flex-1 text-sm text-gray-900">{jobPost.jobPostContactNumber || "-"}</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 상세 내용 섹션 */}
+                {jobPost.jobPostOptionalImage && (
+                    <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+                        <div className="p-6 border-b border-gray-200">
+                            <h2 className="text-xl font-bold text-gray-900 mb-4">상세 내용</h2>
+                        </div>
+                        <div className="p-6">
+                            <img
+                                src={jobPost.jobPostOptionalImage}
+                                alt="채용공고 상세 이미지"
+                                className="w-full h-auto rounded"
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = "https://via.placeholder.com/800x400?text=이미지를+불러올+수+없습니다";
+                                }}
+                            />
+                        </div>
+                    </div>
+                )}
+
+                {/* 지원하기 버튼 */}
+                <div className="flex justify-center mt-6 mb-12">
                     <button
                         onClick={handleApply}
-                        className={`font-bold py-3 px-8 rounded-full text-lg shadow-lg transition duration-200 ${
+                        className={`py-3 px-10 rounded-full text-lg shadow-lg transition duration-200 ${
                             alreadyApplied
-                                ? "bg-gray-400 cursor-not-allowed"
-                                : "bg-blue-500 hover:bg-blue-600 text-white"
+                                ? "bg-gray-400 text-white cursor-not-allowed"
+                                : new Date(jobPost.jobPostDueDate) > new Date() && jobPost.jobPostStatus
+                                    ? "bg-blue-600 hover:bg-blue-700 text-white"
+                                    : "bg-gray-400 text-white cursor-not-allowed"
                         }`}
+                        disabled={alreadyApplied || !(new Date(jobPost.jobPostDueDate) > new Date() && jobPost.jobPostStatus)}
                     >
-                        {alreadyApplied ? "지원 완료" : "지원하기"}
+                        {alreadyApplied ? "지원 완료" : new Date(jobPost.jobPostDueDate) > new Date() && jobPost.jobPostStatus ? "지원하기" : "마감된 공고"}
                     </button>
                 </div>
             </div>
 
+            {/* 모달 */}
             {modal.show && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg p-6 max-w-md w-full">
@@ -307,7 +416,7 @@ export default function JobPostDetail() {
                                         아니오
                                     </button>
                                     <button
-                                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
                                         onClick={confirmApply}
                                     >
                                         예
@@ -327,7 +436,7 @@ export default function JobPostDetail() {
                                         아니오
                                     </button>
                                     <button
-                                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
                                         onClick={goToResumeCreation}
                                     >
                                         예
@@ -340,8 +449,8 @@ export default function JobPostDetail() {
                                 <h3
                                     className={`text-xl font-semibold mb-4 ${
                                         applicationResult?.success
-                                            ? "text-green-500"
-                                            : "text-red-500"
+                                            ? "text-green-600"
+                                            : "text-red-600"
                                     }`}
                                 >
                                     {applicationResult?.success ? "지원 완료" : "지원 실패"}
@@ -349,7 +458,7 @@ export default function JobPostDetail() {
                                 <p className="mb-6">{applicationResult?.message}</p>
                                 <div className="flex justify-end">
                                     <button
-                                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
                                         onClick={closeModal}
                                     >
                                         확인
@@ -363,7 +472,7 @@ export default function JobPostDetail() {
                                 <p className="mb-6">{modal.message}</p>
                                 <div className="flex justify-end">
                                     <button
-                                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
                                         onClick={closeModal}
                                     >
                                         확인
