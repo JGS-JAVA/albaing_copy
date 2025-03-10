@@ -1,30 +1,30 @@
 import React from 'react';
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
 
-import Header from '../../components/Header';
-import Footer from '../../components/Footer';
+import Header from '../components/layout/Header';
+import Footer from '../components/layout/Footer';
 
 
-import Home from '../public/home/Home';
-import CompanyManage from '../company-manage/CompanyManage';
-import ReviewDetail from '../companies/review/ReviewDetail';
-import JobpostAdd from '../company-manage/jobpost/JobpostAdd';
-import JobpostDetail from '../jobpost/JobpostDetail';
-import JobpostEdit from '../company-manage/jobpost/JobpostEdit';
-import JobpostList from '../jobpost/JobpostList';
-import Login from '../public/login/Login';
-import RegisterCompany from '../public/register/RegisterCompany';
-import RegisterPerson from '../public/register/RegisterPerson';
-import Resume from '../user/resume/Resume';
-import ResumeEdit from '../user/resume/ResumeEdit';
-import UserEdit from "../user/mypage/UserEdit";
-import NotFound from "../../components/NotFound";
-import RegisterPage from "../public/register/RegisterPage";
+import Home from '../pages/auth/home/Home';
+import CompanyManage from '../pages/company/manage/CompanyManage';
+import ReviewDetail from '../pages/review/ReviewDetail';
+import JobpostAdd from '../pages/company/manage/jobposts/JobpostAdd';
+import JobpostDetail from '../pages/jobpost/JobpostDetail';
+import JobpostEdit from '../pages/company/manage/jobposts/JobpostEdit';
+import JobpostList from '../pages/jobpost/JobpostList';
+import Login from '../pages/auth/login/Login';
+import RegisterCompany from '../pages/auth/register/RegisterCompany';
+import RegisterPerson from '../pages/auth/register/RegisterPerson';
+import Resume from '../pages/user/resume/Resume';
+import ResumeEdit from '../pages/user/resume/ResumeEdit';
+import UserEdit from "../pages/user/mypage/UserEdit";
+import NotFound from "../components/layout/NotFound";
+import RegisterPage from "../pages/auth/register/RegisterPage";
 import ProtectedRoute from "./ProtectedRoute";
-import ReviewManagement from "../company-manage/review/ReviewManagement";
-import CompanyDetail from "../companies/companyView/CompanyDetail";
-import KakaoLogin from "../teach-kakao/KakaoLogin";
-import NaverLogin from "../teach-naver/NaverLogin";
+import ReviewManage from "../pages/company/manage/reviews/ReviewManage";
+import CompanyDetail from "../pages/company/public/CompanyDetail";
+import KakaoLogin from "../pages/auth/teach-kakao/KakaoLogin";
+import NaverLogin from "../pages/auth/teach-naver/NaverLogin";
 
 // 메인 레이아웃 컴포넌트
 const MainLayout = ({children}) => (
@@ -74,7 +74,7 @@ function PathRoute() {
                 {/* 기업 사용자만 접근 가능 */}
                 <Route element={<ProtectedRoute userTypeRequired="company"/>}>
                     <Route path="/company/manage/:companyId" element={<CompanyManage/>}/> {/* 회사 관리 메인 페이지 */}
-                    <Route path="/company/:companyId/reviews/manage" element={<ReviewManagement/>}/> {/* 회사 리뷰 관리 페이지 */}
+                    <Route path="/company/:companyId/reviews/manage" element={<ReviewManage/>}/> {/* 회사 리뷰 관리 페이지 */}
                     <Route path="/company/:companyId/reviews/:reviewId" element={<ReviewDetail/>}/> {/* 회사 리뷰 상세 페이지 */}
                     <Route path="/jobs/new" element={<MainLayout><JobpostAdd/></MainLayout>}/> {/* 채용공고 등록 페이지 */}
                     <Route path="/jobs/edit/:jobPostId" element={<MainLayout><JobpostEdit/></MainLayout>}/> {/* 채용공고 수정 페이지 */}

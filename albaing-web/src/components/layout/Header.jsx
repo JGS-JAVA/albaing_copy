@@ -16,8 +16,8 @@ import {
     XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
-import albaingLogo from '../assets/svg/albaing_logo.svg';
-import { useAuth } from '../contexts/AuthContext';
+import albaingLogo from '../../assets/svg/albaing_logo.svg';
+import { useAuth } from '../../contexts/AuthContext';
 
 // 카테고리 메뉴 구성
 const categories = [
