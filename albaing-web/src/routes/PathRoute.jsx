@@ -24,10 +24,11 @@ import UserEdit from "../pages/user/mypage/UserEdit";
 import NotFound from "../components/layout/NotFound";
 import RegisterPage from "../pages/auth/register/RegisterPage";
 import ProtectedRoute from "./ProtectedRoute";
-import ReviewManage from "../pages/company/manage/reviews/ReviewManage";
 import CompanyDetail from "../pages/company/public/CompanyDetail";
 import KakaoLogin from "../pages/auth/teach-kakao/KakaoLogin";
 import NaverLogin from "../pages/auth/teach-naver/NaverLogin";
+import MyApplication from "../pages/user/mypage/MyApplication";
+import MyPage from "../pages/user/mypage/MyPage";
 
 // 메인 레이아웃 컴포넌트
 const MainLayout = ({children}) => (
@@ -42,13 +43,21 @@ const MainLayout = ({children}) => (
     </div>
 );
 
+function MyScrap() {
+    return null;
+}
+
+function MyReviews() {
+    return null;
+}
+
 function PathRoute() {
     return (
         <BrowserRouter>
             <Routes>
                 {/* 모든 사용자 접근 가능 */}
-                <Route path="/k" element={<MainLayout><KakaoLogin /></MainLayout>} /> {/* 메인 홈페이지에 카카오 로그인버튼 */}
-                <Route path="/n" element={<MainLayout><NaverLogin /></MainLayout>} /> {/* 메인 홈페이지에 네이버 로그인버튼 */}
+                <Route path="/k" element={<MainLayout><KakaoLogin /></MainLayout>} /> {/* 메인 홈페이지 */}
+                <Route path="/n" element={<MainLayout><NaverLogin /></MainLayout>} /> {/* 메인 홈페이지 */}
                 <Route path="/" element={<MainLayout><Home /></MainLayout>} /> {/* 메인 홈페이지 */}
                 <Route path="/login" element={<MainLayout><Login /></MainLayout>} /> {/* 로그인 페이지 */}
                 <Route path="/register" element={<MainLayout><RegisterPage /></MainLayout>} /> {/* 회원가입 선택 페이지 */}
@@ -60,7 +69,6 @@ function PathRoute() {
 
                 {/* 로그인한 모든 사용자 접근 가능 */}
                 <Route element={<ProtectedRoute/>}>
-                    <Route path="/find/findId" element={<MainLayout><FindId/></MainLayout>}/> {/* 아아디 찾기 페이지 */}
                     <Route path="/resumes" element={<MainLayout><Resume/></MainLayout>}/> {/* 이력서 조회 페이지 */}
                     <Route path="/companies/:companyId" element={<MainLayout><CompanyDetail/></MainLayout>}/> {/* 회사 상세 정보 페이지 */}
                     <Route path="/jobs" element={<MainLayout><JobpostList/></MainLayout>}/> {/* 채용공고 목록 페이지 */}
@@ -70,18 +78,17 @@ function PathRoute() {
 
                 {/* 일반 사용자만 접근 가능 */}
                 <Route element={<ProtectedRoute userTypeRequired="personal"/>}>
-                    {/*<Route path="/mypage" element={<MainLayout><MyPage /></MainLayout>} /> /!* 일반 사용자 마이페이지 메인 *!/*/}
-                    <Route path="/resumes/edit" element={<MainLayout><ResumeEdit/></MainLayout>}/> {/* 이력서 편집 페이지 */}
-                    {/*<Route path="/mypage/applications" element={<MainLayout><MyApplication /></MainLayout>} /> /!* 일반 사용자 지원 내역 페이지 *!/*/}
-                    {/*<Route path="/mypage/scraps" element={<MainLayout><MyScrap /></MainLayout>} /> /!* 일반 사용자 스크랩 목록 페이지 *!/*/}
-                    {/*<Route path="/mypage/reviews" element={<MainLayout><MyReviews /></MainLayout>} /> /!* 일반 사용자 작성 리뷰 목록 페이지 *!/*/}
-                    <Route path="/mypage/user/edit" element={<MainLayout><UserEdit/></MainLayout>}/> {/* 사용자 정보 수정 페이지*/}
+                    <Route path="/mypage/:userId" element={<MainLayout><MyPage /></MainLayout>} /> {/* 일반 사용자 마이페이지 메인 */}
+                    <Route path="/mypage/applications" element={<MainLayout><MyApplication /></MainLayout>} /> {/* 일반 사용자 지원 내역 페이지 */}
+                    <Route path="/mypage/scraps" element={<MainLayout><MyScrap /></MainLayout>} /> {/* 일반 사용자 스크랩 목록 페이지 */}
+                    <Route path="/mypage/reviews" element={<MainLayout><MyReviews /></MainLayout>} /> {/* 일반 사용자 작성 리뷰 목록 페이지 */}
+                    <Route path="/mypage/user/:userId/edit" element={<MainLayout><UserEdit /></MainLayout>} /> {/* 사용자 정보 수정 페이지*/}
+                    <Route path="/resumes/edit" element={<MainLayout><ResumeEdit /></MainLayout>} /> {/* 이력서 편집 페이지 */}
                 </Route>
 
                 {/* 기업 사용자만 접근 가능 */}
                 <Route element={<ProtectedRoute userTypeRequired="company"/>}>
                     <Route path="/company/manage/:companyId" element={<CompanyManage/>}/> {/* 회사 관리 메인 페이지 */}
-                    <Route path="/company/:companyId/reviews/manage" element={<ReviewManage/>}/> {/* 회사 리뷰 관리 페이지 */}
                     <Route path="/company/:companyId/reviews/:reviewId" element={<ReviewDetail/>}/> {/* 회사 리뷰 상세 페이지 */}
                     <Route path="/jobs/new" element={<MainLayout><JobpostAdd/></MainLayout>}/> {/* 채용공고 등록 페이지 */}
                     <Route path="/jobs/edit/:jobPostId" element={<MainLayout><JobpostEdit/></MainLayout>}/> {/* 채용공고 수정 페이지 */}
