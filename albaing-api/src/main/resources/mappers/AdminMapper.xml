@@ -48,7 +48,7 @@
     <!--  String resumeTitle, resumeJobCategory, resumeJobType 을 받아 해당 항목과 부분 이상 일치하는 항목 찾기-->
     <!--  sortOrderBy (이름, 전화번호, 제목) 를 받아 정렬 기준을 정함 -->
     <!--  isDESC 받아 오름차순, 내림차순을 정함 -->
-    <!--  개인 이력서 목록 전체를 List<ViewJobApplication>로 반환-->
+    <!--  개인 이력서 목록 전체를 List<JoinUserWithResume>로 반환-->
     <select id="adminSearchResumes">
         SELECT *
         FROM RESUMES
@@ -89,7 +89,7 @@
     <!--  String userName, companyName, jobPostTitle 을 받아 해당 항목과 부분 이상 일치하는 항목 찾기-->
     <!--  sortOrderBy (지원자명, 법인명, 지원일) 를 받아 정렬 기준을 정함 -->
     <!--  isDESC 받아 오름차순, 내림차순을 정함 -->
-    <!--  개인 이력서 목록 전체를 List<JobApplication>로 반환-->
+    <!--  개인 이력서 목록 전체를 List<ViewJobApplication>로 반환-->
     <!--  JOIN 지나치게 많은 관계로 DB 정리 필요할 것 같아 보임 -->
     <select id="adminSearchJobApplications">
         SELECT *
@@ -128,7 +128,6 @@
     <!--  sortOrderBy (법인명, 대표자명, 사업자등록번호) 를 받아 정렬 기준을 정함 -->
     <!--  isDESC 받아 오름차순, 내림차순을 정함 -->
     <!--  개인 이력서 목록 전체를 List<COMPANIES>로 반환-->
-    <!--  JOIN 지나치게 많은 관계로 DB 정리 필요할 것 같아 보임 -->
     <select id="adminSearchCompanies">
         SELECT *
         FROM COMPANIES
@@ -168,7 +167,7 @@
     <!-- String companyName, jobPostTitle, jobPostStatus 을 받아 해당 항목과 부분 이상 일치하는 항목 찾기-->
     <!-- sortOrderBy (법인명, 공고 제목, 공고 마감일) 를 받아 정렬 기준을 정함 -->
     <!-- isDESC 받아 오름차순, 내림차순을 정함 -->
-    <!-- 개인 이력서 목록 전체를 List<JobPost>로 반환-->
+    <!-- 개인 이력서 목록 전체를 List<JoinJobPostWithCompany>로 반환-->
     <select id="adminSearchJobPosts">
         SELECT *
         FROM JOB_POSTS

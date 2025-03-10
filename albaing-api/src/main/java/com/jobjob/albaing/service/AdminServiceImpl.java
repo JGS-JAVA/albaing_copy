@@ -22,12 +22,12 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<Resume> adminSearchResumes(String resumeTitle, String resumeJobCategory, String resumeJobType, String sortOrderBy, Boolean isDESC) {
+    public List<JoinUserWithResume> adminSearchResumes(String resumeTitle, String resumeJobCategory, String resumeJobType, String sortOrderBy, Boolean isDESC) {
         return adminMapper.adminSearchResumes(resumeTitle, resumeJobCategory, resumeJobType);
     }
 
     @Override
-    public List<JobApplication> adminSearchJobApplications(String userName, String companyName, String jobPostTitle, String sortOrderBy, Boolean isDESC) {
+    public List<ViewJobApplication> adminSearchJobApplications(String userName, String companyName, String jobPostTitle, String sortOrderBy, Boolean isDESC) {
         return adminMapper.adminSearchJobApplications(userName, companyName, jobPostTitle);
     }
 
@@ -37,7 +37,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<JobPost> adminSearchJobPosts(String companyName, String jobPostTitle, String jobPostStatus, String sortOrderBy, Boolean isDESC) {
+    public List<JoinJobPostWithCompany> adminSearchJobPosts(String companyName, String jobPostTitle, String jobPostStatus, String sortOrderBy, Boolean isDESC) {
         return adminMapper.adminSearchJobPosts(companyName, jobPostTitle, jobPostStatus);
     }
 

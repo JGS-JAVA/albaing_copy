@@ -10,13 +10,13 @@ public interface AdminMapper {
 
     List<User> adminSearchUsers(String userName, String userEmail, String userPhone);
 
-    List<Resume> adminSearchResumes(String resumeTitle, String resumeJobCategory, String resumeJobType);
+    List<JoinUserWithResume> adminSearchResumes(String resumeTitle, String resumeJobCategory, String resumeJobType);
 
-    List<JobApplication> adminSearchJobApplications(String userName, String companyName, String jobPostTitle);
+    List<ViewJobApplication> adminSearchJobApplications(String userName, String companyName, String jobPostTitle);
 
     List<Company> adminSearchCompanies(String companyName, String companyOwnerName, String companyPhone, String companyRegistrationNumber);
 
-    List<JobPost> adminSearchJobPosts(String companyName, String jobPostTitle, String jobPostStatus);
+    List<JoinJobPostWithCompany> adminSearchJobPosts(String companyName, String jobPostTitle, String jobPostStatus);
 
     User adminUserDetail(String userId);
 

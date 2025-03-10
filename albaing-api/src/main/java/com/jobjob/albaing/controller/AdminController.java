@@ -27,7 +27,7 @@ public class AdminController {
 
     // 이력서 검색
     @GetMapping("/resumes")
-    public List<Resume> adminSearchResumes(@PathVariable(required = false) String resumeTitle,
+    public List<JoinUserWithResume> adminSearchResumes(@PathVariable(required = false) String resumeTitle,
                                            @PathVariable(required = false) String resumeCategory,
                                            @PathVariable(required = false) String resumeJobType,
                                            @PathVariable(required = false) String sortOrderBy,
@@ -38,11 +38,11 @@ public class AdminController {
 
     // 공고지원 검색
     @GetMapping("/job-applications")
-    public List<JobApplication> adminSearchJobApplications(@PathVariable(required = false) String userName,
-                                                           @PathVariable(required = false) String companyName,
-                                                           @PathVariable(required = false) String jobPostTitle,
-                                                           @PathVariable(required = false) String sortOrderBy,
-                                                           @PathVariable(required = false) Boolean isDESC) {
+    public List<ViewJobApplication> adminSearchJobApplications(@PathVariable(required = false) String userName,
+                                                               @PathVariable(required = false) String companyName,
+                                                               @PathVariable(required = false) String jobPostTitle,
+                                                               @PathVariable(required = false) String sortOrderBy,
+                                                               @PathVariable(required = false) Boolean isDESC) {
 
         return adminService.adminSearchJobApplications(userName, companyName, jobPostTitle, sortOrderBy, isDESC);
     }
@@ -61,11 +61,11 @@ public class AdminController {
 
     // 공고 검색
     @GetMapping("/job-posts")
-    public List<JobPost> adminSearchJobPosts(@PathVariable(required = false) String companyName,
-                                             @PathVariable(required = false) String jobPostTitle,
-                                             @PathVariable(required = false) String jobPostStatus,
-                                             @PathVariable(required = false) String sortOrderBy,
-                                             @PathVariable(required = false) Boolean isDESC) {
+    public List<JoinJobPostWithCompany> adminSearchJobPosts(@PathVariable(required = false) String companyName,
+                                                            @PathVariable(required = false) String jobPostTitle,
+                                                            @PathVariable(required = false) String jobPostStatus,
+                                                            @PathVariable(required = false) String sortOrderBy,
+                                                            @PathVariable(required = false) Boolean isDESC) {
         return adminService.adminSearchJobPosts(companyName, jobPostTitle, jobPostStatus, sortOrderBy, isDESC);
     }
 
