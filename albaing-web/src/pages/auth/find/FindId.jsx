@@ -14,8 +14,8 @@ export default function FindId() {
 
         const endpoint =
             userType === "user"
-                ? `/api/auth/find/user/id?userName=${name}&userPhone=${phone}`
-                : `/api/auth/find/company/id?companyName=${name}&companyPhone=${phone}`;
+                ? `http://localhost:8080/api/auth/find/user/id?userName=${name}&userPhone=${phone}`
+                : `http://localhost:8080/api/auth/find/company/id?companyName=${name}&companyPhone=${phone}`;
 
         axios.get(endpoint)
             .then(response => {

@@ -29,7 +29,6 @@ public interface UserMapper {
 
     // 비밀번호 재설정 (암호화된 비밀번호 저장)
     void updateUserPassword(@Param("userEmail") String userEmail,
-                            @Param("userPhone") String userPhone,
                             @Param("encodedPassword") String encodedPassword);
 
 

@@ -31,22 +31,26 @@ public class FindServiceImpl implements FindService {
     }
 
     @Override
-    public void resetUserPassword(String userEmail, String userPhone, String newPassword) {
-
-        // 비밀번호 암호화
-        String encodedPassword = passwordEncoder.encode(newPassword);
-
-        // 암호화된 비밀번호 저장
-        userMapper.updateUserPassword(userEmail, userPhone, encodedPassword);
+    public boolean verifyUserCredentials(String email, String password) {
+        User user = userMapper.getUserByEmail(email);
+        return user != null && passwordEncoder.matches(password, user.getUserPassword());
     }
 
     @Override
-    public void resetCompanyPassword(String companyEmail, String companyPhone, String newPassword) {
+    public boolean verifyCompanyCredentials(String email, String password) {
+        Company company = companyMapper.getCompanyByEmail(email);
+        return company != null && passwordEncoder.matches(password, company.getCompanyPassword());
+    }
 
-        // 비밀번호 암호화
+    @Override
+    public void resetUserPassword(String userEmail, String newPassword) {
+        String encodedPassword = passwordEncoder.encode(newPassword); // 암호화 추가
+        userMapper.updateUserPassword(userEmail, encodedPassword);
+    }
+
+    @Override
+    public void resetCompanyPassword(String companyEmail, String newPassword) {
         String encodedPassword = passwordEncoder.encode(newPassword);
-
-        // 암호화된 비밀번호 저장
-        companyMapper.updateCompanyPassword(companyEmail, companyPhone, encodedPassword);
+        companyMapper.updateCompanyPassword(companyEmail, encodedPassword);
     }
 }
