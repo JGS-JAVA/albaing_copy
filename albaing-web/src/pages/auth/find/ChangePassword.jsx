@@ -9,7 +9,7 @@ export default function ChangePassword() {
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
 
-    const handleChangePassword = () => {
+    const handleChangePassword = () => { // 프론트에서 테스트 성공
         setMessage("");
         setError("");
 
