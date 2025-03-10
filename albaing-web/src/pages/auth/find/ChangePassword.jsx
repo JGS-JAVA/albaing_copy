@@ -1,45 +1,34 @@
 import { useState } from "react";
+import axios from "axios";
 
 export default function ChangePassword() {
-    const [userType, setUserType] = useState("user"); // "user" 또는 "company"
+    const [userType, setUserType] = useState("user");
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
 
-    const handleChangePassword = async () => {
+    const handleChangePassword = () => {
         setMessage("");
         setError("");
 
         const endpoint =
-            userType === "user"
-                ? "/api/auth/update/user/password"
-                : "/api/auth/update/company/password";
+            userType === "user" ? "/api/auth/update/user/password" : "/api/auth/update/company/password";
 
-        try {
-            const response = await fetch(endpoint, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    userEmail: userType === "user" ? email : undefined,
-                    companyEmail: userType === "company" ? email : undefined,
-                    userPhone: userType === "user" ? phone : undefined,
-                    companyPhone: userType === "company" ? phone : undefined,
-                    newPassword,
-                }),
+        axios.post(endpoint, {
+            userEmail: userType === "user" ? email : undefined,
+            companyEmail: userType === "company" ? email : undefined,
+            userPhone: userType === "user" ? phone : undefined,
+            companyPhone: userType === "company" ? phone : undefined,
+            newPassword,
+        })
+            .then(() => {
+                setMessage("비밀번호가 성공적으로 변경되었습니다.");
+            })
+            .catch(() => {
+                setError("비밀번호 변경 실패");
             });
-
-            if (!response.ok) {
-                throw new Error("비밀번호 변경 실패");
-            }
-
-            setMessage("비밀번호가 성공적으로 변경되었습니다.");
-        } catch (err) {
-            setError(err.message);
-        }
     };
 
     return (
@@ -48,45 +37,17 @@ export default function ChangePassword() {
 
             <div className="mb-2">
                 <label className="mr-2">회원 유형:</label>
-                <select
-                    value={userType}
-                    onChange={(e) => setUserType(e.target.value)}
-                    className="border p-2 rounded"
-                >
+                <select value={userType} onChange={(e) => setUserType(e.target.value)} className="border p-2 rounded">
                     <option value="user">개인회원</option>
                     <option value="company">기업회원</option>
                 </select>
             </div>
 
-            <input
-                type="email"
-                placeholder="이메일"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="border p-2 w-full mb-2"
-            />
-            <input
-                type="text"
-                placeholder="전화번호"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="border p-2 w-full mb-2"
-            />
-            <input
-                type="password"
-                placeholder="새 비밀번호"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                className="border p-2 w-full mb-2"
-            />
+            <input type="email" placeholder="이메일" value={email} onChange={(e) => setEmail(e.target.value)} className="border p-2 w-full mb-2" />
+            <input type="text" placeholder="전화번호" value={phone} onChange={(e) => setPhone(e.target.value)} className="border p-2 w-full mb-2" />
+            <input type="password" placeholder="새 비밀번호" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="border p-2 w-full mb-2" />
 
-            <button
-                onClick={handleChangePassword}
-                className="bg-green-500 text-white p-2 rounded w-full"
-            >
-                비밀번호 변경
-            </button>
-
+            <button onClick={handleChangePassword} className="bg-green-500 text-white p-2 rounded w-full">비밀번호 변경</button>
             {message && <p className="mt-2 text-green-600">{message}</p>}
             {error && <p className="mt-2 text-red-600">{error}</p>}
         </div>
