@@ -4,7 +4,18 @@ import { useNavigate } from 'react-router-dom';
 
 const JobPostAdd = () => {
     const navigate = useNavigate();
-    const companyId = localStorage.getItem('companyId');
+    const storedAuthUser = localStorage.getItem('authUser');
+    let companyId = null;
+
+    if (storedAuthUser) {
+        try {
+            const authUserObj = JSON.parse(storedAuthUser);
+            // 구조에 따라 적절히 접근
+            companyId = authUserObj?.data?.companyId || null;
+        } catch (error) {
+            console.error('Failed to parse authUser from localStorage:', error);
+        }
+    }
 
     const jobCategories = [
         "외식/음료",
