@@ -1,6 +1,9 @@
 package com.jobjob.albaing.dto;
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import lombok.*;
+import org.springframework.data.annotation.Id;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,7 +14,9 @@ import java.util.Date;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class JoinJobPostWithCompany {
+public class ViewJobPost {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long jobPostId;                  // 공고 등록 번호
     private long companyId;                  // 기업 등록 번호
     private String jobPostTitle;             // 공고 제목
@@ -47,5 +52,8 @@ public class JoinJobPostWithCompany {
     public enum ApprovalStatus {
         approved, approving, hidden
     }
+
+    private String sortOrderBy;
+    private Boolean isDESC;
 }
 

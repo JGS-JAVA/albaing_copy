@@ -23,4 +23,6 @@ public class ViewJobApplication {
     private String userEmail;
     private int resumeId;
     private String resumeTitle;
+    private String sortOrderBy;
+    private Boolean isDESC;
 }

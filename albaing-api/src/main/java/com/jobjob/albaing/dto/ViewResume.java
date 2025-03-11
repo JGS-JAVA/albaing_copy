@@ -7,7 +7,7 @@ import org.springframework.data.annotation.Id;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-public class JoinUserWithResume {
+public class ViewResume {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
@@ -41,4 +41,7 @@ public class JoinUserWithResume {
 
     private EducationHistory educationHistory;
     private CareerHistory careerHistory;
+
+    private String sortOrderBy;
+    private Boolean isDESC;
 }

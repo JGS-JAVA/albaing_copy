@@ -5,7 +5,6 @@ import com.jobjob.albaing.mapper.AdminMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -15,14 +14,12 @@ public class AdminServiceImpl implements AdminService {
     private AdminMapper adminMapper;
 
     @Override
-    public List<User> adminSearchUsers(String userName, String userEmail, String userPhone, String sortOrderBy, Boolean isDESC) {
-        List<User> users = new ArrayList<User>();
-        users = adminMapper.adminSearchUsers(userName, userEmail, userPhone);
-        return users;
+    public List<AdminUser> adminSearchUsers(String userName, String userEmail, String userPhone, String sortOrderBy, Boolean isDESC) {
+        return adminMapper.adminSearchUsers(userName, userEmail, userPhone, sortOrderBy, isDESC);
     }
 
     @Override
-    public List<JoinUserWithResume> adminSearchResumes(String resumeTitle, String resumeJobCategory, String resumeJobType, String sortOrderBy, Boolean isDESC) {
+    public List<ViewResume> adminSearchResumes(String resumeTitle, String resumeJobCategory, String resumeJobType, String sortOrderBy, Boolean isDESC) {
         return adminMapper.adminSearchResumes(resumeTitle, resumeJobCategory, resumeJobType);
     }
 
@@ -37,7 +34,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<JoinJobPostWithCompany> adminSearchJobPosts(String companyName, String jobPostTitle, String jobPostStatus, String sortOrderBy, Boolean isDESC) {
+    public List<ViewJobPost> adminSearchJobPosts(String companyName, String jobPostTitle, String jobPostStatus, String sortOrderBy, Boolean isDESC) {
         return adminMapper.adminSearchJobPosts(companyName, jobPostTitle, jobPostStatus);
     }
 
