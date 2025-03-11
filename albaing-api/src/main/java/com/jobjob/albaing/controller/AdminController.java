@@ -22,7 +22,6 @@ public class AdminController {
                                             @RequestParam(required = false) String sortOrderBy,
                                             @RequestParam(required = false) Boolean isDESC) {
 
-        System.out.println("username : " + userName);
         return adminService.adminSearchUsers(userName, userEmail, userPhone, sortOrderBy, isDESC);
     }
 
@@ -72,32 +71,32 @@ public class AdminController {
 
     // 개인 상세 조회
     @GetMapping("/users/{userId}")
-    public User adminUserDetail(@RequestParam(required = false) String userId) {
+    public User adminUserDetail(@PathVariable String userId) {
         return adminService.adminUserDetail(userId);
     }
 
     // 개인 유저 삭제 + 이력서 삭제
     @DeleteMapping("/users/{userId}")
-    public void adminUserDelete(@RequestParam(required = false) String userId) {
+    public void adminUserDelete(@PathVariable String userId) {
         adminService.adminUserDelete(userId);
         adminService.adminResumeDelete(userId);
     }
 
     // 이력서 상세 조회
     @GetMapping("/resumes/{resumeId}")
-    public Resume adminResumeDetail(@RequestParam(required = false) String resumeId) {
+    public Resume adminResumeDetail(@PathVariable String resumeId) {
         return adminService.adminResumeDetail(resumeId);
     }
 
     // 회사 상세 조회
     @GetMapping("/companies/{companyId}")
-    public Company adminCompanyDetail(@RequestParam(required = false) String companyId) {
+    public Company adminCompanyDetail(@PathVariable String companyId) {
         return adminService.adminCompanyDetail(companyId);
     }
 
     // 회사 유저 삭제 + 공고 상태 전환
     @DeleteMapping("/companies/{companyId}")
-    public void adminCompanyDelete(@RequestParam(required = false) String companyId) {
+    public void adminCompanyDelete(@PathVariable String companyId) {
         adminService.adminCompanyDelete(companyId);
         // 공고 상태 비공개로 전환
         adminService.adminJobPostStatusChange(companyId);
@@ -105,13 +104,13 @@ public class AdminController {
 
     // 공고 상세 조회
     @GetMapping("/job-posts/{jobPostId}")
-    public JobPost adminJobPostDetail(@RequestParam(required = false) String jobPostId) {
+    public JobPost adminJobPostDetail(@PathVariable String jobPostId) {
         return adminService.adminJobPostDetail(jobPostId);
     }
 
     // 공고 삭제
     @DeleteMapping("/job-posts/{jobPostId}")
-    public void adminJobPostDelete(@RequestParam(required = false) String jobPostId) {
+    public void adminJobPostDelete(@PathVariable String jobPostId) {
         adminService.adminJobPostDelete(jobPostId);
     }
 
