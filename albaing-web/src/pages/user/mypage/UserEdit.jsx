@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import apiMyPageService from "../../../service/apiMyPageService";
-import defaultProfileImage from "../mypage/default-profile.png"; // 기본 프로필 이미지
+import defaultProfileImage from "../mypage/default-profile.png"// 기본 프로필 이미지
 
 const EditUserPage = () => {
     const { userId } = useParams();
     const navigate = useNavigate();
 
+    // 사용자 정보 상태
     const [user, setUser] = useState({
         userName: "",
         userEmail: "",
@@ -14,8 +15,9 @@ const EditUserPage = () => {
         userGender: "",
         userBirthdate: "",
         userAddress: "",
-        userProfileImage: null, // 파일 업로드를 위한 상태
+        userProfileImage: "" // 프로필 이미지 URL 대신 파일로 변경
     });
+
 
     useEffect(() => {
         apiMyPageService.getUserById(userId, (data) => {
@@ -55,39 +57,95 @@ const EditUserPage = () => {
 
     return (
         <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
-            <h1 className="text-2xl font-bold mb-4">내 정보 수정</h1>
+            <h1 className="text-2xl font-bold mb-6 text-[#0066FF] text-center">내 정보 수정</h1>
 
             {/* 프로필 이미지 */}
-            <div className="mb-4 flex flex-col items-center">
+            <div className="flex flex-col items-center mb-6">
                 <img
                     src={user.userProfileImage ? URL.createObjectURL(user.userProfileImage) : defaultProfileImage}
-                    alt="프로필"
-                    className="w-32 h-32 rounded-full object-cover mb-2 border border-gray-300"
+                    alt="프로필 이미지"
+                    className="w-32 h-32 rounded-full border border-gray-300 object-cover mb-3"
                 />
-                <input type="file" accept="image/*" onChange={handleImageChange} className="text-sm" />
+                <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="text-sm text-gray-600"
+                />
             </div>
 
             {/* 이름 */}
             <div className="mb-4">
-                <label className="block text-sm font-semibold text-[#0066FF] mb-2">이름</label>
+                <label className="block text-sm font-semibold mb-2 text-[#0066FF]">이름</label>
                 <input
                     type="text"
                     name="userName"
                     value={user.userName}
                     disabled
-                    className="w-full p-2 border border-gray-300 rounded bg-[#F2F8FF] text-gray-500"
+                    className="w-full p-2 border border-gray-300 rounded bg-[#F2F8FF] text-[#A0A0A0] cursor-not-allowed"
                 />
             </div>
 
             {/* 이메일 */}
             <div className="mb-4">
-                <label className="block text-sm font-semibold text-[#0066FF] mb-2">이메일</label>
+                <label className="block text-sm font-semibold mb-2 text-[#0066FF]">이메일</label>
                 <input
                     type="email"
                     name="userEmail"
                     value={user.userEmail}
                     disabled
-                    className="w-full p-2 border border-gray-300 rounded bg-[#F2F8FF] text-gray-500"
+                    className="w-full p-2 border border-gray-300 rounded bg-[#F2F8FF] text-[#A0A0A0] cursor-not-allowed"
+                />
+            </div>
+
+            {/* 전화번호 */}
+            <div className="mb-4">
+                <label className="block text-sm font-semibold mb-2 text-[#0066FF]">전화번호</label>
+                <input
+                    type="text"
+                    name="userPhone"
+                    value={user.userPhone}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded bg-[#F2F8FF] text-black"
+                />
+            </div>
+
+            {/* 성별 */}
+            <div className="mb-4">
+                <label className="block text-sm font-semibold mb-2 text-[#0066FF]">성별</label>
+                <select
+                    name="userGender"
+                    value={user.userGender}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded bg-[#F2F8FF] text-black"
+                >
+                    <option value="MALE">남성</option>
+                    <option value="FEMALE">여성</option>
+                    <option value="OTHER">기타</option>
+                </select>
+            </div>
+
+            {/* 생년월일 */}
+            <div className="mb-4">
+                <label className="block text-sm font-semibold mb-2 text-[#0066FF]">생년월일</label>
+                <input
+                    type="date"
+                    name="userBirthdate"
+                    value={user.userBirthdate}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded bg-[#F2F8FF] text-black"
+                />
+            </div>
+
+            {/* 주소 */}
+            <div className="mb-4">
+                <label className="block text-sm font-semibold mb-2 text-[#0066FF]">주소</label>
+                <input
+                    type="text"
+                    name="userAddress"
+                    value={user.userAddress}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded bg-[#F2F8FF] text-black"
                 />
             </div>
 
