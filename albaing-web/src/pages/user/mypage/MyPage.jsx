@@ -14,8 +14,6 @@ const MyPage = () => {
         reviewCount: ""
     };
 
-
-
     useEffect(() => {
         apiMyPageService.getUserById(userId, setUser);
         apiMyPageService.getResumeById(userId, setResume);

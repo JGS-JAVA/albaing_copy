@@ -3,13 +3,11 @@ import { useParams } from "react-router-dom";
 import apiJobApplicationService from "../../../service/apiJobApplicationService";
 
 const MyApplications = () => {
-    const { resumeId } = useParams(); // 올바르게 resumeId 가져오기
-    const [applications, setApplications] = useState([]); // 초기 상태를 빈 배열로 설정
+    const { resumeId } = useParams();
+    const [applications, setApplications] = useState([]);
 
     useEffect(() => {
-        if (resumeId) {
             apiJobApplicationService.getJobApplicationsByResume(resumeId, setApplications);
-        }
     }, [resumeId]);
 
     return (
@@ -25,7 +23,7 @@ const MyApplications = () => {
                             <h3 className="text-lg font-semibold">{application.jobPostTitle}</h3>
                             <p className="text-gray-700">{application.companyName}</p>
                             <p className={`mt-1 font-medium ${getStatusColor(application.approveStatus)}`}>
-                                {application.approveStatus}
+                                {convertStatus(application.approveStatus)}
                             </p>
                         </li>
                     ))}
@@ -38,14 +36,20 @@ const MyApplications = () => {
 // 지원 상태별 색상 지정 함수
 const getStatusColor = (status) => {
     switch (status) {
-        case "승인대기중":
-            return "text-yellow-500";
-        case "합격":
-            return "text-green-500";
-        case "불합격":
-            return "text-red-500";
-        default:
-            return "text-gray-700";
+        case "approving": return "text-yellow-500";
+        case "approved": return "text-green-500";
+        case "denied": return "text-red-500";
+        default: return "text-gray-700";
+    }
+};
+
+// 지원 상태 변환 함수
+const convertStatus = (status) => {
+    switch (status) {
+        case "approving": return "승인대기중";
+        case "approved": return "합격";
+        case "denied": return "불합격";
+        default: return "미정";
     }
 };
 

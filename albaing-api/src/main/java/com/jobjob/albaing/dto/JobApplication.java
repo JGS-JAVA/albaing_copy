@@ -15,5 +15,6 @@ public class JobApplication {
 
     // 조인 결과로 가져올 필드들 (추가)
     private String jobPostTitle;   // 공고 제목
+    private String companyName;    // 회사 이름
     private String applicantName;  // 지원자 이름
 }
