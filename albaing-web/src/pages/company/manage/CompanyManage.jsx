@@ -112,6 +112,7 @@ const CompanyManage = () => {
                     jobPosts={jobPosts}
                     applications={applications}
                     reviews={reviews}
+                    setActiveTab={setActiveTab}
                 />
             )}
 

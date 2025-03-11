@@ -7,7 +7,7 @@ import {
     ChatBubbleLeftRightIcon
 } from '@heroicons/react/24/outline';
 
-const DashboardOverview = ({ companyData, jobPosts, applications, reviews }) => {
+const DashboardOverview = ({ companyData, jobPosts, applications, reviews, setActiveTab }) => {
     // 활성화된 채용공고 수 계산
     const activeJobPostsCount = jobPosts.filter(
         job => job.jobPostStatus && new Date(job.jobPostDueDate) > new Date()
@@ -39,7 +39,7 @@ const DashboardOverview = ({ companyData, jobPosts, applications, reviews }) => 
                     title="활성 채용공고"
                     value={activeJobPostsCount}
                     icon={<BriefcaseIcon className="h-7 w-7 text-blue-600" />}
-                    linkTo="/company/manage/jobs"
+                    onClick={() => setActiveTab('jobPosts')}
                     linkText="채용공고 관리"
                 />
 
@@ -47,7 +47,7 @@ const DashboardOverview = ({ companyData, jobPosts, applications, reviews }) => 
                     title="전체 지원자 수"
                     value={applications.length}
                     icon={<UserGroupIcon className="h-7 w-7 text-green-600" />}
-                    linkTo="/company/manage/applications"
+                    onClick={() => setActiveTab('applications')}
                     linkText="지원자 관리"
                 />
 
@@ -55,7 +55,7 @@ const DashboardOverview = ({ companyData, jobPosts, applications, reviews }) => 
                     title="신규 지원자"
                     value={newApplicationsCount}
                     icon={<ClockIcon className="h-7 w-7 text-amber-600" />}
-                    linkTo="/company/manage/applications"
+                    onClick={() => setActiveTab('applications')}
                     linkText="지원자 확인"
                 />
 
@@ -63,7 +63,7 @@ const DashboardOverview = ({ companyData, jobPosts, applications, reviews }) => 
                     title="기업 리뷰"
                     value={recentReviewsCount}
                     icon={<ChatBubbleLeftRightIcon className="h-7 w-7 text-purple-600" />}
-                    linkTo="/company/manage/reviews"
+                    onClick={() => setActiveTab('reviews')}
                     linkText="리뷰 관리"
                 />
             </div>
@@ -177,7 +177,7 @@ const DashboardOverview = ({ companyData, jobPosts, applications, reviews }) => 
 };
 
 // 통계 카드 컴포넌트
-const StatCard = ({ title, value, icon, linkTo, linkText }) => (
+const StatCard = ({ title, value, icon, onClick, linkText }) => (
     <div className="bg-white rounded-lg shadow p-6 transition-transform hover:scale-102 hover:shadow-md">
         <div className="flex justify-between items-start mb-4">
             <div className="rounded-full bg-blue-50 p-3">
@@ -188,10 +188,13 @@ const StatCard = ({ title, value, icon, linkTo, linkText }) => (
             </div>
         </div>
         <h3 className="text-gray-600 text-sm font-medium">{title}</h3>
-        {linkTo && (
-            <Link to={linkTo} className="mt-3 text-blue-600 hover:text-blue-800 text-sm font-medium inline-block">
+        {linkText && (
+            <button
+                onClick={onClick}
+                className="mt-3 text-blue-600 hover:text-blue-800 text-sm font-medium inline-block cursor-pointer"
+            >
                 {linkText} &rarr;
-            </Link>
+            </button>
         )}
     </div>
 );
