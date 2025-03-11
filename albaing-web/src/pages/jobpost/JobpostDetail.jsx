@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { ErrorMessage, LoadingSpinner } from "../../components/common";
+import {AlertModal, ConfirmModal, ErrorMessage, LoadingSpinner, Modal, useModal} from "../../components";
 import { useAuth } from "../../contexts/AuthContext";
 
 export default function JobPostDetail() {
@@ -14,12 +14,16 @@ export default function JobPostDetail() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [resumeId, setResumeId] = useState(null);
-    const [modal, setModal] = useState({ show: false, message: "", type: "" });
     const [isScraped, setIsScraped] = useState(false);
     const [alreadyApplied, setAlreadyApplied] = useState(false);
     const [applicationResult, setApplicationResult] = useState(null);
     const [companyName, setCompanyName] = useState("");
     const [companyImage, setCompanyImage] = useState(null);
+
+    const alertModal = useModal();
+    const confirmModal = useModal();
+    const resumeConfirmModal = useModal();
+    const resultModal = useModal();
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -117,49 +121,62 @@ export default function JobPostDetail() {
             });
     }
 
-    const showModal = (message, type) => {
-        setModal({ show: true, message, type });
-    };
-
-    const closeModal = () => {
-        setModal({ show: false, message: "", type: "" });
-    };
-
-    const goToResumeCreation = () => {
-        closeModal();
-        navigate("/resumes");
-    };
-
     // 지원하기 버튼 클릭 시
     const handleApply = () => {
         if (!isLoggedIn) {
-            showModal("로그인 후 이용 가능합니다.", "alert");
+            alertModal.openModal({
+                title: '로그인 필요',
+                message: '로그인 후 이용 가능합니다.',
+                type: 'info'
+            });
             return;
         }
+
         if (userType === "company") {
-            showModal("기업 회원은 지원할 수 없습니다.", "alert");
+            alertModal.openModal({
+                title: '권한 제한',
+                message: '기업 회원은 지원할 수 없습니다.',
+                type: 'warning'
+            });
             return;
         }
 
         if (!jobPost?.jobPostStatus || new Date(jobPost.jobPostDueDate) <= new Date()) {
-            showModal("비활성화되거나 마감된 공고입니다.", "alert");
+            alertModal.openModal({
+                title: '마감된 공고',
+                message: '비활성화되거나 마감된 공고입니다.',
+                type: 'error'
+            });
             return;
         }
 
         if (!resumeId) {
-            showModal("이력서가 없습니다. 작성하러 가시겠습니까?", "resume-confirm");
+            resumeConfirmModal.openModal({
+                title: '이력서 필요',
+                message: '이력서가 없습니다. 작성하러 가시겠습니까?'
+            });
             return;
         }
+
         if (alreadyApplied) {
-            showModal("이미 지원한 공고입니다.", "alert");
+            alertModal.openModal({
+                title: '이미 지원함',
+                message: '이미 지원한 공고입니다.',
+                type: 'info'
+            });
             return;
         }
-        showModal("정말 이 공고에 지원하시겠습니까?", "confirm");
+
+        confirmModal.openModal({
+            title: '지원 확인',
+            message: '정말 이 공고에 지원하시겠습니까?'
+        });
     };
 
-    // 지원 확인 모달에서 확인 시
+    // 확인 모달에서 '예'를 선택한 경우
     const confirmApply = () => {
-        closeModal();
+        confirmModal.closeModal();
+
         if (!isLoggedIn || userType !== "personal" || !resumeId) return;
 
         const applicationData = {
@@ -174,25 +191,44 @@ export default function JobPostDetail() {
                     success: true,
                     message: "지원 성공! 행운을 빕니다."
                 });
-                setModal({ show: true, message: "", type: "result" });
+                resultModal.openModal({
+                    type: 'success',
+                    result: true
+                });
             })
             .catch(() => {
                 setApplicationResult({
                     success: false,
                     message: "지원 중 오류가 발생했습니다. 다시 시도해주세요."
                 });
-                setModal({ show: true, message: "", type: "result" });
+                resultModal.openModal({
+                    type: 'error',
+                    result: false
+                });
             });
+    };
+    // 이력서 작성 페이지로 이동
+    const goToResumeCreation = () => {
+        resumeConfirmModal.closeModal();
+        navigate("/resumes");
     };
 
     // 스크랩 토글
     const toggleScrap = () => {
         if (!isLoggedIn) {
-            showModal("로그인 후 이용 가능합니다.", "alert");
+            alertModal.openModal({
+                title: '로그인 필요',
+                message: '로그인 후에 이용 가능합니다.',
+                type: 'info'
+            });
             return;
         }
         if (userType !== "personal") {
-            showModal("개인 회원만 스크랩할 수 있습니다.", "alert");
+            alertModal.openModal({
+                title: '권한 제한',
+                message: '개인 회원만 스크랩할 수 있습니다.',
+                type: 'warning'
+            });
             return;
         }
 
@@ -423,88 +459,58 @@ export default function JobPostDetail() {
             </div>
 
             {/* 모달 */}
-            {modal.show && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 max-w-md w-full">
-                        {modal.type === "confirm" && (
-                            <>
-                                <h3 className="text-xl font-semibold mb-4">지원 확인</h3>
-                                <p className="mb-6">{modal.message}</p>
-                                <div className="flex justify-end space-x-3">
-                                    <button
-                                        className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition"
-                                        onClick={closeModal}
-                                    >
-                                        아니오
-                                    </button>
-                                    <button
-                                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-                                        onClick={confirmApply}
-                                    >
-                                        예
-                                    </button>
-                                </div>
-                            </>
-                        )}
-                        {modal.type === "resume-confirm" && (
-                            <>
-                                <h3 className="text-xl font-semibold mb-4">이력서 확인</h3>
-                                <p className="mb-6">{modal.message}</p>
-                                <div className="flex justify-end space-x-3">
-                                    <button
-                                        className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition"
-                                        onClick={closeModal}
-                                    >
-                                        아니오
-                                    </button>
-                                    <button
-                                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-                                        onClick={goToResumeCreation}
-                                    >
-                                        예
-                                    </button>
-                                </div>
-                            </>
-                        )}
-                        {modal.type === "result" && (
-                            <>
-                                <h3
-                                    className={`text-xl font-semibold mb-4 ${
-                                        applicationResult?.success
-                                            ? "text-green-600"
-                                            : "text-red-600"
-                                    }`}
-                                >
-                                    {applicationResult?.success ? "지원 완료" : "지원 실패"}
-                                </h3>
-                                <p className="mb-6">{applicationResult?.message}</p>
-                                <div className="flex justify-end">
-                                    <button
-                                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-                                        onClick={closeModal}
-                                    >
-                                        확인
-                                    </button>
-                                </div>
-                            </>
-                        )}
-                        {modal.type === "alert" && (
-                            <>
-                                <h3 className="text-xl font-semibold mb-4">알림</h3>
-                                <p className="mb-6">{modal.message}</p>
-                                <div className="flex justify-end">
-                                    <button
-                                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-                                        onClick={closeModal}
-                                    >
-                                        확인
-                                    </button>
-                                </div>
-                            </>
-                        )}
-                    </div>
+            {/* 알림 모달 */}
+            <AlertModal
+                isOpen={alertModal.isOpen}
+                onClose={alertModal.closeModal}
+                title={alertModal.modalProps.title || '알림'}
+                message={alertModal.modalProps.message}
+                confirmText="확인"
+                type={alertModal.modalProps.type || 'info'}
+            />
+
+            {/* 지원 확인 모달 */}
+            <ConfirmModal
+                isOpen={confirmModal.isOpen}
+                onClose={confirmModal.closeModal}
+                onConfirm={confirmApply}
+                title="지원 확인"
+                message="정말 이 공고에 지원하시겠습니까?"
+                confirmText="예"
+                cancelText="아니오"
+            />
+
+            {/* 이력서 확인 모달 */}
+            <ConfirmModal
+                isOpen={resumeConfirmModal.isOpen}
+                onClose={resumeConfirmModal.closeModal}
+                onConfirm={goToResumeCreation}
+                title="이력서 확인"
+                message="이력서가 없습니다. 작성하러 가시겠습니까?"
+                confirmText="예"
+                cancelText="아니오"
+            />
+
+            {/* 결과 모달 */}
+            <Modal
+                isOpen={resultModal.isOpen}
+                onClose={resultModal.closeModal}
+                title={applicationResult?.success ? "지원 완료" : "지원 실패"}
+                size="sm"
+            >
+                <div className={`mb-6 ${applicationResult?.success ? "text-green-600" : "text-red-600"}`}>
+                    <p>{applicationResult?.message}</p>
                 </div>
-            )}
+                <div className="flex justify-end">
+                    <button
+                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                        onClick={resultModal.closeModal}
+                    >
+                        확인
+                    </button>
+                </div>
+            </Modal>
+
         </div>
     );
 }

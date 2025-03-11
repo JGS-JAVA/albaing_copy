@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import {useModal} from "../index";
 
 const ReviewModal = ({ companyId, onClose, onSubmit }) => {
     const [reviewTitle, setReviewTitle] = useState("");
