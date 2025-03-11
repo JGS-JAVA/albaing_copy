@@ -63,7 +63,7 @@ const Resume = () => {
         fetchResume();
     }, [userData]);
 
-    // 이후 나머지 UI 렌더링 코드는 그대로 유지합니다.
+
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen p-4">
