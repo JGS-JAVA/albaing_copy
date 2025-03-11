@@ -28,6 +28,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import CompanyDetail from "../pages/company/public/CompanyDetail";
 import MyApplication from "../pages/user/mypage/MyApplication";
 import MyPage from "../pages/user/mypage/MyPage";
+import ResumeView from "../pages/company/manage/applications/resume/ResumeView";
 
 // 메인 레이아웃 컴포넌트
 const MainLayout = ({children}) => (
@@ -82,6 +83,7 @@ function PathRoute() {
                     <Route path="/company/:companyId/reviews/:reviewId" element={<ReviewDetail/>}/> {/* 회사 리뷰 상세 페이지 */}
                     <Route path="/jobs/new" element={<MainLayout><JobpostAdd/></MainLayout>}/> {/* 채용공고 등록 페이지 */}
                     <Route path="/jobs/edit/:jobPostId" element={<MainLayout><JobpostEdit/></MainLayout>}/> {/* 채용공고 수정 페이지 */}
+                    <Route path="/resumes/:resumeId" element={<MainLayout><ResumeView /></MainLayout>}/> {/* 지원자 이력서 상세 보기 */}
                     {/*<Route path="/jobs/:id/applications" element={<MainLayout><JobApplicationManager /></MainLayout>} /> /!* 채용공고 지원자 관리 페이지 *!/*/}
                 </Route>
 
