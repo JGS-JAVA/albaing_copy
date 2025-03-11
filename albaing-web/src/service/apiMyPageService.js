@@ -55,7 +55,7 @@ const apiMyPageService = {
 
     // 특정 사용자의 스크랩 목록 조회
     getScrapsByUser: function (userId) {
-        return axios.get(`${API_MYPAGE_URL}/${userId}`)
+        return axios.get(`${API_MYPAGE_URL}/scrap/${userId}`)
             .then((res) => {
                 return res.data;
             })
