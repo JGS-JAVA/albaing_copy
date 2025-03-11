@@ -14,16 +14,27 @@ export default function FindId() {
 
         const endpoint =
             userType === "user"
-                ? `/api/auth/find/user/id?userName=${name}&userPhone=${phone}`
-                : `/api/auth/find/company/id?companyName=${name}&companyPhone=${phone}`;
+                ? `http://localhost:8080/api/auth/find/user/id?userName=${name}&userPhone=${phone}`
+                : `http://localhost:8080/api/auth/find/company/id?companyName=${name}&companyPhone=${phone}`;
 
-        axios.get(endpoint)
+
+        axios
+            .get(endpoint)
             .then(response => {
-                setEmail(response.data.email || "찾은 이메일 없음");
+                console.log("🔹 API 응답 데이터:", response.data);  // 응답 확인 로그
+
+                const email = userType === "user" ? response.data.userEmail : response.data.companyEmail;
+
+                if (email) {
+                    setEmail(email);
+                } else {
+                    setEmail("찾은 이메일 없음");
+                }
             })
             .catch(() => {
                 setError("정보를 찾을 수 없습니다.");
             });
+
     };
 
     return (

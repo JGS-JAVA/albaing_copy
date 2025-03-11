@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ErrorMessage, LoadingSpinner } from "../../components/common";
@@ -8,6 +8,7 @@ export default function JobPostDetail() {
     const { jobPostId } = useParams();
     const navigate = useNavigate();
     const { isLoggedIn, userType, userData } = useAuth();
+    const pageTopRef = useRef(null);
 
     const [jobPost, setJobPost] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -18,6 +19,11 @@ export default function JobPostDetail() {
     const [alreadyApplied, setAlreadyApplied] = useState(false);
     const [applicationResult, setApplicationResult] = useState(null);
     const [companyName, setCompanyName] = useState("");
+    const [companyImage, setCompanyImage] = useState(null);
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [jobPostId]);
 
     useEffect(() => {
         if (!jobPostId) {
@@ -29,11 +35,9 @@ export default function JobPostDetail() {
         loadJobPostData();
     }, [jobPostId, isLoggedIn, userType, userData]);
 
-    // 채용 공고 데이터 로드
     function loadJobPostData() {
         setLoading(true);
 
-        // 채용공고 상세 정보 조회
         axios.get(`/api/jobs/${jobPostId}`, { withCredentials: true })
             .then((response) => {
                 if (response.data) {
@@ -43,8 +47,9 @@ export default function JobPostDetail() {
                     if (jobData.companyId) {
                         axios.get(`/api/companies/${jobData.companyId}`, { withCredentials: true })
                             .then((companyResponse) => {
-                                if (companyResponse.data && companyResponse.data.companyName) {
-                                    setCompanyName(companyResponse.data.companyName);
+                                if (companyResponse.data) {
+                                    setCompanyName(companyResponse.data.companyName || "회사명 미지정");
+                                    setCompanyImage(companyResponse.data.companyImage || null);
                                 }
                             })
                             .catch(() => {
@@ -238,7 +243,7 @@ export default function JobPostDetail() {
     if (!jobPost) return <div className="text-center py-10">해당 공고를 찾을 수 없습니다.</div>
 
     return (
-        <div className="bg-gray-50 py-12">
+        <div className="bg-gray-50 py-12" ref={pageTopRef}>
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* 스크랩 버튼 */}
                 {isLoggedIn && userType === "personal" && (
@@ -246,7 +251,7 @@ export default function JobPostDetail() {
                         <button
                             className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${
                                 isScraped
-                                    ? "bg-yellow-400 text-white hover:bg-yellow-500"
+                                    ? "bg-blue-600 text-white hover:bg-blue-700"
                                     : "bg-gray-200 text-gray-600 hover:bg-gray-300"
                             }`}
                             onClick={toggleScrap}
@@ -271,8 +276,21 @@ export default function JobPostDetail() {
                     </div>
                 )}
 
-                {/* 기업 정보 섹션 */}
+                {/* 회사 이미지 표시 - 크게 */}
                 <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+                    {companyImage && (
+                        <div className="w-full h-64 bg-gray-100">
+                            <img
+                                src={companyImage}
+                                alt={companyName}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.style.display = "none";
+                                }}
+                            />
+                        </div>
+                    )}
                     <div className="flex items-center p-6 border-b border-gray-200">
                         <div className="flex-shrink-0 h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-2xl font-bold">
                             {companyName ? companyName.charAt(0) : 'C'}
