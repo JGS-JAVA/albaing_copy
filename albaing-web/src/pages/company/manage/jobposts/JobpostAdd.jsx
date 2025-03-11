@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../../contexts/AuthContext';
 
 const JobPostAdd = () => {
     const navigate = useNavigate();
-    const companyId = localStorage.getItem('companyId');
+    const { user } = useAuth();
+    const companyId = user?.data?.companyId || null;
 
     const jobCategories = [
         "외식/음료",
@@ -33,6 +35,7 @@ const JobPostAdd = () => {
     const [searchResults, setSearchResults] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
 
+    // 초기값에 companyId 포함
     const [formData, setFormData] = useState({
         companyId: companyId,
         jobPostTitle: '',
@@ -52,8 +55,13 @@ const JobPostAdd = () => {
         jobPostDueDate: '',
     });
 
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    // companyId가 변경될 경우 formData에도 업데이트
+    useEffect(() => {
+        setFormData(prev => ({
+            ...prev,
+            companyId: companyId,
+        }));
+    }, [companyId]);
 
     useEffect(() => {
         const script = document.createElement('script');
@@ -68,7 +76,7 @@ const JobPostAdd = () => {
         };
 
         return () => {
-
+            // cleanup if 필요하면 추가
         };
     }, []);
 
@@ -79,7 +87,7 @@ const JobPostAdd = () => {
             [name]: value
         }));
 
-        // 상세 주소가 변경될 때 전체 주소도 업데이트
+        // 상세 주소 변경 시 전체 주소 업데이트
         if (name === 'jobPostWorkPlaceDetail') {
             setFormData(prev => ({
                 ...prev,
@@ -171,7 +179,6 @@ const JobPostAdd = () => {
 
         return (
             <div className="bg-white rounded-lg shadow p-6">
-                {/* 상단: 제목 및 주요 정보 (3개씩 2줄) */}
                 <div className="border-b pb-4 mb-4">
                     <h2 className="text-3xl font-bold text-gray-800 mb-2">
                         {data.jobPostTitle || '제목 없음'}
@@ -197,8 +204,6 @@ const JobPostAdd = () => {
                         </div>
                     </div>
                 </div>
-
-                {/* 중단: 세부 정보 */}
                 <div className="mb-4 space-y-1 text-sm text-gray-600">
                     <p>
                         <strong>근무지:</strong> {fullAddress || '-'}
@@ -213,8 +218,6 @@ const JobPostAdd = () => {
                         <strong>학력요건:</strong> {data.jobPostRequiredEducations || '-'}
                     </p>
                 </div>
-
-                {/* 하단: 이미지 영역 */}
                 {data.jobPostOptionalImage && (
                     <div className="mt-4">
                         <img
@@ -231,6 +234,9 @@ const JobPostAdd = () => {
             </div>
         );
     };
+
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     return (
         <div className="max-w-4xl mx-auto p-6 bg-gradient-to-r from-gray-100 to-gray-50 shadow-lg rounded-lg">
@@ -275,7 +281,7 @@ const JobPostAdd = () => {
 
             {activeTab === "edit" ? (
                 <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md space-y-6">
-                    {/* 기존 폼 필드들 */}
+                    {/* 채용공고 제목 */}
                     <div>
                         <label htmlFor="jobPostTitle" className="block text-sm font-medium text-gray-700 mb-1">
                             채용공고 제목 *
@@ -291,7 +297,7 @@ const JobPostAdd = () => {
                             placeholder="채용 제목을 입력하세요"
                         />
                     </div>
-
+                    {/* 이미지 URL */}
                     <div>
                         <label htmlFor="jobPostOptionalImage" className="block text-sm font-medium text-gray-700 mb-1">
                             이미지 URL (선택사항)
@@ -306,7 +312,7 @@ const JobPostAdd = () => {
                             placeholder="이미지 URL을 입력하세요"
                         />
                     </div>
-
+                    {/* 연락처 */}
                     <div>
                         <label htmlFor="jobPostContactNumber" className="block text-sm font-medium text-gray-700 mb-1">
                             연락처 *
@@ -322,7 +328,7 @@ const JobPostAdd = () => {
                             placeholder="연락 가능한 전화번호를 입력하세요"
                         />
                     </div>
-
+                    {/* 필요 학력 */}
                     <div>
                         <label htmlFor="jobPostRequiredEducations" className="block text-sm font-medium text-gray-700 mb-1">
                             필요 학력
@@ -337,7 +343,7 @@ const JobPostAdd = () => {
                             placeholder="예: 고졸 이상, 무관 등"
                         />
                     </div>
-
+                    {/* 직종 카테고리 */}
                     <div>
                         <label htmlFor="jobPostJobCategory" className="block text-sm font-medium text-gray-700 mb-1">
                             직종 카테고리 *
@@ -358,7 +364,7 @@ const JobPostAdd = () => {
                             ))}
                         </select>
                     </div>
-
+                    {/* 고용형태 */}
                     <div>
                         <label htmlFor="jobPostJobType" className="block text-sm font-medium text-gray-700 mb-1">
                             고용형태 *
@@ -377,7 +383,7 @@ const JobPostAdd = () => {
                             ))}
                         </select>
                     </div>
-
+                    {/* 근무기간 */}
                     <div>
                         <label htmlFor="jobPostWorkingPeriod" className="block text-sm font-medium text-gray-700 mb-1">
                             근무기간 *
@@ -396,7 +402,7 @@ const JobPostAdd = () => {
                             ))}
                         </select>
                     </div>
-
+                    {/* 근무요일 */}
                     <div>
                         <label htmlFor="jobWorkSchedule" className="block text-sm font-medium text-gray-700 mb-1">
                             근무요일 *
@@ -415,7 +421,7 @@ const JobPostAdd = () => {
                             ))}
                         </select>
                     </div>
-
+                    {/* 근무시간 */}
                     <div>
                         <label htmlFor="jobPostShiftHours" className="block text-sm font-medium text-gray-700 mb-1">
                             근무시간 *
@@ -434,7 +440,7 @@ const JobPostAdd = () => {
                             ))}
                         </select>
                     </div>
-
+                    {/* 급여 */}
                     <div>
                         <label htmlFor="jobPostSalary" className="block text-sm font-medium text-gray-700 mb-1">
                             급여 *
@@ -450,7 +456,7 @@ const JobPostAdd = () => {
                             placeholder="예: 시급 10,000원, 월 250만원 등"
                         />
                     </div>
-
+                    {/* 근무지 */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                             근무지 *
@@ -472,7 +478,6 @@ const JobPostAdd = () => {
                                     주소 검색
                                 </button>
                             </div>
-
                             <input
                                 type="text"
                                 id="jobPostWorkPlaceDetail"
@@ -484,7 +489,7 @@ const JobPostAdd = () => {
                             />
                         </div>
                     </div>
-
+                    {/* 채용 마감일 */}
                     <div>
                         <label htmlFor="jobPostDueDate" className="block text-sm font-medium text-gray-700 mb-1">
                             채용 마감일 *
@@ -499,7 +504,6 @@ const JobPostAdd = () => {
                             className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
-
                     <div className="px-6 py-4 bg-gray-50 text-right flex justify-end space-x-3">
                         <button
                             type="button"
@@ -554,7 +558,6 @@ const JobPostAdd = () => {
                                 {isSearching ? '검색 중...' : '검색'}
                             </button>
                         </div>
-
                         {searchResults.length > 0 ? (
                             <div className="mb-4 max-h-60 overflow-y-auto border rounded-md">
                                 <ul className="divide-y divide-gray-200">
@@ -578,7 +581,6 @@ const JobPostAdd = () => {
                                 </div>
                             )
                         )}
-
                         <div className="flex justify-end">
                             <button
                                 type="button"
