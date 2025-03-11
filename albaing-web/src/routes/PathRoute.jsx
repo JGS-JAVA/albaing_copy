@@ -25,8 +25,6 @@ import NotFound from "../components/layout/NotFound";
 import RegisterPage from "../pages/auth/register/RegisterPage";
 import ProtectedRoute from "./ProtectedRoute";
 import CompanyDetail from "../pages/company/public/CompanyDetail";
-import KakaoLogin from "../pages/auth/teach-kakao/KakaoLogin";
-import NaverLogin from "../pages/auth/teach-naver/NaverLogin";
 import MyApplication from "../pages/user/mypage/MyApplication";
 import MyPage from "../pages/user/mypage/MyPage";
 
@@ -43,21 +41,11 @@ const MainLayout = ({children}) => (
     </div>
 );
 
-function MyScrap() {
-    return null;
-}
-
-function MyReviews() {
-    return null;
-}
-
 function PathRoute() {
     return (
         <BrowserRouter>
             <Routes>
                 {/* 모든 사용자 접근 가능 */}
-                <Route path="/k" element={<MainLayout><KakaoLogin /></MainLayout>} /> {/* 메인 홈페이지 */}
-                <Route path="/n" element={<MainLayout><NaverLogin /></MainLayout>} /> {/* 메인 홈페이지 */}
                 <Route path="/" element={<MainLayout><Home /></MainLayout>} /> {/* 메인 홈페이지 */}
                 <Route path="/login" element={<MainLayout><Login /></MainLayout>} /> {/* 로그인 페이지 */}
                 <Route path="/register" element={<MainLayout><RegisterPage /></MainLayout>} /> {/* 회원가입 선택 페이지 */}
@@ -80,8 +68,8 @@ function PathRoute() {
                 <Route element={<ProtectedRoute userTypeRequired="personal"/>}>
                     <Route path="/mypage/:userId" element={<MainLayout><MyPage /></MainLayout>} /> {/* 일반 사용자 마이페이지 메인 */}
                     <Route path="/mypage/applications" element={<MainLayout><MyApplication /></MainLayout>} /> {/* 일반 사용자 지원 내역 페이지 */}
-                    <Route path="/mypage/scraps" element={<MainLayout><MyScrap /></MainLayout>} /> {/* 일반 사용자 스크랩 목록 페이지 */}
-                    <Route path="/mypage/reviews" element={<MainLayout><MyReviews /></MainLayout>} /> {/* 일반 사용자 작성 리뷰 목록 페이지 */}
+                    {/*<Route path="/mypage/scraps" element={<MainLayout><MyScrap /></MainLayout>} /> /!* 일반 사용자 스크랩 목록 페이지 *!/ */}
+                    {/*<Route path="/mypage/reviews" element={<MainLayout><MyReviews /></MainLayout>} /> /!* 일반 사용자 작성 리뷰 목록 페이지 *!/ */}
                     <Route path="/mypage/user/:userId/edit" element={<MainLayout><UserEdit /></MainLayout>} /> {/* 사용자 정보 수정 페이지*/}
                     <Route path="/resumes/edit" element={<MainLayout><ResumeEdit /></MainLayout>} /> {/* 이력서 편집 페이지 */}
                 </Route>
