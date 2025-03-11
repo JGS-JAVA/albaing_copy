@@ -49,7 +49,7 @@ const BusinessValidation = () => {
 
                 if (valid === '01') {
                     alert("businessRegistration axios : 사업자 인증에 성공했습니다.");
-                    navigate('/register/company'); // ✅ useNavigate 사용하여 페이지 이동
+                    navigate('/register/company'); // ✅ useNavigate 사용하여 페이지 이동..
                 } else {
                     alert("사업자가 아닙니다. 사업자 회원가입을 진행할 수 없습니다.");
                     navigate('/register/BusinessValidation'); // ✅ 다시 인증 페이지로 이동
