@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../../contexts/AuthContext';
+import { LoadingSpinner, ErrorMessage } from '../../../../components';
 
 const JobPostAdd = () => {
     const navigate = useNavigate();
@@ -34,6 +35,8 @@ const JobPostAdd = () => {
     const [searchKeyword, setSearchKeyword] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     // 초기값에 companyId 포함
     const [formData, setFormData] = useState({
@@ -71,7 +74,7 @@ const JobPostAdd = () => {
 
         script.onload = () => {
             window.kakao.maps.load(() => {
-                console.log('카카오맵 API가 로드되었습니다.');
+                // 카카오맵 API 로드됨
             });
         };
 
@@ -158,12 +161,11 @@ const JobPostAdd = () => {
             .post('/api/jobs', updatedFormData)
             .then((response) => {
                 setLoading(false);
-                navigate(`/jobs/${response.data.jobPostId}`);
+                navigate(-1);
             })
             .catch((error) => {
                 setLoading(false);
                 setError('채용공고 등록 중 오류가 발생했습니다. 다시 시도해주세요.');
-                console.error('Error creating job post:', error);
             });
     };
 
@@ -183,7 +185,7 @@ const JobPostAdd = () => {
                     <h2 className="text-3xl font-bold text-gray-800 mb-2">
                         {data.jobPostTitle || '제목 없음'}
                     </h2>
-                    <div className="grid grid-cols-3 gap-4 text-gray-600 text-sm">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-gray-600 text-sm">
                         <div>
                             <strong>직종 카테고리:</strong> {data.jobPostJobCategory || '-'}
                         </div>
@@ -235,13 +237,12 @@ const JobPostAdd = () => {
         );
     };
 
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    if (loading) return <LoadingSpinner message="처리 중입니다..." />;
 
     return (
-        <div className="max-w-4xl mx-auto p-6 bg-gradient-to-r from-gray-100 to-gray-50 shadow-lg rounded-lg">
+        <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg my-8">
             <div className="flex justify-between items-center mb-6 border-b pb-4">
-                <h1 className="text-3xl font-bold text-gray-800">채용공고 등록</h1>
+                <h1 className="text-2xl font-bold text-gray-800">채용공고 등록</h1>
                 <button
                     onClick={handleCancel}
                     className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
@@ -251,40 +252,38 @@ const JobPostAdd = () => {
             </div>
 
             <div className="mb-6">
-                <button
-                    onClick={() => setActiveTab("edit")}
-                    className={`px-4 py-2 mr-2 ${
-                        activeTab === "edit"
-                            ? "bg-blue-500 text-white"
-                            : "bg-white text-gray-700 border"
-                    } rounded`}
-                >
-                    작성
-                </button>
-                <button
-                    onClick={() => setActiveTab("preview")}
-                    className={`px-4 py-2 ${
-                        activeTab === "preview"
-                            ? "bg-blue-500 text-white"
-                            : "bg-white text-gray-700 border"
-                    } rounded`}
-                >
-                    미리보기
-                </button>
+                <div className="inline-flex rounded-lg">
+                    <button
+                        onClick={() => setActiveTab("edit")}
+                        className={`px-4 py-2 rounded-l-lg ${
+                            activeTab === "edit"
+                                ? "bg-blue-500 text-white"
+                                : "bg-gray-200 text-gray-700"
+                        } transition-colors`}
+                    >
+                        작성
+                    </button>
+                    <button
+                        onClick={() => setActiveTab("preview")}
+                        className={`px-4 py-2 rounded-r-lg ${
+                            activeTab === "preview"
+                                ? "bg-blue-500 text-white"
+                                : "bg-gray-200 text-gray-700"
+                        } transition-colors`}
+                    >
+                        미리보기
+                    </button>
+                </div>
             </div>
 
-            {error && (
-                <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-                    {error}
-                </div>
-            )}
+            {error && <ErrorMessage message={error} />}
 
             {activeTab === "edit" ? (
-                <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6">
                     {/* 채용공고 제목 */}
                     <div>
                         <label htmlFor="jobPostTitle" className="block text-sm font-medium text-gray-700 mb-1">
-                            채용공고 제목 *
+                            채용공고 제목 <span className="text-red-500">*</span>
                         </label>
                         <input
                             type="text"
@@ -293,10 +292,11 @@ const JobPostAdd = () => {
                             value={formData.jobPostTitle}
                             onChange={handleChange}
                             required
-                            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             placeholder="채용 제목을 입력하세요"
                         />
                     </div>
+
                     {/* 이미지 URL */}
                     <div>
                         <label htmlFor="jobPostOptionalImage" className="block text-sm font-medium text-gray-700 mb-1">
@@ -308,14 +308,15 @@ const JobPostAdd = () => {
                             name="jobPostOptionalImage"
                             value={formData.jobPostOptionalImage}
                             onChange={handleChange}
-                            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             placeholder="이미지 URL을 입력하세요"
                         />
                     </div>
+
                     {/* 연락처 */}
                     <div>
                         <label htmlFor="jobPostContactNumber" className="block text-sm font-medium text-gray-700 mb-1">
-                            연락처 *
+                            연락처 <span className="text-red-500">*</span>
                         </label>
                         <input
                             type="text"
@@ -324,10 +325,11 @@ const JobPostAdd = () => {
                             value={formData.jobPostContactNumber}
                             onChange={handleChange}
                             required
-                            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             placeholder="연락 가능한 전화번호를 입력하세요"
                         />
                     </div>
+
                     {/* 필요 학력 */}
                     <div>
                         <label htmlFor="jobPostRequiredEducations" className="block text-sm font-medium text-gray-700 mb-1">
@@ -339,127 +341,136 @@ const JobPostAdd = () => {
                             name="jobPostRequiredEducations"
                             value={formData.jobPostRequiredEducations}
                             onChange={handleChange}
-                            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             placeholder="예: 고졸 이상, 무관 등"
                         />
                     </div>
-                    {/* 직종 카테고리 */}
-                    <div>
-                        <label htmlFor="jobPostJobCategory" className="block text-sm font-medium text-gray-700 mb-1">
-                            직종 카테고리 *
-                        </label>
-                        <select
-                            id="jobPostJobCategory"
-                            name="jobPostJobCategory"
-                            value={formData.jobPostJobCategory}
-                            onChange={handleChange}
-                            required
-                            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            <option value="">카테고리 선택</option>
-                            {jobCategories.map((category, index) => (
-                                <option key={index} value={category}>
-                                    {category}
-                                </option>
-                            ))}
-                        </select>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* 직종 카테고리 */}
+                        <div>
+                            <label htmlFor="jobPostJobCategory" className="block text-sm font-medium text-gray-700 mb-1">
+                                직종 카테고리 <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                id="jobPostJobCategory"
+                                name="jobPostJobCategory"
+                                value={formData.jobPostJobCategory}
+                                onChange={handleChange}
+                                required
+                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                            >
+                                <option value="">카테고리 선택</option>
+                                {jobCategories.map((category, index) => (
+                                    <option key={index} value={category}>
+                                        {category}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* 고용형태 */}
+                        <div>
+                            <label htmlFor="jobPostJobType" className="block text-sm font-medium text-gray-700 mb-1">
+                                고용형태 <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                id="jobPostJobType"
+                                name="jobPostJobType"
+                                value={formData.jobPostJobType}
+                                onChange={handleChange}
+                                required
+                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                            >
+                                <option value="">고용형태 선택</option>
+                                {jobTypes.map((type, index) => (
+                                    <option key={index} value={type}>{type}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* 근무기간 */}
+                        <div>
+                            <label htmlFor="jobPostWorkingPeriod" className="block text-sm font-medium text-gray-700 mb-1">
+                                근무기간 <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                id="jobPostWorkingPeriod"
+                                name="jobPostWorkingPeriod"
+                                value={formData.jobPostWorkingPeriod}
+                                onChange={handleChange}
+                                required
+                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                            >
+                                <option value="">근무기간 선택</option>
+                                {workingPeriods.map((period, index) => (
+                                    <option key={index} value={period}>{period}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* 근무요일 */}
+                        <div>
+                            <label htmlFor="jobWorkSchedule" className="block text-sm font-medium text-gray-700 mb-1">
+                                근무요일 <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                id="jobWorkSchedule"
+                                name="jobWorkSchedule"
+                                value={formData.jobWorkSchedule}
+                                onChange={handleChange}
+                                required
+                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                            >
+                                <option value="">근무요일 선택</option>
+                                {workSchedules.map((schedule, index) => (
+                                    <option key={index} value={schedule}>{schedule}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* 근무시간 */}
+                        <div>
+                            <label htmlFor="jobPostShiftHours" className="block text-sm font-medium text-gray-700 mb-1">
+                                근무시간 <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                id="jobPostShiftHours"
+                                name="jobPostShiftHours"
+                                value={formData.jobPostShiftHours}
+                                onChange={handleChange}
+                                required
+                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                            >
+                                <option value="">근무시간 선택</option>
+                                {shiftHours.map((hour, index) => (
+                                    <option key={index} value={hour}>{hour}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* 급여 */}
+                        <div>
+                            <label htmlFor="jobPostSalary" className="block text-sm font-medium text-gray-700 mb-1">
+                                급여 <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="jobPostSalary"
+                                name="jobPostSalary"
+                                value={formData.jobPostSalary}
+                                onChange={handleChange}
+                                required
+                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="예: 시급 10,000원, 월 250만원 등"
+                            />
+                        </div>
                     </div>
-                    {/* 고용형태 */}
-                    <div>
-                        <label htmlFor="jobPostJobType" className="block text-sm font-medium text-gray-700 mb-1">
-                            고용형태 *
-                        </label>
-                        <select
-                            id="jobPostJobType"
-                            name="jobPostJobType"
-                            value={formData.jobPostJobType}
-                            onChange={handleChange}
-                            required
-                            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            <option value="">고용형태 선택</option>
-                            {jobTypes.map((type, index) => (
-                                <option key={index} value={type}>{type}</option>
-                            ))}
-                        </select>
-                    </div>
-                    {/* 근무기간 */}
-                    <div>
-                        <label htmlFor="jobPostWorkingPeriod" className="block text-sm font-medium text-gray-700 mb-1">
-                            근무기간 *
-                        </label>
-                        <select
-                            id="jobPostWorkingPeriod"
-                            name="jobPostWorkingPeriod"
-                            value={formData.jobPostWorkingPeriod}
-                            onChange={handleChange}
-                            required
-                            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            <option value="">근무기간 선택</option>
-                            {workingPeriods.map((period, index) => (
-                                <option key={index} value={period}>{period}</option>
-                            ))}
-                        </select>
-                    </div>
-                    {/* 근무요일 */}
-                    <div>
-                        <label htmlFor="jobWorkSchedule" className="block text-sm font-medium text-gray-700 mb-1">
-                            근무요일 *
-                        </label>
-                        <select
-                            id="jobWorkSchedule"
-                            name="jobWorkSchedule"
-                            value={formData.jobWorkSchedule}
-                            onChange={handleChange}
-                            required
-                            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            <option value="">근무요일 선택</option>
-                            {workSchedules.map((schedule, index) => (
-                                <option key={index} value={schedule}>{schedule}</option>
-                            ))}
-                        </select>
-                    </div>
-                    {/* 근무시간 */}
-                    <div>
-                        <label htmlFor="jobPostShiftHours" className="block text-sm font-medium text-gray-700 mb-1">
-                            근무시간 *
-                        </label>
-                        <select
-                            id="jobPostShiftHours"
-                            name="jobPostShiftHours"
-                            value={formData.jobPostShiftHours}
-                            onChange={handleChange}
-                            required
-                            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            <option value="">근무시간 선택</option>
-                            {shiftHours.map((hour, index) => (
-                                <option key={index} value={hour}>{hour}</option>
-                            ))}
-                        </select>
-                    </div>
-                    {/* 급여 */}
-                    <div>
-                        <label htmlFor="jobPostSalary" className="block text-sm font-medium text-gray-700 mb-1">
-                            급여 *
-                        </label>
-                        <input
-                            type="text"
-                            id="jobPostSalary"
-                            name="jobPostSalary"
-                            value={formData.jobPostSalary}
-                            onChange={handleChange}
-                            required
-                            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="예: 시급 10,000원, 월 250만원 등"
-                        />
-                    </div>
+
                     {/* 근무지 */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            근무지 *
+                            근무지 <span className="text-red-500">*</span>
                         </label>
                         <div className="space-y-3">
                             <div className="flex items-center">
@@ -467,13 +478,13 @@ const JobPostAdd = () => {
                                     type="text"
                                     readOnly
                                     value={formData.jobPostWorkPlace}
-                                    className="w-full p-3 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full p-3 border border-gray-300 rounded-l-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                     placeholder="주소 검색을 클릭하여 주소를 검색하세요"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowAddressSearch(true)}
-                                    className="p-3 bg-blue-500 text-white rounded-r-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="p-3 bg-blue-500 text-white rounded-r-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-500"
                                 >
                                     주소 검색
                                 </button>
@@ -484,15 +495,16 @@ const JobPostAdd = () => {
                                 name="jobPostWorkPlaceDetail"
                                 value={formData.jobPostWorkPlaceDetail}
                                 onChange={handleChange}
-                                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 placeholder="상세 주소를 입력하세요 (예: 건물명, 동/호수 등)"
                             />
                         </div>
                     </div>
+
                     {/* 채용 마감일 */}
                     <div>
                         <label htmlFor="jobPostDueDate" className="block text-sm font-medium text-gray-700 mb-1">
-                            채용 마감일 *
+                            채용 마감일 <span className="text-red-500">*</span>
                         </label>
                         <input
                             type="date"
@@ -501,21 +513,22 @@ const JobPostAdd = () => {
                             value={formData.jobPostDueDate}
                             onChange={handleChange}
                             required
-                            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         />
                     </div>
-                    <div className="px-6 py-4 bg-gray-50 text-right flex justify-end space-x-3">
+
+                    <div className="pt-4 flex justify-end space-x-3">
                         <button
                             type="button"
                             onClick={handleCancel}
-                            className="px-4 py-2 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+                            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors"
                         >
                             취소
                         </button>
                         <button
                             type="submit"
                             disabled={loading}
-                            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 transition-colors"
+                            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 disabled:opacity-50 transition-colors"
                         >
                             {loading ? '처리 중...' : '등록하기'}
                         </button>
@@ -527,7 +540,7 @@ const JobPostAdd = () => {
                     <div className="text-right">
                         <button
                             onClick={() => setActiveTab("edit")}
-                            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 transition-colors"
                         >
                             수정하기
                         </button>
@@ -538,14 +551,14 @@ const JobPostAdd = () => {
             {/* 주소 검색 모달 */}
             {showAddressSearch && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-xl max-h-screen overflow-y-auto">
+                    <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-xl max-h-[80vh] overflow-y-auto">
                         <h3 className="text-xl font-bold mb-4">주소 검색</h3>
                         <div className="flex mb-4">
                             <input
                                 type="text"
                                 value={searchKeyword}
                                 onChange={(e) => setSearchKeyword(e.target.value)}
-                                className="flex-grow p-3 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="flex-grow p-3 border border-gray-300 rounded-l-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 placeholder="주소 또는 건물명을 입력하세요"
                                 onKeyPress={(e) => e.key === 'Enter' && searchAddress()}
                             />
@@ -553,11 +566,13 @@ const JobPostAdd = () => {
                                 type="button"
                                 onClick={searchAddress}
                                 disabled={isSearching}
-                                className="p-3 bg-blue-500 text-white rounded-r-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                                className="p-3 bg-blue-500 text-white rounded-r-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
                             >
                                 {isSearching ? '검색 중...' : '검색'}
                             </button>
                         </div>
+
+                        {/* 검색 결과 */}
                         {searchResults.length > 0 ? (
                             <div className="mb-4 max-h-60 overflow-y-auto border rounded-md">
                                 <ul className="divide-y divide-gray-200">
@@ -581,11 +596,12 @@ const JobPostAdd = () => {
                                 </div>
                             )
                         )}
+
                         <div className="flex justify-end">
                             <button
                                 type="button"
                                 onClick={() => setShowAddressSearch(false)}
-                                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:ring-2 focus:ring-gray-400"
                             >
                                 닫기
                             </button>
