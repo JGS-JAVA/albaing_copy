@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../../contexts/AuthContext";
-import { ErrorMessage, LoadingSpinner } from "../../../components/common";
+import { ErrorMessage, LoadingSpinner } from "../../../components";
 import axios from 'axios';
 import DashboardLayout from "./components/DashboardLayout";
 import DashboardOverview from "./components/DashboardOverview";

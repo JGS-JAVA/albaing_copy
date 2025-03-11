@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { LoadingSpinner, ErrorMessage } from '../../components/common';
+import {LoadingSpinner, ErrorMessage, useModal, AlertModal} from '../../components';
 import Pagination from '../../components/common/Pagination';
 import { useAuth } from '../../contexts/AuthContext';
 import JobCard from "./components/JobCard";
@@ -30,7 +30,6 @@ const locations = [
 ];
 
 export default function JobpostList() {
-    // Auth 컨텍스트 사용
     const { isLoggedIn, userType, userData } = useAuth();
 
     // 상태 관리
@@ -45,9 +44,8 @@ export default function JobpostList() {
     const [totalItems, setTotalItems] = useState(0);
     const [itemsPerPage] = useState(10);
     const [scrapedPosts, setScrapedPosts] = useState([]);
-    const [modal, setModal] = useState({ show: false, message: "", type: "" });
+    const alertModal = useModal();
 
-    // 초기 데이터 로드 및 필터링 조건 변경 시 데이터 새로 로드
     useEffect(() => {
         fetchJobListings();
     }, [currentPage, selectedCategory, selectedLocation, searchQuery]);
@@ -62,25 +60,22 @@ export default function JobpostList() {
     // 스크랩된 공고 목록 로드
     useEffect(() => {
         if (isLoggedIn && userType === "personal") {
-            // 로컬 스토리지에서 불러오기
             const localScrapedPosts = JSON.parse(localStorage.getItem("scrapedPosts") || "[]");
             setScrapedPosts(localScrapedPosts);
 
-            // API에서 불러오기 (사용자 ID가 있는 경우)
             if (userData && userData.userId) {
                 fetchUserScraps(userData.userId);
             }
         }
     }, [isLoggedIn, userType, userData]);
 
-    // 사용자 스크랩 목록 가져오기 - Promise 방식
+    // 사용자 스크랩 목록 가져오기
     const fetchUserScraps = (userId) => {
         axios.get(`/api/scrap/user/${userId}`, { withCredentials: true })
             .then(response => {
                 if (response.data && Array.isArray(response.data)) {
                     const apiScrapedPosts = response.data.map(scrap => Number(scrap.jobPostId));
 
-                    // 로컬 스토리지 스크랩과 API 스크랩 병합
                     const localScrapedPosts = JSON.parse(localStorage.getItem("scrapedPosts") || "[]");
                     const mergedScraps = [...new Set([...localScrapedPosts, ...apiScrapedPosts])];
 
@@ -93,9 +88,8 @@ export default function JobpostList() {
             });
     };
 
-    // 회사 정보 데이터 조회 - Promise 방식
+    // 회사 정보 데이터 조회
     const fetchCompanyInfo = () => {
-        // 중복 제거를 위해 Set 사용
         const uniqueCompanyIds = [...new Set(
             jobListings
                 .filter(job => job.companyId)
@@ -245,28 +239,27 @@ export default function JobpostList() {
         }
     };
 
-    // 모달 관련 함수
-    const showModal = (message, type) => {
-        setModal({ show: true, message, type });
-    };
-
-    const closeModal = () => {
-        setModal({ show: false, message: "", type: "" });
-    };
-
     // 스크랩 토글 함수
     const toggleScrap = (jobPostId, event) => {
-        // 이벤트 전파 방지 (Link 클릭 방지)
+
         event.preventDefault();
         event.stopPropagation();
 
         if (!isLoggedIn) {
-            showModal("로그인 후 이용 가능합니다.", "alert");
+            alertModal.openModal({
+                title: '로그인 필요',
+                message: '로그인 후 이용 가능합니다.',
+                type: 'info'
+            });
             return;
         }
 
         if (userType !== "personal") {
-            showModal("개인 회원만 스크랩할 수 있습니다.", "alert");
+            alertModal.openModal({
+                title: '권한 제한',
+                message: '개인 회원만 스크랩할 수 있습니다.',
+                type: 'warning'
+            });
             return;
         }
 
@@ -275,26 +268,22 @@ export default function JobpostList() {
         let updatedScraps = [...scrapedPosts];
 
         if (isCurrentlyScraped) {
-            // 스크랩 취소
+
             updatedScraps = updatedScraps.filter(id => id !== jobId);
 
-            // API 호출 (사용자 ID가 있는 경우)
             if (userData && userData.userId) {
                 axios.delete(`/api/scrap/remove/${userData.userId}/${jobId}`, { withCredentials: true })
                     .catch(() => {/* 실패 시 특별한 처리 없음 */});
             }
         } else {
-            // 스크랩 추가
             updatedScraps.push(jobId);
 
-            // API 호출 (사용자 ID가 있는 경우)
             if (userData && userData.userId) {
                 axios.post(`/api/scrap/add/${userData.userId}/${jobId}`, {}, { withCredentials: true })
                     .catch(() => {/* 실패 시 특별한 처리 없음 */});
             }
         }
 
-        // 상태 및 로컬 스토리지 업데이트
         setScrapedPosts(updatedScraps);
         localStorage.setItem("scrapedPosts", JSON.stringify(updatedScraps));
     };
@@ -415,22 +404,14 @@ export default function JobpostList() {
             </div>
 
             {/* 모달 */}
-            {modal.show && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 max-w-md w-full">
-                        <h3 className="text-xl font-semibold mb-4">알림</h3>
-                        <p className="mb-6">{modal.message}</p>
-                        <div className="flex justify-end">
-                            <button
-                                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-                                onClick={closeModal}
-                            >
-                                확인
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <AlertModal
+                isOpen={alertModal.isOpen}
+                onClose={alertModal.closeModal}
+                title={alertModal.modalProps.title || '알림'}
+                message={alertModal.modalProps.message}
+                confirmText={alertModal.modalProps.confirmText || '확인'}
+                type={alertModal.modalProps.type || 'info'}
+            />
         </div>
     );
 }

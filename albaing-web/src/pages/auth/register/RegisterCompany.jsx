@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import {ErrorMessage} from "../../../components/common";
+import {ErrorMessage} from "../../../components";
+import { AlertModal, useModal } from '../../../components';
 
 const RegisterCompany = () => {
     const [companyName, setCompanyName] = useState("");
@@ -20,6 +21,7 @@ const RegisterCompany = () => {
     const [verificationCode, setVerificationCode] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const alertModal = useModal();
 
     const navigate = useNavigate();
 
@@ -36,7 +38,11 @@ const RegisterCompany = () => {
             email: companyEmail
         })
             .then(response => {
-                alert("인증번호가 이메일로 발송되었습니다.");
+                alertModal.openModal({
+                    title: '인증번호 발송',
+                    message: '인증번호가 이메일로 발송되었습니다.',
+                    type: 'success'
+                });
             })
             .catch(error => {
                 setError(`인증번호 발송 실패: ${error.response?.data?.message || "알 수 없는 오류가 발생했습니다."}`);
@@ -50,9 +56,9 @@ const RegisterCompany = () => {
     const verifyCode = () => {
         if (!verificationCode) {
             setError("인증번호를 입력해주세요.");
+
             return;
         }
-
         setLoading(true);
         setError("");
 
@@ -62,7 +68,11 @@ const RegisterCompany = () => {
         })
             .then(response => {
                 setEmailVerified(true);
-                alert("이메일 인증이 완료되었습니다.");
+                alertModal.openModal({
+                    title: '인증 완료',
+                    message: '이메일 인증이 완료되었습니다.',
+                    type: 'success'
+                });
             })
             .catch(error => {
                 setError(`인증번호 확인 실패: ${error.response?.data?.message || "알 수 없는 오류가 발생했습니다."}`);
@@ -165,8 +175,12 @@ const RegisterCompany = () => {
             termsAgreement
         })
             .then(response => {
-                alert("회사 회원가입이 성공적으로 완료되었습니다.");
-                navigate("/login");
+                alertModal.openModal({
+                    title: '가입 완료',
+                    message: '회원가입이 성공적으로 완료되었습니다.',
+                    type: 'success',
+                    onClose: () => navigate("/login")
+                });
             })
             .catch(error => {
                 setError(`회원가입 실패: ${error.response?.data?.message || "알 수 없는 오류가 발생했습니다."}`);
@@ -176,7 +190,6 @@ const RegisterCompany = () => {
                 setLoading(false);
             });
     };
-
     return (
         <div className="max-w-2xl mx-auto px-4 py-10">
             <div className="text-center mb-10">
@@ -493,6 +506,16 @@ const RegisterCompany = () => {
                     </Link>
                 </p>
             </div>
+
+            {/* 알림 모달 */}
+            <AlertModal
+                isOpen={alertModal.isOpen}
+                onClose={alertModal.closeModal}
+                title={alertModal.modalProps.title || '알림'}
+                message={alertModal.modalProps.message}
+                confirmText="확인"
+                type={alertModal.modalProps.type || 'info'}
+            />
         </div>
     );
 };
