@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { LoadingSpinner, ErrorMessage } from '../../components/common';
 import Pagination from '../../components/common/Pagination';
+import { useAuth } from '../../contexts/AuthContext';
+import JobCard from "./components/JobCard";
 
 // 카테고리 분류 데이터
 const categories = [
@@ -29,9 +30,12 @@ const locations = [
 ];
 
 export default function JobpostList() {
+    // Auth 컨텍스트 사용
+    const { isLoggedIn, userType, userData } = useAuth();
+
     // 상태 관리
     const [jobListings, setJobListings] = useState([]);
-    const [companyNames, setCompanyNames] = useState({});
+    const [companyInfo, setCompanyInfo] = useState({});  // 회사 정보(이름, 이미지)
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedCategory, setSelectedCategory] = useState('all');
@@ -40,21 +44,57 @@ export default function JobpostList() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
     const [itemsPerPage] = useState(10);
+    const [scrapedPosts, setScrapedPosts] = useState([]);
+    const [modal, setModal] = useState({ show: false, message: "", type: "" });
 
     // 초기 데이터 로드 및 필터링 조건 변경 시 데이터 새로 로드
     useEffect(() => {
         fetchJobListings();
     }, [currentPage, selectedCategory, selectedLocation, searchQuery]);
 
-    // 회사명 데이터 불러오기
+    // 회사 정보 데이터 불러오기
     useEffect(() => {
         if (jobListings.length > 0) {
-            fetchCompanyNames();
+            fetchCompanyInfo();
         }
     }, [jobListings]);
 
-    // 회사명 데이터 조회
-    const fetchCompanyNames = async () => {
+    // 스크랩된 공고 목록 로드
+    useEffect(() => {
+        if (isLoggedIn && userType === "personal") {
+            // 로컬 스토리지에서 불러오기
+            const localScrapedPosts = JSON.parse(localStorage.getItem("scrapedPosts") || "[]");
+            setScrapedPosts(localScrapedPosts);
+
+            // API에서 불러오기 (사용자 ID가 있는 경우)
+            if (userData && userData.userId) {
+                fetchUserScraps(userData.userId);
+            }
+        }
+    }, [isLoggedIn, userType, userData]);
+
+    // 사용자 스크랩 목록 가져오기 - Promise 방식
+    const fetchUserScraps = (userId) => {
+        axios.get(`/api/scrap/user/${userId}`, { withCredentials: true })
+            .then(response => {
+                if (response.data && Array.isArray(response.data)) {
+                    const apiScrapedPosts = response.data.map(scrap => Number(scrap.jobPostId));
+
+                    // 로컬 스토리지 스크랩과 API 스크랩 병합
+                    const localScrapedPosts = JSON.parse(localStorage.getItem("scrapedPosts") || "[]");
+                    const mergedScraps = [...new Set([...localScrapedPosts, ...apiScrapedPosts])];
+
+                    setScrapedPosts(mergedScraps);
+                    localStorage.setItem("scrapedPosts", JSON.stringify(mergedScraps));
+                }
+            })
+            .catch(error => {
+                console.error("스크랩 목록 조회 실패", error);
+            });
+    };
+
+    // 회사 정보 데이터 조회 - Promise 방식
+    const fetchCompanyInfo = () => {
         // 중복 제거를 위해 Set 사용
         const uniqueCompanyIds = [...new Set(
             jobListings
@@ -62,35 +102,61 @@ export default function JobpostList() {
                 .map(job => job.companyId)
         )];
 
-        // 이미 가져온 회사명 제외
-        const idsToFetch = uniqueCompanyIds.filter(id => !companyNames[id]);
+        // 이미 가져온 회사 정보 제외
+        const idsToFetch = uniqueCompanyIds.filter(id => !companyInfo[id]);
 
         if (idsToFetch.length === 0) return;
 
-        // 회사명 조회
-        const newCompanyNames = { ...companyNames };
+        // 회사 정보 조회
+        const newCompanyInfo = { ...companyInfo };
 
-        await Promise.all(
-            idsToFetch.map(async (companyId) => {
-                try {
-                    const response = await axios.get(`/api/companies/${companyId}`, { withCredentials: true });
-                    if (response.data && response.data.companyName) {
-                        newCompanyNames[companyId] = response.data.companyName;
-                    }
-                } catch (error) {
-                    // 회사명 조회 실패 시 처리하지 않음
-                }
+        Promise.all(
+            idsToFetch.map(companyId => {
+                return axios.get(`/api/companies/${companyId}`, { withCredentials: true })
+                    .then(response => {
+                        if (response.data) {
+                            newCompanyInfo[companyId] = {
+                                companyName: response.data.companyName || "회사명 미지정",
+                                companyImage: response.data.companyImage || null
+                            };
+                        }
+                        return companyId;
+                    })
+                    .catch(() => {
+                        // 회사 정보 조회 실패 시 처리하지 않음
+                        newCompanyInfo[companyId] = {
+                            companyName: "회사명 미지정",
+                            companyImage: null
+                        };
+                        return companyId;
+                    });
             })
-        );
-
-        setCompanyNames(newCompanyNames);
+        )
+            .then(() => {
+                setCompanyInfo(newCompanyInfo);
+            });
     };
 
-    // 회사명 가져오기
-    const getCompanyName = (job) => {
-        if (job.companyName) return job.companyName;
-        if (job.companyId && companyNames[job.companyId]) return companyNames[job.companyId];
-        return "회사명 미지정";
+    // 회사 정보 가져오기
+    const getCompanyInfo = (job) => {
+        // 이미 공고에 회사명이 포함된 경우
+        if (job.companyName) {
+            return {
+                companyName: job.companyName,
+                companyImage: job.companyImage || null
+            };
+        }
+
+        // 회사 ID로 정보 조회
+        if (job.companyId && companyInfo[job.companyId]) {
+            return companyInfo[job.companyId];
+        }
+
+        // 기본 정보
+        return {
+            companyName: "회사명 미지정",
+            companyImage: null
+        };
     };
 
     const fetchJobListings = () => {
@@ -179,6 +245,60 @@ export default function JobpostList() {
         }
     };
 
+    // 모달 관련 함수
+    const showModal = (message, type) => {
+        setModal({ show: true, message, type });
+    };
+
+    const closeModal = () => {
+        setModal({ show: false, message: "", type: "" });
+    };
+
+    // 스크랩 토글 함수
+    const toggleScrap = (jobPostId, event) => {
+        // 이벤트 전파 방지 (Link 클릭 방지)
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (!isLoggedIn) {
+            showModal("로그인 후 이용 가능합니다.", "alert");
+            return;
+        }
+
+        if (userType !== "personal") {
+            showModal("개인 회원만 스크랩할 수 있습니다.", "alert");
+            return;
+        }
+
+        const jobId = Number(jobPostId);
+        const isCurrentlyScraped = scrapedPosts.includes(jobId);
+        let updatedScraps = [...scrapedPosts];
+
+        if (isCurrentlyScraped) {
+            // 스크랩 취소
+            updatedScraps = updatedScraps.filter(id => id !== jobId);
+
+            // API 호출 (사용자 ID가 있는 경우)
+            if (userData && userData.userId) {
+                axios.delete(`/api/scrap/remove/${userData.userId}/${jobId}`, { withCredentials: true })
+                    .catch(() => {/* 실패 시 특별한 처리 없음 */});
+            }
+        } else {
+            // 스크랩 추가
+            updatedScraps.push(jobId);
+
+            // API 호출 (사용자 ID가 있는 경우)
+            if (userData && userData.userId) {
+                axios.post(`/api/scrap/add/${userData.userId}/${jobId}`, {}, { withCredentials: true })
+                    .catch(() => {/* 실패 시 특별한 처리 없음 */});
+            }
+        }
+
+        // 상태 및 로컬 스토리지 업데이트
+        setScrapedPosts(updatedScraps);
+        localStorage.setItem("scrapedPosts", JSON.stringify(updatedScraps));
+    };
+
     return (
         <div className="bg-gray-50 py-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -250,7 +370,7 @@ export default function JobpostList() {
                 {loading && <LoadingSpinner message="채용 공고를 불러오는 중..." fullScreen={false} className="py-10" />}
                 {error && <ErrorMessage message={error} />}
 
-                {/* 채용 공고 목록 */}
+                {/* 채용 공고 목록 - 카드 형식 */}
                 {!loading && !error && (
                     <div>
                         {jobListings.length === 0 ? (
@@ -258,75 +378,59 @@ export default function JobpostList() {
                                 <p className="text-gray-500">검색 결과가 없습니다.</p>
                             </div>
                         ) : (
-                            <ul className="space-y-4">
-                                {jobListings.map((job) => (
-                                    <li key={job.jobPostId} className="bg-white shadow rounded-lg overflow-hidden hover:shadow-md transition-shadow duration-300 border border-gray-100">
-                                        <Link to={`/jobs/${job.jobPostId}`} className="block">
-                                            <div className="p-6">
-                                                <div className="flex items-start">
-                                                    <div className="flex-shrink-0">
-                                                        <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
-                                                            {getCompanyName(job).charAt(0)}
-                                                        </div>
-                                                    </div>
-                                                    <div className="ml-4 flex-1">
-                                                        <div className="flex items-center justify-between">
-                                                            <h3 className="text-lg font-medium text-gray-900">{job.jobPostTitle || '제목 없음'}</h3>
-                                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                                {job.jobPostJobType || '미지정'}
-                                                            </span>
-                                                        </div>
-                                                        <p className="mt-1 text-sm text-gray-500">{getCompanyName(job)}</p>
-                                                        <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
-                                                            <div className="flex items-center text-sm text-gray-500">
-                                                                <svg className="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                                                    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                                                                </svg>
-                                                                {job.jobPostWorkPlace || '위치 미정'}
-                                                            </div>
-                                                            <div className="flex items-center text-sm text-gray-500">
-                                                                <svg className="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                                                                </svg>
-                                                                {job.jobWorkSchedule || '근무일'}, {job.jobPostShiftHours || '근무시간'}
-                                                            </div>
-                                                            <div className="flex items-center text-sm text-gray-500">
-                                                                <svg className="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                                                    <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
-                                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd" />
-                                                                </svg>
-                                                                {job.jobPostSalary || '급여 미정'}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="mt-4 flex items-center justify-between">
-                                                    <div className="text-sm text-gray-500">
-                                                        등록일: {formatDate(job.jobPostCreatedAt)}
-                                                    </div>
-                                                    <div className="text-sm font-medium text-red-600">
-                                                        마감일: {formatDate(job.jobPostDueDate)}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {jobListings.map((job) => {
+                                    const company = getCompanyInfo(job);
+                                    const isScraped = scrapedPosts.includes(Number(job.jobPostId));
+
+                                    return (
+                                        <JobCard
+                                            key={job.jobPostId}
+                                            job={job}
+                                            company={company}
+                                            isScraped={isScraped}
+                                            isLoggedIn={isLoggedIn}
+                                            userType={userType}
+                                            toggleScrap={toggleScrap}
+                                            formatDate={formatDate}
+                                        />
+                                    );
+                                })}
+                            </div>
                         )}
 
                         {/* 페이지네이션 */}
                         {totalItems > 0 && (
-                            <Pagination
-                                totalItems={totalItems}
-                                itemsPerPage={itemsPerPage}
-                                currentPage={currentPage}
-                                setCurrentPage={setCurrentPage}
-                            />
+                            <div className="mt-8">
+                                <Pagination
+                                    totalItems={totalItems}
+                                    itemsPerPage={itemsPerPage}
+                                    currentPage={currentPage}
+                                    setCurrentPage={setCurrentPage}
+                                />
+                            </div>
                         )}
                     </div>
                 )}
             </div>
+
+            {/* 모달 */}
+            {modal.show && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 max-w-md w-full">
+                        <h3 className="text-xl font-semibold mb-4">알림</h3>
+                        <p className="mb-6">{modal.message}</p>
+                        <div className="flex justify-end">
+                            <button
+                                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                                onClick={closeModal}
+                            >
+                                확인
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
