@@ -127,7 +127,7 @@ export default function Header() {
                     <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-4">
                         {isLoggedIn ? (
                             <>
-                                <Link to={userType === 'company' ? `/company/manage/${userData.companyId}` : "/mypage"} className="text-sm font-semibold text-gray-900">
+                                <Link to={userType === 'company' ? `/company/manage/${userData.companyId}` : `/mypage/${userData?.userId}`} className="text-sm font-semibold text-gray-900">
                                     마이페이지
                                 </Link>
                                 <button

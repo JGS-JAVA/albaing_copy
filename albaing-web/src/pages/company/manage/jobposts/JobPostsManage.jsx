@@ -15,7 +15,7 @@ const JobPostsManage = ({ jobPosts, refreshJobPosts }) => {
         const matchesSearch = job.jobPostTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
             job.jobPostJobCategory.toLowerCase().includes(searchTerm.toLowerCase());
 
-        // 상태 필터링
+        // 상태 필터링: 활성은 jobPostStatus가 true이면서 마감일이 미래인 경우
         const isActive = job.jobPostStatus && new Date(job.jobPostDueDate) > new Date();
         if (filterStatus === 'all') return matchesSearch;
         if (filterStatus === 'active') return matchesSearch && isActive;
@@ -98,7 +98,10 @@ const JobPostsManage = ({ jobPosts, refreshJobPosts }) => {
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
                             {filteredJobPosts.map((job) => {
+                                // isActive: job가 채용중인 상태 (상태 true이면서 마감일이 미래)
                                 const isActive = job.jobPostStatus && new Date(job.jobPostDueDate) > new Date();
+                                // 재활성화를 시도할 경우, 현재 날짜가 지난 경우에는 활성화가 불가능함
+                                const dueDatePassed = new Date(job.jobPostDueDate) <= new Date();
 
                                 return (
                                     <tr key={job.jobPostId} className="hover:bg-gray-50">
@@ -134,11 +137,25 @@ const JobPostsManage = ({ jobPosts, refreshJobPosts }) => {
                                                 수정
                                             </button>
                                             <button
-                                                onClick={() => setConfirmationModal({
-                                                    jobPostId: job.jobPostId,
-                                                    currentStatus: job.jobPostStatus,
-                                                    title: job.jobPostTitle
-                                                })}
+                                                onClick={() => {
+                                                    // 채용 활성화를 시도하는 경우
+                                                    if (!isActive && dueDatePassed) {
+                                                        setConfirmationModal({
+                                                            jobPostId: job.jobPostId,
+                                                            currentStatus: job.jobPostStatus,
+                                                            title: job.jobPostTitle,
+                                                            error: true,
+                                                            errorMessage: "공고 날짜가 지나 활성화할 수 없습니다. 공고 활성화를 위해 수정페이지에서 날짜 변경해주세요."
+                                                        });
+                                                    } else {
+                                                        // 정상적인 상태 변경 (활성 -> 마감 또는 마감 -> 활성)
+                                                        setConfirmationModal({
+                                                            jobPostId: job.jobPostId,
+                                                            currentStatus: job.jobPostStatus,
+                                                            title: job.jobPostTitle
+                                                        });
+                                                    }
+                                                }}
                                                 className={`${isActive ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900'}`}
                                             >
                                                 {isActive ? '마감하기' : '활성화'}
@@ -164,30 +181,51 @@ const JobPostsManage = ({ jobPosts, refreshJobPosts }) => {
                 </div>
             )}
 
-            {/* 상태 변경 확인 모달 */}
+            {/* 상태 변경 확인/오류 모달 */}
             {confirmationModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg p-6 max-w-md mx-4 shadow-xl">
-                        <h3 className="text-lg font-bold mb-4">공고 상태 변경</h3>
-                        <p className="mb-6">
-                            "{confirmationModal.title}" 공고를
-                            {confirmationModal.currentStatus ? ' 마감' : ' 활성화'}
-                            하시겠습니까?
-                        </p>
-                        <div className="flex justify-end space-x-3">
-                            <button
-                                onClick={() => setConfirmationModal(null)}
-                                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                            >
-                                취소
-                            </button>
-                            <button
-                                onClick={() => updateJobPostStatus(confirmationModal.jobPostId, confirmationModal.currentStatus)}
-                                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                            >
-                                확인
-                            </button>
-                        </div>
+                        {confirmationModal.error ? (
+                            <>
+                                <h3 className="text-lg font-bold mb-4">공고 활성화 불가</h3>
+                                <p className="mb-6">
+                                    해당 공고는 날짜가 지나 활성화할 수 없습니다.
+                                    <br/>
+                                    공고 활성화를 위해 수정페이지에서
+                                    <br/>
+                                    날짜를 변경해주세요.
+                                </p>
+                                <div className="flex justify-end">
+                                    <button
+                                        onClick={() => setConfirmationModal(null)}
+                                        className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-blue-50"
+                                    >
+                                        확인
+                                    </button>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <h3 className="text-lg font-bold mb-4">공고 상태 변경</h3>
+                                <p className="mb-6">
+                                    "{confirmationModal.title}" 공고를 {confirmationModal.currentStatus ? '마감' : '활성화'}하시겠습니까?
+                                </p>
+                                <div className="flex justify-end space-x-3">
+                                    <button
+                                        onClick={() => setConfirmationModal(null)}
+                                        className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                                    >
+                                        취소
+                                    </button>
+                                    <button
+                                        onClick={() => updateJobPostStatus(confirmationModal.jobPostId, confirmationModal.currentStatus)}
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                                    >
+                                        확인
+                                    </button>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
             )}

@@ -4,6 +4,7 @@ import com.jobjob.albaing.dto.Company;
 import com.jobjob.albaing.dto.User;
 import com.jobjob.albaing.model.vo.VerificationRequest;
 import com.jobjob.albaing.service.AuthServiceImpl;
+import com.jobjob.albaing.service.ResumeServiceImpl;
 import com.jobjob.albaing.service.VerificationServiceImpl;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,10 @@ public class AuthController {
 
     @Autowired
     private AuthServiceImpl authService;
-
     @Autowired
     private VerificationServiceImpl verificationService;
+    @Autowired
+    private ResumeServiceImpl resumeService;
 
 
     @PostMapping("/register/person")
@@ -33,6 +35,7 @@ public class AuthController {
         Map<String, Object> response = authService.registerUser(user);
 
         if ("success".equals(response.get("status"))) {
+            resumeService.createResumeForUser(user);
             return ResponseEntity.ok(response);
         } else if ("fail".equals(response.get("status"))) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
@@ -153,4 +156,6 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
+
+
 }
