@@ -28,31 +28,35 @@
             </trim>
         </where>
         <trim prefix="ORDER BY">
-            <if test="sortOrderBy == '이름'">
-                user_name
-            </if>
-            <if test="sortOrderBy == '전화번호'">
-                user_phone
-            </if>
-            <if test="sortOrderBy == '가입일'">
-                user_created_at
-            </if>
-            <if test="isDESC == true">
-                DESC
+            <if test="sortOrderBy != null and sortOrderBy != ''">
+                <choose>
+                    <when test="sortOrderBy == '이름'">
+                        user_name
+                    </when>
+                    <when test="sortOrderBy == '전화번호'">
+                        user_phone
+                    </when>
+                    <when test="sortOrderBy == '가입일'">
+                        user_created_at
+                    </when>
+                </choose>
+                <if test="isDESC == true">
+                    DESC
+                </if>
             </if>
         </trim>
     </select>
 
 
     <!--  개인 이력서 조회 : 제목, 직업 분류, 근무 형태로 검색 -->
-    <!--  String resumeTitle, resumeJobCategory, resumeJobType 을 받아 해당 항목과 부분 이상 일치하는 항목 찾기-->
+    <!--  String userName, resumeTitle, resumeJobCategory, resumeJobType 을 받아 해당 항목과 부분 이상 일치하는 항목 찾기-->
     <!--  sortOrderBy (이름, 전화번호, 제목) 를 받아 정렬 기준을 정함 -->
     <!--  isDESC 받아 오름차순, 내림차순을 정함 -->
     <!--  개인 이력서 목록 전체를 List<JoinUserWithResume>로 반환-->
     <select id="adminSearchResumes">
         SELECT *
         FROM RESUMES
-        JOIN USERS on RESUMES.user_id = RESUMES.user_id
+        JOIN USERS on USERS.user_id = RESUMES.user_id
         <where>
             <trim prefixOverrides="AND">
                 <if test="userName != null and userName != ''">

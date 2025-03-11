@@ -2,14 +2,32 @@ package com.jobjob.albaing.dto;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
 import java.util.Date;
 
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class ViewResume {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int resumeId;
+    private String resumeTitle;
+    private String resumeLocation;
+    private String resumeJobCategory;
+    private String resumeJobType;
+    private String resumeJobDuration;
+    private String resumeWorkSchedule;
+    private String resumeWorkTime;
+    private String resumeJobSkill;
+    private String resumeIntroduction;
+
     private Long userId;
     private String userEmail;
     private String userPassword;
@@ -28,20 +46,8 @@ public class ViewResume {
         male, female
     }
 
-    private int resumeId;
-    private String resumeTitle;
-    private String resumeLocation;
-    private String resumeJobCategory;
-    private String resumeJobType;
-    private String resumeJobDuration;
-    private String resumeWorkSchedule;
-    private String resumeWorkTime;
-    private String resumeJobSkill;
-    private String resumeIntroduction;
-
-    private EducationHistory educationHistory;
-    private CareerHistory careerHistory;
-
     private String sortOrderBy;
     private Boolean isDESC;
+
+
 }

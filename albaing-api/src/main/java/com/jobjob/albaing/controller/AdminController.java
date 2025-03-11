@@ -27,13 +27,14 @@ public class AdminController {
 
     // 이력서 검색
     @GetMapping("/resumes")
-    public List<ViewResume> adminSearchResumes(@RequestParam(required = false) String resumeTitle,
+    public List<ViewResume> adminSearchResumes(@RequestParam(required = false) String userName,
+                                               @RequestParam(required = false) String resumeTitle,
                                                @RequestParam(required = false) String resumeCategory,
                                                @RequestParam(required = false) String resumeJobType,
                                                @RequestParam(required = false) String sortOrderBy,
                                                @RequestParam(required = false) Boolean isDESC) {
 
-        return adminService.adminSearchResumes(resumeTitle, resumeCategory, resumeJobType, sortOrderBy, isDESC);
+        return adminService.adminSearchResumes(userName, resumeTitle, resumeCategory, resumeJobType, sortOrderBy, isDESC);
     }
 
     // 공고지원 검색
