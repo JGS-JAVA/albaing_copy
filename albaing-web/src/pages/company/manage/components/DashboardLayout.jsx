@@ -1,4 +1,6 @@
 import React from 'react';
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../../contexts/AuthContext";
 import {
     HomeIcon,
     BriefcaseIcon,
@@ -8,6 +10,9 @@ import {
 } from '@heroicons/react/24/outline';
 
 const DashboardLayout = ({ companyData, activeTab, setActiveTab, children }) => {
+    const { logout } = useAuth();
+    const navigate = useNavigate();
+
     const tabs = [
         { id: 'dashboard', name: '대시보드', icon: HomeIcon },
         { id: 'jobPosts', name: '채용공고 관리', icon: BriefcaseIcon },
@@ -20,38 +25,53 @@ const DashboardLayout = ({ companyData, activeTab, setActiveTab, children }) => 
         setActiveTab(tabId);
     };
 
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
+
     return (
         <div className="flex h-screen bg-gray-100">
-            {/* 사이드바 */}
-            <div className="w-64 bg-white shadow-md hidden md:block">
-                <div className="p-6 border-b border-gray-200">
-                    <h2 className="text-2xl font-semibold text-gray-800 truncate">
-                        {companyData?.companyName || '회사 대시보드'}
-                    </h2>
-                    <p className="text-gray-600 text-sm mt-1">Company Dashboard</p>
-                </div>
+            {/* 데스크탑 사이드바 */}
+            <div className="w-64 bg-white shadow-md hidden md:flex flex-col h-screen">
+                <div>
+                    <div className="p-6 border-b border-gray-200">
+                        <h2 className="text-2xl font-semibold text-gray-800 truncate">
+                            {companyData?.companyName || '회사 대시보드'}
+                        </h2>
+                        <p className="text-gray-600 text-sm mt-1">Company Dashboard</p>
+                    </div>
 
-                <nav className="mt-6">
-                    <ul>
-                        {tabs.map((tab) => (
-                            <li
-                                key={tab.id}
-                                className={`
-                                    px-6 py-4 cursor-pointer flex items-center
-                                    hover:bg-blue-50 transition-colors
-                                    ${activeTab === tab.id
-                                    ? 'bg-blue-100 border-l-4 border-blue-500 text-blue-600 font-medium'
-                                    : 'text-gray-700'
-                                }
-                                `}
-                                onClick={() => handleTabChange(tab.id)}
-                            >
-                                <tab.icon className="h-5 w-5 mr-3" />
-                                <span>{tab.name}</span>
-                            </li>
-                        ))}
-                    </ul>
-                </nav>
+                    <nav className="mt-6">
+                        <ul>
+                            {tabs.map((tab) => (
+                                <li
+                                    key={tab.id}
+                                    className={`
+                                        px-6 py-4 cursor-pointer flex items-center
+                                        hover:bg-blue-50 transition-colors
+                                        ${activeTab === tab.id
+                                        ? 'bg-blue-100 border-l-4 border-blue-500 text-blue-600 font-medium'
+                                        : 'text-gray-700'
+                                    }
+                                    `}
+                                    onClick={() => handleTabChange(tab.id)}
+                                >
+                                    <tab.icon className="h-5 w-5 mr-3" />
+                                    <span>{tab.name}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </nav>
+                </div>
+                <div className="mt-auto p-6">
+                    <button
+                        onClick={handleLogout}
+                        className="w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition-colors"
+                    >
+                        로그아웃
+                    </button>
+                </div>
             </div>
 
             {/* 모바일 탭 네비게이션 */}
