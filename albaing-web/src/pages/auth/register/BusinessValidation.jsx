@@ -45,7 +45,7 @@ const BusinessValidation = () => {
         };
 
         axios({
-            url: "0rsV2ZpVVbhRdzdow1XYlJ90OFql0qQm1sn7RnDySfIL6euWd5uVi7XFviZDtCZGB2iykgpDi+tccmdqSNmY8g==", // Replace with actual authentication key URL
+            url: "https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=0rsV2ZpVVbhRdzdow1XYlJ90OFql0qQm1sn7RnDySfIL6euWd5uVi7XFviZDtCZGB2iykgpDi+tccmdqSNmY8g==", // Replace with actual authentication key URL
             method: "POST",
             data: JSON.stringify(data),
             headers: {
