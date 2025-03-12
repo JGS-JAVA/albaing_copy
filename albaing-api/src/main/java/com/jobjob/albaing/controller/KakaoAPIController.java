@@ -45,7 +45,7 @@ public class KakaoAPIController {
         String kakaoAuthUrl = "https://kauth.kakao.com/oauth/authorize?response_type=code" +
                 "&client_id=" + kakaoClientId +
                 "&redirect_uri=" + redirectUri +
-                "&scope=profile_nickname,profile_image,account_email,name,gender,birthday";
+                "&scope=profile_nickname,account_email,name,gender,birthday,birthyear";
 
         return new RedirectView(kakaoAuthUrl);
     }
@@ -97,10 +97,10 @@ public class KakaoAPIController {
                 : new HashMap<>();
 
         String nickname = (String) properties.get("nickname");
-        String profileImg = (String) properties.get("profile_image");
         String email = kakaoAccount.getOrDefault("email", "").toString();
         String gender = kakaoAccount.getOrDefault("gender", "").toString();
         String birthday = kakaoAccount.getOrDefault("birthday", "").toString();
+        String birthyear = kakaoAccount.getOrDefault("birthyear", "").toString();
 
         // 4️⃣ DB에서 가입 여부 확인 (AuthService에서 처리)
         if (authService.isUserExist(email)) {
@@ -131,9 +131,10 @@ public class KakaoAPIController {
         if (!birthday.isEmpty()) {
             frontendRedirectUri += "&birthday=" + birthday;
         }
-        if (!profileImg.isEmpty()) {
-            frontendRedirectUri += "&profileImage=" + URLEncoder.encode(profileImg, StandardCharsets.UTF_8);
+        if (!birthyear.isEmpty()) {
+            frontendRedirectUri += "&birthyear=" + birthyear;
         }
+
 
         return new RedirectView(frontendRedirectUri); // 미가입 사용자는 회원가입으로 리다이렉트
     }

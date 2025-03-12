@@ -31,26 +31,20 @@ const RegisterPerson = () => {
         const kakaoId = params.get("kakaoId");
         const naverId = params.get("naverId");
         const genderParam = params.get("gender");
-        const birthdayParam = params.get("birthday");
-        const profileImageParam = params.get("profileImage");
+        const birthyearParam = params.get("birthyear"); // YYYY 형식
+        const birthdayParam = params.get("birthday"); // MMDD 형식
 
-        console.log("params:", params);
-        console.log("nickname:", nicknameParam);
-        console.log("email:", email);
-        console.log("kakaoId:", kakaoId);
-        console.log("naverId:", naverId);
+        console.log("birthyearParam:", birthyearParam);
+        console.log("birthdayParam:", birthdayParam);
 
         setUserName(nicknameParam || "");
         setUserEmail(email || "");
-        setUserProfileImage(profileImageParam || "");
 
         if (email && kakaoId) {
-            console.log("✅ 카카오 로그인 사용자 감지 → 이메일 인증 자동 완료");
             setEmailVerified(true);
         }
 
         if (email && naverId) {
-            console.log("✅ 네이버 로그인 사용자 감지 → 이메일 인증 자동 완료");
             setEmailVerified(true);
         }
 
@@ -58,15 +52,18 @@ const RegisterPerson = () => {
             setUserGender(genderParam.toLowerCase() === "male" ? "male" : "female");
         }
 
-        if (birthdayParam) {
-            if (birthdayParam.length === 4) {
-                const currentYear = new Date().getFullYear();
-                setUserBirthdate(`${currentYear}-${birthdayParam.slice(0, 2)}-${birthdayParam.slice(2, 4)}`);
-            } else {
-                setUserBirthdate(birthdayParam);
-            }
+        if (birthyearParam && birthdayParam) {
+            // ✅ 올바르게 YYYY-MM-DD 형식으로 변환
+            const formattedBirthdate = `${birthyearParam}-${birthdayParam.substring(0, 2)}-${birthdayParam.substring(2, 4)}`;
+            setUserBirthdate(formattedBirthdate);
+        } else if (birthdayParam?.length === 4) {
+            const currentYear = new Date().getFullYear();
+            const formattedBirthdate = `${currentYear}-${birthdayParam.substring(0, 2)}-${birthdayParam.substring(2, 4)}`;
+            setUserBirthdate(formattedBirthdate);
         }
+
     }, []);
+
 
     const requestVerificationCode = () => {
         if (!userEmail) {
