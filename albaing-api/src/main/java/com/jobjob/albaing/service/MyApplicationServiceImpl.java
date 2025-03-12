@@ -19,7 +19,7 @@ public class MyApplicationServiceImpl implements MyApplicationService {
        return myApplicationMapper.getUserApplications(resumeId);
     }
 
-    // 지원 개수, 승인 대기, 합격, 불합격 개수를 가져오는 서비스
+    // 지원 개수, 승인 대기, 합격, 불합격 개수 가져오기
     public Map<String, Object> getApplicationStatus(int resumeId) {
         Map<String, Object> result = new HashMap<>();
         result.put("totalApplications", myApplicationMapper.countUserApplication(resumeId));
