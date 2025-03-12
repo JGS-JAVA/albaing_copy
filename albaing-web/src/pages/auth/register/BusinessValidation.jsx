@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import alertModal from "../../../components/modals/AlertModal";
 
 const BusinessValidation = () => {
     const [licenseNumber, setLicenseNumber] = useState('');
@@ -49,10 +50,19 @@ const BusinessValidation = () => {
     const businessRegistration = () => {
         validateBusinessNumber((isValid) => {
             if (isValid) {
-                alert("사업자 인증에 성공했습니다.");
-                navigate('/register/company');
+                alertModal.openModal({
+                    title: '권한 제한',
+                    message: '사업자 인증에 성공했습니다.',
+                    type: 'success',
+                    onClose: () => navigate('/register/company')
+                });
+
             } else {
-                alert("사업자 정보가 일치하지 않습니다. 다시 확인해주세요.");
+                alertModal.openModal({
+                    title: '정보 불일치',
+                    message: '사업자 정보가 일치하지 않습니다. 다시 확인해주세요.',
+                    type: 'warning',
+                });
             }
         });
     };
