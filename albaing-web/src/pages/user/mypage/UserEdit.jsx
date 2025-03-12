@@ -2,10 +2,12 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import apiMyPageService from "../../../service/apiMyPageService";
 import defaultProfileImage from "../mypage/default-profile.png"// 기본 프로필 이미지
+import {useModal,AlertModal} from "../../../components";
 
 const EditUserPage = () => {
     const { userId } = useParams();
     const navigate = useNavigate();
+    const alertModal = useModal();
 
     // 사용자 정보 상태
     const [user, setUser] = useState({
@@ -51,8 +53,12 @@ const EditUserPage = () => {
         });
 
         apiMyPageService.updateUser(userId, formData);
-        alert("정보가 수정되었습니다.");
-        navigate(`/mypage/${userId}`);
+        alertModal.openModal({
+            title: '수정 완료',
+            message: '정보가 수정되었습니다.',
+            type: 'success',
+            onClose: () => navigate(`/mypage/${userId}`)
+        });
     };
 
     return (
@@ -158,6 +164,15 @@ const EditUserPage = () => {
                     수정 완료
                 </button>
             </div>
+            {/* 알림 모달 */}
+            <AlertModal
+                isOpen={alertModal.isOpen}
+                onClose={alertModal.closeModal}
+                title={alertModal.modalProps.title || '알림'}
+                message={alertModal.modalProps.message}
+                confirmText="확인"
+                type={alertModal.modalProps.type || 'info'}
+            />
         </div>
     );
 };

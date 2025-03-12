@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { PlusIcon } from '@heroicons/react/24/outline';
+import {useModal,AlertModal} from "../../../../components";
+
 
 const JobPostsManage = ({ jobPosts, refreshJobPosts }) => {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState('all'); // 'all', 'active', 'closed'
-    const [confirmationModal, setConfirmationModal] = useState(null);
+    const alertModal = useModal();
 
     // 채용공고 필터링
     const filteredJobPosts = jobPosts.filter(job => {
@@ -36,11 +38,15 @@ const JobPostsManage = ({ jobPosts, refreshJobPosts }) => {
         axios.patch(`/api/jobs/${jobPostId}/status?status=${newStatus}`)
             .then(() => {
                 refreshJobPosts();
-                setConfirmationModal(null);
+
             })
             .catch(err => {
                 console.error('Error updating status:', err);
-                alert('상태 변경 중 오류가 발생했습니다.');
+                alertModal.openModal({
+                    title: '오류',
+                    message: '상태 변경 중 오류가 발생했습니다',
+                    type: 'warning'
+                });
             });
     };
 
@@ -140,20 +146,13 @@ const JobPostsManage = ({ jobPosts, refreshJobPosts }) => {
                                                 onClick={() => {
                                                     // 채용 활성화를 시도하는 경우
                                                     if (!isActive && dueDatePassed) {
-                                                        setConfirmationModal({
-                                                            jobPostId: job.jobPostId,
-                                                            currentStatus: job.jobPostStatus,
-                                                            title: job.jobPostTitle,
-                                                            error: true,
-                                                            errorMessage: "공고 날짜가 지나 활성화할 수 없습니다. 공고 활성화를 위해 수정페이지에서 날짜 변경해주세요."
+                                                        alertModal.openModal({
+                                                            title: '오류',
+                                                            message: '공고 날짜가 지나 활성화할 수 없습니다. 공고 활성화를 위해 수정페이지에서 날짜 변경해주세요.',
+                                                            type: 'warning',
                                                         });
                                                     } else {
-                                                        // 정상적인 상태 변경 (활성 -> 마감 또는 마감 -> 활성)
-                                                        setConfirmationModal({
-                                                            jobPostId: job.jobPostId,
-                                                            currentStatus: job.jobPostStatus,
-                                                            title: job.jobPostTitle
-                                                        });
+                                                        updateJobPostStatus(job.jobPostId, job.jobPostStatus);
                                                     }
                                                 }}
                                                 className={`${isActive ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900'}`}
@@ -180,55 +179,15 @@ const JobPostsManage = ({ jobPosts, refreshJobPosts }) => {
                     </button>
                 </div>
             )}
-
-            {/* 상태 변경 확인/오류 모달 */}
-            {confirmationModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 max-w-md mx-4 shadow-xl">
-                        {confirmationModal.error ? (
-                            <>
-                                <h3 className="text-lg font-bold mb-4">공고 활성화 불가</h3>
-                                <p className="mb-6">
-                                    해당 공고는 날짜가 지나 활성화할 수 없습니다.
-                                    <br/>
-                                    공고 활성화를 위해 수정페이지에서
-                                    <br/>
-                                    날짜를 변경해주세요.
-                                </p>
-                                <div className="flex justify-end">
-                                    <button
-                                        onClick={() => setConfirmationModal(null)}
-                                        className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-blue-50"
-                                    >
-                                        확인
-                                    </button>
-                                </div>
-                            </>
-                        ) : (
-                            <>
-                                <h3 className="text-lg font-bold mb-4">공고 상태 변경</h3>
-                                <p className="mb-6">
-                                    "{confirmationModal.title}" 공고를 {confirmationModal.currentStatus ? '마감' : '활성화'}하시겠습니까?
-                                </p>
-                                <div className="flex justify-end space-x-3">
-                                    <button
-                                        onClick={() => setConfirmationModal(null)}
-                                        className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                                    >
-                                        취소
-                                    </button>
-                                    <button
-                                        onClick={() => updateJobPostStatus(confirmationModal.jobPostId, confirmationModal.currentStatus)}
-                                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                                    >
-                                        확인
-                                    </button>
-                                </div>
-                            </>
-                        )}
-                    </div>
-                </div>
-            )}
+            {/* 알림 모달 */}
+            <AlertModal
+                isOpen={alertModal.isOpen}
+                onClose={alertModal.closeModal}
+                title={alertModal.modalProps.title || '알림'}
+                message={alertModal.modalProps.message}
+                confirmText="확인"
+                type={alertModal.modalProps.type || 'info'}
+            />
         </div>
     );
 };
