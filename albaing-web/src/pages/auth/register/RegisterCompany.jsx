@@ -29,7 +29,7 @@ const RegisterCompany = () => {
     useEffect(() => {
         const storedCompanyRegistrationNumber = localStorage.getItem("companyRegistrationNumber") || '';
         const storedCompanyOwnerName = localStorage.getItem("companyOwnerName") || '';
-        const storedCompanyO
+        const storedCompanyOpenDate = localStorage.getItem("companyOpenDate") || '';
 
         setCompanyRegistrationNumber(storedCompanyRegistrationNumber);
         setCompanyOwnerName(storedCompanyOwnerName);
