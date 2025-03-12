@@ -27,9 +27,15 @@ const RegisterCompany = () => {
 
     // 로컬스토리지에서 데이터 불러오기
     useEffect(() => {
-        setCompanyRegistrationNumber(localStorage.getItem("companyRegistrationNumber") || '');
-        setCompanyOwnerName(localStorage.getItem("companyOwnerName") || '');
-        setCompanyOpenDate(localStorage.getItem("companyOpenDate") || '');
+        const storedCompanyRegistrationNumber = localStorage.getItem("companyRegistrationNumber") || '';
+        const storedCompanyOwnerName = localStorage.getItem("companyOwnerName") || '';
+        const storedCompanyOpenDate = localStorage.getItem("companyOpenDate") || '';
+
+        console.log("불러온 값:", { storedCompanyRegistrationNumber, storedCompanyOwnerName, storedCompanyOpenDate });
+
+        setCompanyRegistrationNumber(storedCompanyRegistrationNumber);
+        setCompanyOwnerName(storedCompanyOwnerName);
+        setCompanyOpenDate(storedCompanyOpenDate);
     }, []);
 
     const requestVerificationCode = () => {
@@ -325,7 +331,8 @@ const RegisterCompany = () => {
                             </div>
 
                             <div>
-                                <label htmlFor="companyRegistrationNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                                <label htmlFor="companyRegistrationNumber"
+                                       className="block text-sm font-medium text-gray-700 mb-1">
                                     사업자등록번호 <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -343,7 +350,8 @@ const RegisterCompany = () => {
                             </div>
 
                             <div>
-                                <label htmlFor="companyOwnerName" className="block text-sm font-medium text-gray-700 mb-1">
+                                <label htmlFor="companyOwnerName"
+                                       className="block text-sm font-medium text-gray-700 mb-1">
                                     대표자명 <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -373,7 +381,8 @@ const RegisterCompany = () => {
                             </div>
 
                             <div className="md:col-span-2">
-                                <label htmlFor="companyLocalAddress" className="block text-sm font-medium text-gray-700 mb-1">
+                                <label htmlFor="companyLocalAddress"
+                                       className="block text-sm font-medium text-gray-700 mb-1">
                                     회사 주소 <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -388,16 +397,16 @@ const RegisterCompany = () => {
                             </div>
 
                             <div>
-                                <label htmlFor="companyOpenDate" className="block text-sm font-medium text-gray-700 mb-1">
+                                <label htmlFor="companyOpenDate"
+                                       className="block text-sm font-medium text-gray-700 mb-1">
                                     설립일
                                 </label>
                                 <input
-                                    type="date"
+                                    type="text"
                                     id="companyOpenDate"
                                     value={companyOpenDate}
-                                    onChange={(e) => setCompanyOpenDate(e.target.value)}
-                                    className="w-full p-2 border rounded-md"
-
+                                    disabled
+                                    className="w-full p-2 border rounded-md bg-gray-100 text-gray-500"
                                 />
                             </div>
                         </div>

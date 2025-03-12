@@ -21,6 +21,7 @@ const BusinessValidation = () => {
             ]
         };
 
+
         axios.post(
             "https://api.odcloud.kr/api/nts-businessman/v1/validate?serviceKey=0rsV2ZpVVbhRdzdow1XYlJ90OFql0qQm1sn7RnDySfIL6euWd5uVi7XFviZDtCZGB2iykgpDi%2BtccmdqSNmY8g%3D%3D",
             data,
@@ -43,6 +44,8 @@ const BusinessValidation = () => {
                 setMessage("에러가 발생했습니다.");
                 callback(false);
             });
+
+
     };
 
     // 가입하기
@@ -50,6 +53,9 @@ const BusinessValidation = () => {
         validateBusinessNumber((isValid) => {
             if (isValid) {
                 alert("사업자 인증에 성공했습니다.");
+
+                // 로컬 스토리지에 저장 (값이 올바르게 저장되는지 콘솔로 확인)
+                console.log("저장되는 값:", { companyRegistrationNumber, companyOwnerName, companyOpenDate });
 
                 // 로컬 스토리지에 저장
                 localStorage.setItem("companyRegistrationNumber", companyRegistrationNumber);
