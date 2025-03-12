@@ -12,7 +12,7 @@ export default function Footer() {
                         {/* 로고 */}
                         <div>
                             <Link to="/">
-                                <img src={albaingLogo} alt="알바잉 로고" className="h-24 md:h-36 w-auto" />
+                                <img src={albaingLogo} alt="알바잉 로고" className="h-16 md:h-20 w-auto" />
                             </Link>
                         </div>
 

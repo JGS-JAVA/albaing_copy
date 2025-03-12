@@ -70,7 +70,7 @@ export default function Header() {
                             <img
                                 src={albaingLogo}
                                 alt="알바잉 로고"
-                                className="md:h-32 h-28 w-auto"
+                                className="h-16 w-auto"
                             />
                         </Link>
                     </div>
@@ -161,7 +161,7 @@ export default function Header() {
                             <img
                                 src={albaingLogo}
                                 alt="알바잉 로고"
-                                className="h-16 w-auto"
+                                className="h-6 w-auto"
                             />
                         </Link>
                         <button
