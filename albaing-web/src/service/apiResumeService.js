@@ -1,7 +1,18 @@
 import axios from 'axios';
 
 const apiResumeService = {
-    getResume: function(resumeId) {
+
+    // getResumeIdByUser: function (userId,resumeId) {
+    //     axios
+    //         .get(`api/resume/user/${userId}`)
+    //         .then((res) => resumeId(res.data))
+    //         .catch((err) => {
+    //             console.error("resumeId 가져오기 실패:", err);
+    //             return null;
+    //         });
+    // },
+
+    getResume: function (resumeId) {
         return axios.get(`/api/resume/${resumeId}`)
             .then(response => {
                 console.log('이력서 조회 성공:', response.data);
@@ -13,7 +24,8 @@ const apiResumeService = {
             });
     },
 
-    getResumeByUserId: function(userId) {
+
+    getResumeByUserId: function (userId) {
         return axios.get(`/api/resume/user/${userId}`)
             .then(response => {
                 console.log('사용자 ID로 이력서 조회 성공:', response.data);
@@ -25,7 +37,7 @@ const apiResumeService = {
             });
     },
 
-    updateResume: function(resumeId, resumeUpdateRequest) {
+    updateResume: function (resumeId, resumeUpdateRequest) {
         return axios.put(`/api/resume/update/${resumeId}`, resumeUpdateRequest)
             .then(response => {
                 console.log('이력서 수정 성공:', response.data);
@@ -37,7 +49,7 @@ const apiResumeService = {
             });
     },
 
-    createResume: function(resumeCreateRequest) {
+    createResume: function (resumeCreateRequest) {
         return axios.post('/api/resume/create', resumeCreateRequest)
             .then(response => {
                 console.log('이력서 생성 성공:', response.data);

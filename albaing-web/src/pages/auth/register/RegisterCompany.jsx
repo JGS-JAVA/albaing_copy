@@ -1,13 +1,14 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import {ErrorMessage} from "../../../components";
 import { AlertModal, useModal } from '../../../components';
 
 const RegisterCompany = () => {
-    const [companyName, setCompanyName] = useState("");
     const [companyRegistrationNumber, setCompanyRegistrationNumber] = useState("");
     const [companyOwnerName, setCompanyOwnerName] = useState("");
+    const [companyOpenDate, setCompanyOpenDate] = useState("");
+    const [companyName, setCompanyName] = useState("");
     const [companyEmail, setCompanyEmail] = useState("");
     const [companyPassword, setCompanyPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -15,7 +16,6 @@ const RegisterCompany = () => {
     const [companyLocalAddress, setCompanyLocalAddress] = useState("");
     const [companyLogo, setCompanyLogo] = useState("");
     const [companyDescription, setCompanyDescription] = useState("");
-    const [companyOpenDate, setCompanyOpenDate] = useState("");
     const [termsAgreement, setTermsAgreement] = useState(false);
     const [emailVerified, setEmailVerified] = useState(false);
     const [verificationCode, setVerificationCode] = useState("");
@@ -24,6 +24,17 @@ const RegisterCompany = () => {
     const alertModal = useModal();
 
     const navigate = useNavigate();
+
+    // 로컬스토리지에서 데이터 불러오기
+    useEffect(() => {
+        const storedCompanyRegistrationNumber = localStorage.getItem("companyRegistrationNumber") || '';
+        const storedCompanyOwnerName = localStorage.getItem("companyOwnerName") || '';
+        const storedCompanyO
+
+        setCompanyRegistrationNumber(storedCompanyRegistrationNumber);
+        setCompanyOwnerName(storedCompanyOwnerName);
+        setCompanyOpenDate(storedCompanyOpenDate);
+    }, []);
 
     const requestVerificationCode = () => {
         if (!companyEmail) {
@@ -318,7 +329,8 @@ const RegisterCompany = () => {
                             </div>
 
                             <div>
-                                <label htmlFor="companyRegistrationNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                                <label htmlFor="companyRegistrationNumber"
+                                       className="block text-sm font-medium text-gray-700 mb-1">
                                     사업자등록번호 <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -328,7 +340,7 @@ const RegisterCompany = () => {
                                     onChange={(e) => setCompanyRegistrationNumber(e.target.value)}
                                     className="w-full p-2 border rounded-md"
                                     placeholder="000-00-00000"
-                                    required
+                                    disabled
                                 />
                                 <p className="mt-1 text-xs text-gray-500">
                                     하이픈(-)을 포함한 형식으로 입력해주세요. (예: 123-45-67890)
@@ -336,7 +348,8 @@ const RegisterCompany = () => {
                             </div>
 
                             <div>
-                                <label htmlFor="companyOwnerName" className="block text-sm font-medium text-gray-700 mb-1">
+                                <label htmlFor="companyOwnerName"
+                                       className="block text-sm font-medium text-gray-700 mb-1">
                                     대표자명 <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -346,7 +359,7 @@ const RegisterCompany = () => {
                                     onChange={(e) => setCompanyOwnerName(e.target.value)}
                                     className="w-full p-2 border rounded-md"
                                     placeholder="대표자 이름을 입력하세요"
-                                    required
+                                    disabled
                                 />
                             </div>
 
@@ -366,7 +379,8 @@ const RegisterCompany = () => {
                             </div>
 
                             <div className="md:col-span-2">
-                                <label htmlFor="companyLocalAddress" className="block text-sm font-medium text-gray-700 mb-1">
+                                <label htmlFor="companyLocalAddress"
+                                       className="block text-sm font-medium text-gray-700 mb-1">
                                     회사 주소 <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -381,15 +395,16 @@ const RegisterCompany = () => {
                             </div>
 
                             <div>
-                                <label htmlFor="companyOpenDate" className="block text-sm font-medium text-gray-700 mb-1">
+                                <label htmlFor="companyOpenDate"
+                                       className="block text-sm font-medium text-gray-700 mb-1">
                                     설립일
                                 </label>
                                 <input
-                                    type="date"
+                                    type="text"
                                     id="companyOpenDate"
                                     value={companyOpenDate}
-                                    onChange={(e) => setCompanyOpenDate(e.target.value)}
-                                    className="w-full p-2 border rounded-md"
+                                    disabled
+                                    className="w-full p-2 border rounded-md bg-gray-100 text-gray-500"
                                 />
                             </div>
                         </div>

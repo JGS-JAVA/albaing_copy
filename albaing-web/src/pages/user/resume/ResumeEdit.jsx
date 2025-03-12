@@ -103,6 +103,7 @@ const ResumeEdit = () => {
         fetchResume();
     }, [userData, resumeId]);
 
+    //
     const validateForm = () => {
         const errors = {};
 
@@ -125,7 +126,7 @@ const ResumeEdit = () => {
             [name]: value
         }));
 
-        // Clear error for this field if it exists
+
         if (formErrors[name]) {
             setFormErrors(prev => ({
                 ...prev,

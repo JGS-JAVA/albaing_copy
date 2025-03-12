@@ -2,11 +2,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../../../../contexts/AuthContext";
+import {useModal,AlertModal} from "../../../../components";
 
 const CompanyReviewManagementDetail = () => {
     const { companyId, reviewId } = useParams();
     const navigate = useNavigate();
     const { isLoggedIn, userType, userData } = useAuth();
+    const alertModal = useModal();
 
     const [review, setReview] = useState(null);
     const [comments, setComments] = useState([]);
@@ -89,8 +91,12 @@ const CompanyReviewManagementDetail = () => {
                 withCredentials: true
             })
                 .then(() => {
-                    alert("리뷰가 성공적으로 삭제되었습니다.");
-                    navigate(`/company/manage/${companyId}`);
+                    alertModal.openModal({
+                        title: '삭제 완료',
+                        message: '리뷰가 성공적으로 삭제되었습니다.',
+                        type: 'success',
+                        onClose: () =>  navigate(`/company/manage/${companyId}`)
+                    });
                 })
                 .catch(error => {
                     console.error("리뷰 삭제 중 오류 발생:", error);
@@ -208,6 +214,15 @@ const CompanyReviewManagementDetail = () => {
                     </form>
                 </div>
             </div>
+            {/* 알림 모달 */}
+            <AlertModal
+                isOpen={alertModal.isOpen}
+                onClose={alertModal.closeModal}
+                title={alertModal.modalProps.title || '알림'}
+                message={alertModal.modalProps.message}
+                confirmText="확인"
+                type={alertModal.modalProps.type || 'info'}
+            />
         </div>
     );
 };
