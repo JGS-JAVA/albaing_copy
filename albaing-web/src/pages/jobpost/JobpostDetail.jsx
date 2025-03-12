@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import {useParams, useNavigate, Link} from "react-router-dom";
 import axios from "axios";
 import {AlertModal, ConfirmModal, ErrorMessage, LoadingSpinner, Modal, useModal} from "../../components";
 import { useAuth } from "../../contexts/AuthContext";
@@ -332,7 +332,9 @@ export default function JobPostDetail() {
                             {companyName ? companyName.charAt(0) : 'C'}
                         </div>
                         <div className="ml-6 flex-1">
+                            <Link to={`/companies/${jobPost.companyId}`}>
                             <h1 className="text-2xl font-bold text-gray-900">{companyName || "회사명 미지정"}</h1>
+                            </Link>
                             <div className="flex flex-wrap gap-2 mt-2">
                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                     {jobPost.jobPostJobCategory || "미분류"}

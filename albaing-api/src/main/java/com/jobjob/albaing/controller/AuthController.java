@@ -29,9 +29,7 @@ public class AuthController {
 
     @PostMapping("/register/person")
     public ResponseEntity<Map<String, Object>> registerUser(@RequestBody User user) {
-        System.out.println("🚀 회원가입 요청: " + user);
 
-        // 📌 AuthServiceImpl 에서 회원가입 처리 (이메일 인증 포함)
         Map<String, Object> response = authService.registerUser(user);
 
         if ("success".equals(response.get("status"))) {
@@ -94,9 +92,15 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Map<String, Object>> logout(HttpSession session) {
-        session.invalidate();
+
+        // 세션에서 사용자와 기업 정보 모두 제거
+        session.removeAttribute("userSession");
+        session.removeAttribute("companySession");
+
+        session.invalidate(); // 세션 무효화
+
         Map<String, Object> response = new HashMap<>();
-        response.put("status", "logout");
+        response.put("status", "success");
         response.put("message", "로그아웃 되었습니다.");
         return ResponseEntity.ok(response);
     }

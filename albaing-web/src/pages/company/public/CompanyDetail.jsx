@@ -5,7 +5,7 @@ import CompanyTabs from './CompanyTabs';
 import CompanyInfoTab from './CompanyInfoTab';
 import JobListTab from './JobListTab';
 import ReviewListTab from './ReviewListTab';
-import companyService from '../../../service/companyService';
+import apiCompanyService from '../../../service/apiCompanyService';
 
 const CompanyDetail = () => {
     const { companyId } = useParams();
@@ -21,14 +21,14 @@ const CompanyDetail = () => {
         setError(null);
 
         // Promise 체이닝을 사용한 데이터 로딩
-        companyService.getCompanyInfo(companyId)
+        apiCompanyService.getCompanyInfo(companyId)
             .then(companyData => {
                 setCompany(companyData);
-                return companyService.getJobPostsByCompanyId(companyId);
+                return apiCompanyService.getJobPostsByCompanyId(companyId);
             })
             .then(jobPostsData => {
                 setJobPosts(jobPostsData);
-                return companyService.getReviewsByCompanyId(companyId);
+                return apiCompanyService.getReviewsByCompanyId(companyId);
             })
             .then(reviewsData => {
                 setReviews(reviewsData);
@@ -42,8 +42,8 @@ const CompanyDetail = () => {
 
     // 새 리뷰가 추가되면 리뷰 목록 새로고침
     const handleReviewAdded = (reviewData) => {
-        return companyService.addReview(companyId, reviewData)
-            .then(() => companyService.getReviewsByCompanyId(companyId))
+        return apiCompanyService.addReview(companyId, reviewData)
+            .then(() => apiCompanyService.getReviewsByCompanyId(companyId))
             .then(updatedReviews => {
                 setReviews(updatedReviews);
                 return true;

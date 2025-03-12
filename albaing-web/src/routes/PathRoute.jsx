@@ -29,6 +29,7 @@ import CompanyDetail from "../pages/company/public/CompanyDetail";
 import MyApplication from "../pages/user/mypage/MyApplication";
 import MyPage from "../pages/user/mypage/MyPage";
 import ResumeView from "../pages/company/manage/applications/resume/ResumeView";
+import Companies from "../pages/company/public/Companies";
 
 // 메인 레이아웃 컴포넌트
 const MainLayout = ({children}) => (
@@ -61,6 +62,7 @@ function PathRoute() {
                 {/* 로그인한 모든 사용자 접근 가능 */}
                 <Route element={<ProtectedRoute/>}>
                     <Route path="/resumes" element={<MainLayout><Resume/></MainLayout>}/> {/* 이력서 조회 페이지 */}
+                    <Route path="/companies" element={<MainLayout><Companies/></MainLayout>}/> {/* 회사 목록 페이지 */}
                     <Route path="/companies/:companyId" element={<MainLayout><CompanyDetail/></MainLayout>}/> {/* 회사 상세 정보 페이지 */}
                     <Route path="/jobs" element={<MainLayout><JobpostList/></MainLayout>}/> {/* 채용공고 목록 페이지 */}
                     <Route path="/jobs/:jobPostId" element={<MainLayout><JobpostDetail/></MainLayout>}/> {/* 채용공고 상세 페이지 */}
@@ -70,7 +72,7 @@ function PathRoute() {
                 {/* 일반 사용자만 접근 가능 */}
                 <Route element={<ProtectedRoute userTypeRequired="personal"/>}>
                     <Route path="/mypage/:userId" element={<MainLayout><MyPage /></MainLayout>} /> {/* 일반 사용자 마이페이지 메인 */}
-                    <Route path="/mypage/applications" element={<MainLayout><MyApplication /></MainLayout>} /> {/* 일반 사용자 지원 내역 페이지 */}
+                    <Route path="/mypage/applications/:resumeId" element={<MainLayout><MyApplication /></MainLayout>} /> {/* 일반 사용자 지원 내역 페이지 */}
                     {/*<Route path="/mypage/scraps" element={<MainLayout><MyScrap /></MainLayout>} /> /!* 일반 사용자 스크랩 목록 페이지 *!/ */}
                     {/*<Route path="/mypage/reviews" element={<MainLayout><MyReviews /></MainLayout>} /> /!* 일반 사용자 작성 리뷰 목록 페이지 *!/ */}
                     <Route path="/mypage/user/:userId/edit" element={<MainLayout><UserEdit /></MainLayout>} /> {/* 사용자 정보 수정 페이지*/}

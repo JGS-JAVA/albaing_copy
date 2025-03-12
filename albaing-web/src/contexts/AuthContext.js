@@ -13,34 +13,21 @@ export const AuthProvider = ({ children }) => {
         if (storedUser) {
             try {
                 const parsedUser = JSON.parse(storedUser);
-
-                // 바로 상태 업데이트
+                // 임시로 상태 설정
                 setUser(parsedUser);
-                setLoading(false);
-
-                setTimeout(() => {
-                    console.error("사용자 상태 업데이트 확인:", {
-                        user: parsedUser,
-                        isLoggedIn: !!parsedUser,
-                        userType: parsedUser?.type,
-                        userData: parsedUser?.data
-                    });
-                }, 0);
-
-                return Promise.resolve(parsedUser);
             } catch (e) {
                 localStorage.removeItem('authUser');
             }
         }
 
         return axios.get('/api/auth/checkLogin', { withCredentials: true })
-            .then(res => {
-                if (res.status === 200 && res.data) {
+            .then(response => {
+                if (response.status === 200 && response.data) {
                     let userData;
-                    if (res.data.userId) {
-                        userData = { type: 'personal', data: res.data };
-                    } else if (res.data.companyId) {
-                        userData = { type: 'company', data: res.data };
+                    if (response.data.userId) {
+                        userData = { type: 'personal', data: response.data };
+                    } else if (response.data.companyId) {
+                        userData = { type: 'company', data: response.data };
                     }
 
                     if (userData) {
@@ -51,11 +38,14 @@ export const AuthProvider = ({ children }) => {
                     }
                 }
 
+                // 서버에서 인증되지 않았으면 로컬 스토리지도 정리
+                localStorage.removeItem('authUser');
                 setUser(null);
                 setLoading(false);
                 return null;
             })
             .catch(error => {
+                // 오류 발생 시 (401 등) 로컬 스토리지 정리
                 localStorage.removeItem('authUser');
                 setUser(null);
                 setLoading(false);
@@ -95,32 +85,53 @@ export const AuthProvider = ({ children }) => {
     const logout = () => {
         return axios.post('/api/auth/logout', {}, { withCredentials: true })
             .then(() => {
+                // 로컬 스토리지와 상태 모두 정리
                 localStorage.removeItem('authUser');
                 setUser(null);
-                return true;
+
+                return { success: true, message: '로그아웃되었습니다.' };
             })
             .catch(error => {
+                console.error('로그아웃 오류:', error);
+
+                // 오류가 발생해도 클라이언트 측 상태는 정리
                 localStorage.removeItem('authUser');
                 setUser(null);
-                return false;
+
+                return { success: false, message: '로그아웃 처리 중 오류가 발생했습니다.' };
             });
     };
 
     useEffect(() => {
-
-        // 로컬 스토리지에서 직접 확인하여 로그인 상태 즉시 설정
+        // 로컬 스토리지에서 임시로 상태 설정
         const storedUser = localStorage.getItem('authUser');
         if (storedUser) {
             try {
                 const parsedUser = JSON.parse(storedUser);
-                setUser(parsedUser);
-                setLoading(false);
+                setUser(parsedUser); // 임시 설정
             } catch (e) {
-                checkAuth();
+                localStorage.removeItem('authUser');
             }
-        } else {
-            checkAuth();
         }
+
+        // 실제 서버 세션 상태 확인 (비동기)
+        checkAuth()
+            .then(actualUser => {
+                // 서버 세션 상태와 로컬 스토리지 상태가 다르면 로컬 스토리지에 업데이트
+                const currentStoredUser = localStorage.getItem('authUser');
+                if (JSON.stringify(actualUser) !== currentStoredUser) {
+                    if (actualUser) {
+                        localStorage.setItem('authUser', JSON.stringify(actualUser));
+                    } else {
+                        localStorage.removeItem('authUser');
+                    }
+                }
+            })
+            .catch(() => {
+                // 오류 발생 시 로컬 스토리지 정리
+                localStorage.removeItem('authUser');
+                setUser(null);
+            });
     }, []);
 
     const contextValue = {
