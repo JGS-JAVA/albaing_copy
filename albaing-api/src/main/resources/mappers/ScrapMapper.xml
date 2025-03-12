@@ -27,10 +27,19 @@
           AND job_post_id = #{jobPostId}
     </delete>
 
-    <!-- 특정 사용자의 스크랩 목록 조회 -->
+    <!-- 특정 사용자의 스크랩 목록 조회 (공고 제목, 회사 이름 포함) -->
     <select id="getScrapsByUser">
-        SELECT s.scrap_id, s.user_id, s.job_post_id, s.scrap_created_at, s.scrap_is
+        SELECT
+            s.scrap_id,
+            s.user_id,
+            s.job_post_id,
+            s.scrap_created_at,
+            s.scrap_is,
+            jp.job_post_title,
+            c.company_name
         FROM scraps s
+                 LEFT JOIN job_posts jp ON s.job_post_id = jp.job_post_id
+                 LEFT JOIN companies c ON jp.company_id = c.company_id
         WHERE s.user_id = #{userId}
           AND s.scrap_is = TRUE
     </select>

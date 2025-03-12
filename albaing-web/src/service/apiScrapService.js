@@ -8,9 +8,8 @@ const apiScrapService = {
     addScrap: (userId, jobPostId) => {
         axios
             .post(`${API_SCRAP_URL}/add/${userId}/${jobPostId}`)
-            .then((res) => {
-                return res.data;
-            })
+            .then((res) => res.data
+            )
             .catch((err) => {
                 console.error("스크랩 추가 실패:", err);
             });
@@ -20,16 +19,16 @@ const apiScrapService = {
     removeScrap: (userId, jobPostId) => {
         return axios
             .delete(`${API_SCRAP_URL}/remove/${userId}/${jobPostId}`)
-            .then((res) => {
-                jobPostId(res.data);})
+            .then((res) =>
+                res.data)
             .catch((err) => {
                 console.error("스크랩 삭제 실패:", err);
             });
     },
 
     // 특정 사용자의 스크랩 목록 조회
-    getUserScraps: (userId) => {
-        return axios
+    getScrapsByUser: (userId) => {
+        axios
             .get(`${API_SCRAP_URL}/${userId}`)
             .then((res) => res.data)
             .catch((err) => {

@@ -24,4 +24,7 @@ public class Scrap {
     private Date scrapCreatedAt;
     private boolean scrapIs;
 
+    private String jobPostTitle;  // 공고 제목
+    private String companyName;   // 회사 이름
+
 }
