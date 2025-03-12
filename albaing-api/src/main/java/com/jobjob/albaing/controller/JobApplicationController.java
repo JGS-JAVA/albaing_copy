@@ -2,6 +2,7 @@ package com.jobjob.albaing.controller;
 
 import com.jobjob.albaing.dto.JobApplication;
 import com.jobjob.albaing.service.JobApplicationServiceImpl;
+import com.jobjob.albaing.service.MyApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -15,13 +16,19 @@ public class JobApplicationController {
 
     @Autowired
     private JobApplicationServiceImpl jobApplicationService;
+    @Autowired
+    private MyApplicationService myApplicationService;
 
     // (새로 추가) 이력서 기준 지원 내역 조회
-    @GetMapping("/resume/{resumeId}")
-    public List<JobApplication> getJobApplicationsByResume(
-            @PathVariable("resumeId") int resumeId
-    ) {
-        return jobApplicationService.getJobApplications(resumeId);
+    @GetMapping("resume/{resumeId}")
+    public List<Map<String, Object>> getUserApplications(@PathVariable int resumeId) {
+        return myApplicationService.getUserApplications(resumeId);
+    }
+
+    // 특정 resumeId에 대한 지원 개수 및 상태별 개수 조회
+    @GetMapping("/status/{resumeId}")
+    public Map<String, Object> getApplicationStats(@PathVariable int resumeId) {
+        return myApplicationService.getApplicationStatus(resumeId);
     }
 
     // (이미 있는) 채용공고별 지원자 목록 조회

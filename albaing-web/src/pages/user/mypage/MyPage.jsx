@@ -14,8 +14,6 @@ const MyPage = () => {
         reviewCount: ""
     };
 
-
-
     useEffect(() => {
         apiMyPageService.getUserById(userId, setUser);
         apiMyPageService.getResumeById(userId, setResume);
@@ -46,7 +44,7 @@ const MyPage = () => {
                         </div>
                         <h2 className="text-2xl font-bold text-gray-900">{user.userName}</h2>
                     <br/>
-                        <p className="text-gray-600 mb-4">{user.userEmail}</p>
+                        <p className="text-gray-600 mb-4">이메일 : {user.userEmail}</p>
                         <p className="text-gray-600 mb-4">생년월일 : {user.userBirthdate}</p>
                         <button
                             className="w-full text-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
@@ -64,7 +62,7 @@ const MyPage = () => {
                                 <svg xmlns="<http://www.w3.org/2000/svg>" className="h-6 w-6 text-blue-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
-                                <h3 className="text-xl font-semibold text-gray-900">내 이력서</h3>
+                                <h3 className="text-xl font-semibold text-gray-900"><Link to="/resumes">{resume.resumeTitle}</Link></h3>
                             </div>
                             <button
                                 className="text-blue-600 hover:text-blue-800 transition-colors"
@@ -73,7 +71,7 @@ const MyPage = () => {
                         </div>
                         {resume ? (
                             <div>
-                                <h4 className="text-lg font-medium text-gray-800">{resume.title}</h4>
+                                {/*<h5 className="text-lg font-medium text-gray-800"><Link to="/resumes"></Link></h5>*/}
                                 <div className="mt-2 grid grid-cols-2 gap-2 text-sm text-gray-600">
                                     <div>
                                         <strong>희망 직종:</strong> {resume.resumeJobCategory || '미등록'}
@@ -129,7 +127,7 @@ const MyPage = () => {
                                 />
                             </Link>
 
-                            <Link to="/mypage/applications">
+                            <Link to={`/mypage/applications/${userId}`}>
                                 <ActivityCard
                                     icon={
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-500"
