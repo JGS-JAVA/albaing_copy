@@ -83,6 +83,24 @@ public class ReviewController {
         }
     }
 
+    //리뷰 수정
+    @PutMapping("/reviews/{reviewId}")
+    public ResponseEntity<?> updateReview(
+            @PathVariable long reviewId,
+            @RequestBody Review review,
+            HttpSession session
+    ) {
+        User user = (User) session.getAttribute("userSession");
+        if (user == null) {
+            return ResponseEntity.status(401).body(Map.of("message", "로그인이 필요합니다."));
+        }
+
+        review.setReviewId(reviewId);
+        reviewService.updateReview(review);
+
+        return ResponseEntity.ok().build();
+    }
+
     // 댓글 등록
     @PostMapping("/companies/{companyId}/reviews/{reviewId}/comments")
     public ResponseEntity<?> addComment(
@@ -113,8 +131,8 @@ public class ReviewController {
     // 리뷰 삭제 (일반 사용자)
     @DeleteMapping("/reviews/{reviewId}")
     public ResponseEntity<?> deleteReview(
-        @PathVariable("reviewId") long reviewId,
-        HttpSession session
+            @PathVariable("reviewId") long reviewId,
+            HttpSession session
     ) {
         User user = (User) session.getAttribute("userSession");
         if (user == null) {
@@ -122,6 +140,23 @@ public class ReviewController {
         }
 
         reviewService.deleteReview(reviewId, user.getUserId());
+        return ResponseEntity.ok().build();
+    }
+
+    // 리뷰 댓글 수정(일반 사용자)
+    @PutMapping("/reviews/{reviewId}/comments/{commentId}")
+    public ResponseEntity<?> updateComment(
+            @PathVariable long commentId,
+            @RequestBody Comment comment,
+            HttpSession session
+    ) {
+        User user = (User) session.getAttribute("userSession");
+        if (user == null) {
+            return ResponseEntity.status(401).body(Map.of("message", "로그인이 필요합니다."));
+        }
+
+        comment.setCommentId(commentId);
+        reviewService.updateComment(comment);
         return ResponseEntity.ok().build();
     }
 

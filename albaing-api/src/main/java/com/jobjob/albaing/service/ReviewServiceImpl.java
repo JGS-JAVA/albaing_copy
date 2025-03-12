@@ -45,6 +45,12 @@ public class ReviewServiceImpl implements ReviewService {
         }
     }
 
+    //회사 리뷰 수정
+    @Override
+    public void updateReview(Review review) {
+        reviewMapper.updateReview(review);
+    }
+
     //회사 리뷰 삭제
     @Override
     public void deleteReview(long reviewId, long userId) {
@@ -55,6 +61,12 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public void addComment(Comment comment) {
         reviewMapper.addComment(comment);
+    }
+
+    //리뷰 댓글 수정
+    @Override
+    public void updateComment(Comment comment) {
+        reviewMapper.updateComment(comment);
     }
 
     //리뷰 댓글 삭제
