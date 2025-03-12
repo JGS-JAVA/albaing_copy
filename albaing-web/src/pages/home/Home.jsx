@@ -6,8 +6,6 @@ const Home = () => {
         <div>
             <Banner />
             <JobpostList />
-
-
         </div>
     );
 }

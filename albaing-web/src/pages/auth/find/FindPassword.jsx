@@ -1,41 +1,35 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
-export default function FindId() {
+export default function FindPassword() {
     const [userType, setUserType] = useState("user");
-    const [name, setName] = useState("");
-    const [phone, setPhone] = useState("");
     const [email, setEmail] = useState("");
+    const [userName, setUserName] = useState("");
+    const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const handleFindId = () => {
+    const navigate = useNavigate();
+
+    const handleVerification = () => {
         setError("");
-        setEmail("");
         setLoading(true);
 
-        const endpoint =
-            userType === "user"
-                ? `/api/auth/find/user/id?userName=${name}&userPhone=${phone}`
-                : `/api/auth/find/company/id?companyName=${name}&companyPhone=${phone}`;
+        const endpoint = userType === "user"
+            ? "/api/auth/verify/user"
+            : "/api/auth/verify/company";
 
-        axios
-            .get(endpoint)
-            .then(response => {
-                console.log("🔹 API 응답 데이터:", response.data);
+        const requestData = userType === "user"
+            ? { userEmail: email, userName, userPassword: password }
+            : { companyEmail: email, companyPassword: password };
 
-                const email = userType === "user" ? response.data.userEmail : response.data.companyEmail;
-
-                if (email) {
-                    setEmail(email);
-                } else {
-                    setEmail("찾은 이메일 없음");
-                }
-                setLoading(false);
+        axios.post(endpoint, requestData)
+            .then(() => {
+                navigate("/change/password", { state: { email, userType } });
             })
             .catch(() => {
-                setError("정보를 찾을 수 없습니다. 입력한 정보를 확인해주세요.");
+                setError("계정 정보가 일치하지 않습니다. 다시 확인해주세요.");
                 setLoading(false);
             });
     };
@@ -48,11 +42,11 @@ export default function FindId() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
                 </Link>
-                <h2 className="text-2xl font-bold text-gray-800">아이디 찾기</h2>
+                <h2 className="text-2xl font-bold text-gray-800">비밀번호 찾기</h2>
             </div>
 
             <div className="mb-6">
-                <p className="text-gray-600 text-sm">이름과 전화번호를 입력하여 아이디를 찾을 수 있습니다.</p>
+                <p className="text-gray-600 text-sm">본인 확인을 위해 정보를 입력해주세요.</p>
             </div>
 
             <div className="mb-5">
@@ -94,35 +88,51 @@ export default function FindId() {
             </div>
 
             <div className="mb-4">
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                    {userType === "user" ? "이름" : "회사명"}
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                    이메일
                 </label>
                 <input
-                    type="text"
-                    id="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    type="email"
+                    id="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                    placeholder={userType === "user" ? "이름을 입력하세요" : "회사명을 입력하세요"}
+                    placeholder="이메일을 입력하세요"
                 />
             </div>
 
+            {userType === "user" && (
+                <div className="mb-4">
+                    <label htmlFor="userName" className="block text-sm font-medium text-gray-700 mb-1">
+                        이름
+                    </label>
+                    <input
+                        type="text"
+                        id="userName"
+                        value={userName}
+                        onChange={(e) => setUserName(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                        placeholder="이름을 입력하세요"
+                    />
+                </div>
+            )}
+
             <div className="mb-5">
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                    전화번호
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                    현재 비밀번호
                 </label>
                 <input
-                    type="text"
-                    id="phone"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    type="password"
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                    placeholder="전화번호를 입력하세요 (예: 010-1234-5678)"
+                    placeholder="현재 비밀번호를 입력하세요"
                 />
             </div>
 
             <button
-                onClick={handleFindId}
+                onClick={handleVerification}
                 className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center"
                 disabled={loading}
             >
@@ -132,17 +142,10 @@ export default function FindId() {
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        찾는 중...
+                        확인 중...
                     </>
-                ) : "아이디 찾기"}
+                ) : "본인 확인"}
             </button>
-
-            {email && (
-                <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                    <h3 className="font-medium text-blue-800 mb-2">찾은 아이디</h3>
-                    <p className="text-blue-900 font-medium break-all">{email}</p>
-                </div>
-            )}
 
             {error && (
                 <div className="mt-4 p-4 bg-red-50 text-red-700 rounded-lg border border-red-200">
@@ -156,11 +159,11 @@ export default function FindId() {
             )}
 
             <div className="mt-8 pt-5 border-t border-gray-200 flex justify-center space-x-6">
-                <Link to="/find/password" className="text-blue-600 font-medium hover:text-blue-700 flex items-center">
+                <Link to="/find/id" className="text-blue-600 font-medium hover:text-blue-700 flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
-                    비밀번호 찾기
+                    아이디 찾기
                 </Link>
                 <Link to="/login" className="text-gray-600 font-medium hover:text-gray-800 flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">

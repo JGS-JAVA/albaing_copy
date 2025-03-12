@@ -16,8 +16,7 @@ import Login from '../pages/auth/login/Login';
 import RegisterCompany from '../pages/auth/register/RegisterCompany';
 import RegisterPerson from '../pages/auth/register/RegisterPerson';
 import FindId from '../pages/auth/find/FindId';
-import ChangePasswordCheck from '../pages/auth/find/ChangePasswordCheck';
-import ChangePasswordSet from '../pages/auth/find/ChangePasswordSet';
+import FindPassword from '../pages/auth/find/FindPassword';
 import BusinessValidation from "../pages/auth/register/BusinessValidation";
 import Resume from '../pages/user/resume/Resume';
 import ResumeEdit from '../pages/user/resume/ResumeEdit';
@@ -30,6 +29,8 @@ import MyApplication from "../pages/user/mypage/MyApplication";
 import MyPage from "../pages/user/mypage/MyPage";
 import ResumeView from "../pages/company/manage/applications/resume/ResumeView";
 import Companies from "../pages/company/public/Companies";
+import ChangePassword from "../pages/auth/find/ChangePassword";
+import Find from "../pages/auth/find/Find";
 
 // 메인 레이아웃 컴포넌트
 const MainLayout = ({children}) => (
@@ -55,9 +56,10 @@ function PathRoute() {
                 <Route path="/register/person" element={<MainLayout><RegisterPerson /></MainLayout>} /> {/* 개인 회원가입 페이지 */}
                 <Route path="/register/company" element={<MainLayout><RegisterCompany /></MainLayout>} /> {/* 기업 회원가입 페이지 */}
                 <Route path="/register/BusinessValidation" element={<MainLayout><BusinessValidation /></MainLayout>} /> {/* 기업 회원가입 페이지 */}
-                <Route path="/find/findId" element={<MainLayout><FindId /></MainLayout>} /> {/* 아이디 찾기 페이지 */}
-                <Route path="/find/changePasswordCheck" element={<MainLayout><ChangePasswordCheck /></MainLayout>} /> {/* 비밀번호 변경 페이지 */}
-                <Route path="/find/changePasswordSet" element={<MainLayout><ChangePasswordSet /></MainLayout>} /> {/* 비밀번호 변경 페이지 */}
+                <Route path="/find" element={<MainLayout><Find /></MainLayout>} /> {/* 아이디 찾기 페이지 */}
+                <Route path="/find/id" element={<MainLayout><FindId /></MainLayout>} /> {/* 아이디 찾기 페이지 */}
+                <Route path="/find/password" element={<MainLayout><FindPassword /></MainLayout>} /> {/* 비밀번호 변경 페이지 */}
+                <Route path="/change/password" element={<MainLayout><ChangePassword /></MainLayout>} /> {/* 비밀번호 변경 페이지 */}
 
                 {/* 로그인한 모든 사용자 접근 가능 */}
                 <Route element={<ProtectedRoute/>}>

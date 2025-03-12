@@ -129,7 +129,7 @@ export default function Login() {
                             />
                         </div>
                         <div className="mt-2 flex justify-end">
-                            <Link to="/find/password" className="text-sm font-medium text-blue-600 hover:text-blue-500">
+                            <Link to="/find" className="text-sm font-medium text-blue-600 hover:text-blue-500">
                                 비밀번호를 잊으셨나요?
                             </Link>
                         </div>
@@ -183,10 +183,10 @@ export default function Login() {
                 <p className="mt-8 text-center text-sm text-gray-500">
                     아직 회원이 아니신가요?{' '}
                     <Link
-                        to={userType === 'personal' ? '/register/person' : '/register/company'}
+                        to="/register"
                         className="font-semibold text-blue-600 hover:text-blue-500"
                     >
-                        {userType === 'personal' ? '개인 회원가입' : '기업 회원가입'}
+                        회원가입
                     </Link>
                 </p>
 

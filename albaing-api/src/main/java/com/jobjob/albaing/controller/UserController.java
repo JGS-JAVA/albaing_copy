@@ -18,7 +18,6 @@ public class UserController {
     private ResumeServiceImpl resumeService;
 
 
-
     // 마이페이지 - 사용자 정보 조회
     @GetMapping("/user/{userId}")
     public User getUserById(@PathVariable int userId) {

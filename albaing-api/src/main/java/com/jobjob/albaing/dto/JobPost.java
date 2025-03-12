@@ -28,4 +28,6 @@ public class JobPost {
     private LocalDate jobPostDueDate;        // 마감일
     private LocalDateTime jobPostCreatedAt;  // 공고 게시일
     private LocalDateTime jobPostUpdatedAt;  // 공고 최종 수정일
+
+    private String companyName;
 }
