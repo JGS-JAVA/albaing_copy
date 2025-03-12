@@ -23,27 +23,19 @@ import { useAuth } from '../../contexts/AuthContext';
 const categories = [
     {
         name: '채용정보',
-        submenu: [
-            { name: '전체 채용정보', href: '/jobpost/list' },
-            { name: '지역별 채용정보', href: '/jobpost/list?type=area' },
-            { name: '업종별 채용정보', href: '/jobpost/list?type=category' },
-            { name: '신규 채용정보', href: '/jobpost/list?type=new' },
-        ],
+        href: '/jobs'
     },
     {
         name: '기업정보',
-        submenu: [
-            { name: '기업 검색', href: '/company' },
-            { name: '기업 리뷰', href: '/company/review' },
-        ],
+        href: '/companies',
     },
     {
         name: '인재정보',
         href: '/resume',
     },
     {
-        name: '커뮤니티',
-        href: '/community',
+        name: '공지사항',
+        href: '/notices',
     },
 ];
 
