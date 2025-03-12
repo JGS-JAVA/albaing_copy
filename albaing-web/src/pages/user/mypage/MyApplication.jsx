@@ -1,19 +1,35 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import apiJobApplicationService from "../../../service/apiJobApplicationService";
+import apiMyApplicationService from "../../../service/apiMyApplicationService";
 
 const MyApplications = () => {
     const { resumeId } = useParams();
     const [applications, setApplications] = useState([]);
+    const [applicationStats, setApplicationStats] = useState(null); // 상태 개수 저장
 
     useEffect(() => {
-            apiJobApplicationService.getJobApplicationsByResume(resumeId, setApplications);
+        apiMyApplicationService.getJobApplicationsByResume(resumeId, setApplications);
+        apiMyApplicationService.getApplicationStatsByResume(resumeId, setApplicationStats);
     }, [resumeId]);
 
     return (
         <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
             <h2 className="text-2xl font-semibold mb-4">지원한 공고 내역</h2>
 
+            {/* 지원 상태 개수 (통계) 출력 */}
+            {applicationStats && (
+                <div className="mb-4 p-4 bg-gray-100 rounded-lg shadow-sm">
+                    <p className="text-lg font-medium">📊 지원 현황</p>
+                    <ul className="flex space-x-4 mt-2">
+                        <li className="text-blue-600">총 지원: {applicationStats.totalApplications}</li>
+                        <li className="text-yellow-500">승인 대기: {applicationStats.approving}</li>
+                        <li className="text-green-500">합격: {applicationStats.approved}</li>
+                        <li className="text-red-500">불합격: {applicationStats.denied}</li>
+                    </ul>
+                </div>
+            )}
+
+            {/* 지원한 공고 목록 */}
             {applications.length === 0 ? (
                 <p>지원한 공고가 없습니다.</p>
             ) : (
