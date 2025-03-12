@@ -1,8 +1,8 @@
 import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import axios from "axios";
-import {ErrorMessage, LoadingSpinner} from "../../components/common";
-
+import {ErrorMessage, LoadingSpinner} from "../../components";
+import {useModal,AlertModal} from "../../components";
 
 const ReviewDetail = () => {
     const {companyId, reviewId} = useParams();
@@ -11,11 +11,14 @@ const ReviewDetail = () => {
     const [commentInput, setCommentInput] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+  
     const [editReviewId, setEditReviewId] = useState(null);
     const [editReviewContent, setEditReviewContent] = useState("");
     const [editCommentId, setEditCommentId] = useState(null);
     const [editCommentContent, setEditCommentContent] = useState("");
     const navigate = useNavigate();
+  
+    const alertModal = useModal();
 
     // 조회한 리뷰 내용 불러오기
     useEffect(() => {
@@ -117,9 +120,17 @@ const ReviewDetail = () => {
             console.error("오류 응답:", error.response);
 
             if (error.response?.status === 401) {
-                alert("댓글을 작성하려면 로그인이 필요합니다.");
+                alertModal.openModal({
+                    title: '로그인 필요',
+                    message: '댓글을 작성하려면 로그인이 필요합니다.',
+                    type: 'info'
+                });
             } else {
-                alert("댓글 작성 중 오류가 발생했습니다. 다시 시도해주세요.");
+                alertModal.openModal({
+                    title: '오류',
+                    message: '댓글 작성 중 오류가 발생했습니다. 다시 시도해주세요.',
+                    type: 'warning',
+                });
             }
         }
     };
@@ -314,6 +325,14 @@ const ReviewDetail = () => {
                     </form>
                 </div>
             </div>
+            <AlertModal
+                isOpen={alertModal.isOpen}
+                onClose={alertModal.closeModal}
+                title={alertModal.modalProps.title || '알림'}
+                message={alertModal.modalProps.message}
+                confirmText="확인"
+                type={alertModal.modalProps.type || 'info'}
+            />
         </div>
     );
 };

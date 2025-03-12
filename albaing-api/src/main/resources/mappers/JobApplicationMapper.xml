@@ -14,8 +14,16 @@
                  )
     </insert>
 
+<!--    사용자 지원 공고 불러오기-->
     <select id="getJobApplications">
-        SELECT * FROM JOB_APPLICATIONS WHERE resume_id = #{resumeId}
+        SELECT
+            ja.*,
+            jp.job_post_title,
+            c.company_name
+        FROM JOB_APPLICATIONS ja
+                 JOIN JOB_POSTS jp ON ja.job_post_id = jp.job_post_id
+                 JOIN COMPANIES c ON jp.company_id = c.company_id
+        WHERE ja.resume_id = #{resumeId}
     </select>
 
     <select id="getJobApplicationsByJobPostId">

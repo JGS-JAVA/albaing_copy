@@ -2,6 +2,7 @@ package com.jobjob.albaing.mapper;
 
 import com.jobjob.albaing.dto.User;
 import org.apache.ibatis.annotations.Mapper;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
 import java.util.Map;
@@ -26,13 +27,18 @@ public interface UserMapper {
     // 유저 이메일 찾기
     User findUserEmail(String userName, String userPhone);
 
+    // 비밀번호 재설정 (암호화된 비밀번호 저장)
+    void updateUserPassword(@Param("userEmail") String userEmail,
+                            @Param("encodedPassword") String encodedPassword);
+
+
     // 마이페이지- 사용자 정보 조회
     User getUserById(int userId);
 
     User getUserByEmail(String email);
 
     // 마이페이지 - 사용자 정보 수정
-    void updateUser(int userId, User.Gender userGender, Date userBirthdate, String userAddress, String userProfileImage);
+    void updateUser(User user);
 
 
 }

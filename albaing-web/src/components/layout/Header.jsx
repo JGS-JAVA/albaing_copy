@@ -23,27 +23,19 @@ import { useAuth } from '../../contexts/AuthContext';
 const categories = [
     {
         name: '채용정보',
-        submenu: [
-            { name: '전체 채용정보', href: '/jobpost/list' },
-            { name: '지역별 채용정보', href: '/jobpost/list?type=area' },
-            { name: '업종별 채용정보', href: '/jobpost/list?type=category' },
-            { name: '신규 채용정보', href: '/jobpost/list?type=new' },
-        ],
+        href: '/jobs'
     },
     {
         name: '기업정보',
-        submenu: [
-            { name: '기업 검색', href: '/company' },
-            { name: '기업 리뷰', href: '/company/review' },
-        ],
+        href: '/companies',
     },
     {
         name: '인재정보',
         href: '/resume',
     },
     {
-        name: '커뮤니티',
-        href: '/community',
+        name: '공지사항',
+        href: '/notices',
     },
 ];
 
@@ -70,7 +62,7 @@ export default function Header() {
                             <img
                                 src={albaingLogo}
                                 alt="알바잉 로고"
-                                className="md:h-32 h-28 w-auto"
+                                className="h-16 w-auto"
                             />
                         </Link>
                     </div>
@@ -127,7 +119,7 @@ export default function Header() {
                     <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-4">
                         {isLoggedIn ? (
                             <>
-                                <Link to={userType === 'company' ? `/company/manage/${userData.companyId}` : "/mypage"} className="text-sm font-semibold text-gray-900">
+                                <Link to={userType === 'company' ? `/company/manage/${userData.companyId}` : `/mypage/${userData?.userId}`} className="text-sm font-semibold text-gray-900">
                                     마이페이지
                                 </Link>
                                 <button
@@ -161,7 +153,7 @@ export default function Header() {
                             <img
                                 src={albaingLogo}
                                 alt="알바잉 로고"
-                                className="h-16 w-auto"
+                                className="h-6 w-auto"
                             />
                         </Link>
                         <button

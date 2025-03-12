@@ -36,7 +36,7 @@
 
     <!-- 유저 로그인 -->
     <select id="loginUser" parameterType="map">
-        SELECT user_id, user_email, user_password, user_name
+        SELECT *
         FROM users
         WHERE user_email = #{userEmail}
     </select>
@@ -63,6 +63,12 @@
         AND user_phone = #{userPhone}
     </select>
 
+    <!-- 유저 비밀번호 바꾸기 -->
+    <update id="updateUserPassword">
+        UPDATE users
+        SET user_password = #{encodedPassword}
+        WHERE user_email = #{userEmail}
+    </update>
 
     <!-- 마이페이지 -사용자 정보 조회 -->
     <select id="getUserById">
@@ -81,8 +87,13 @@
     <update id="updateUser">
         UPDATE USERS
         SET
-            user_gender = #{userGender},
+
+            user_email= #{userEmail},
+            user_password = #{userPassword},
+            user_name=#{userName},
             user_birthdate = #{userBirthdate},
+            user_gender = #{userGender},
+            user_phone = #{userPhone},
             user_address = #{userAddress},
             user_profile_image = #{userProfileImage}
         WHERE user_id = #{userId}

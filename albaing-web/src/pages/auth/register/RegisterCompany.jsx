@@ -1,12 +1,14 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import {ErrorMessage} from "../../../components/common";
+import {ErrorMessage} from "../../../components";
+import { AlertModal, useModal } from '../../../components';
 
 const RegisterCompany = () => {
-    const [companyName, setCompanyName] = useState("");
     const [companyRegistrationNumber, setCompanyRegistrationNumber] = useState("");
     const [companyOwnerName, setCompanyOwnerName] = useState("");
+    const [companyOpenDate, setCompanyOpenDate] = useState("");
+    const [companyName, setCompanyName] = useState("");
     const [companyEmail, setCompanyEmail] = useState("");
     const [companyPassword, setCompanyPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -14,14 +16,25 @@ const RegisterCompany = () => {
     const [companyLocalAddress, setCompanyLocalAddress] = useState("");
     const [companyLogo, setCompanyLogo] = useState("");
     const [companyDescription, setCompanyDescription] = useState("");
-    const [companyOpenDate, setCompanyOpenDate] = useState("");
     const [termsAgreement, setTermsAgreement] = useState(false);
     const [emailVerified, setEmailVerified] = useState(false);
     const [verificationCode, setVerificationCode] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const alertModal = useModal();
 
     const navigate = useNavigate();
+
+    // 로컬스토리지에서 데이터 불러오기
+    useEffect(() => {
+        const storedCompanyRegistrationNumber = localStorage.getItem("companyRegistrationNumber") || '';
+        const storedCompanyOwnerName = localStorage.getItem("companyOwnerName") || '';
+        const storedCompanyOpenDate = localStorage.getItem("companyOpenDate") || '';
+
+        setCompanyRegistrationNumber(storedCompanyRegistrationNumber);
+        setCompanyOwnerName(storedCompanyOwnerName);
+        setCompanyOpenDate(storedCompanyOpenDate);
+    }, []);
 
     const requestVerificationCode = () => {
         if (!companyEmail) {
@@ -36,7 +49,11 @@ const RegisterCompany = () => {
             email: companyEmail
         })
             .then(response => {
-                alert("인증번호가 이메일로 발송되었습니다.");
+                alertModal.openModal({
+                    title: '인증번호 발송',
+                    message: '인증번호가 이메일로 발송되었습니다.',
+                    type: 'success'
+                });
             })
             .catch(error => {
                 setError(`인증번호 발송 실패: ${error.response?.data?.message || "알 수 없는 오류가 발생했습니다."}`);
@@ -50,9 +67,9 @@ const RegisterCompany = () => {
     const verifyCode = () => {
         if (!verificationCode) {
             setError("인증번호를 입력해주세요.");
+
             return;
         }
-
         setLoading(true);
         setError("");
 
@@ -62,7 +79,11 @@ const RegisterCompany = () => {
         })
             .then(response => {
                 setEmailVerified(true);
-                alert("이메일 인증이 완료되었습니다.");
+                alertModal.openModal({
+                    title: '인증 완료',
+                    message: '이메일 인증이 완료되었습니다.',
+                    type: 'success'
+                });
             })
             .catch(error => {
                 setError(`인증번호 확인 실패: ${error.response?.data?.message || "알 수 없는 오류가 발생했습니다."}`);
@@ -165,8 +186,12 @@ const RegisterCompany = () => {
             termsAgreement
         })
             .then(response => {
-                alert("회사 회원가입이 성공적으로 완료되었습니다.");
-                navigate("/login");
+                alertModal.openModal({
+                    title: '가입 완료',
+                    message: '회원가입이 성공적으로 완료되었습니다.',
+                    type: 'success',
+                    onClose: () => navigate("/login")
+                });
             })
             .catch(error => {
                 setError(`회원가입 실패: ${error.response?.data?.message || "알 수 없는 오류가 발생했습니다."}`);
@@ -176,7 +201,6 @@ const RegisterCompany = () => {
                 setLoading(false);
             });
     };
-
     return (
         <div className="max-w-2xl mx-auto px-4 py-10">
             <div className="text-center mb-10">
@@ -305,7 +329,8 @@ const RegisterCompany = () => {
                             </div>
 
                             <div>
-                                <label htmlFor="companyRegistrationNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                                <label htmlFor="companyRegistrationNumber"
+                                       className="block text-sm font-medium text-gray-700 mb-1">
                                     사업자등록번호 <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -315,7 +340,7 @@ const RegisterCompany = () => {
                                     onChange={(e) => setCompanyRegistrationNumber(e.target.value)}
                                     className="w-full p-2 border rounded-md"
                                     placeholder="000-00-00000"
-                                    required
+                                    disabled
                                 />
                                 <p className="mt-1 text-xs text-gray-500">
                                     하이픈(-)을 포함한 형식으로 입력해주세요. (예: 123-45-67890)
@@ -323,7 +348,8 @@ const RegisterCompany = () => {
                             </div>
 
                             <div>
-                                <label htmlFor="companyOwnerName" className="block text-sm font-medium text-gray-700 mb-1">
+                                <label htmlFor="companyOwnerName"
+                                       className="block text-sm font-medium text-gray-700 mb-1">
                                     대표자명 <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -333,7 +359,7 @@ const RegisterCompany = () => {
                                     onChange={(e) => setCompanyOwnerName(e.target.value)}
                                     className="w-full p-2 border rounded-md"
                                     placeholder="대표자 이름을 입력하세요"
-                                    required
+                                    disabled
                                 />
                             </div>
 
@@ -353,7 +379,8 @@ const RegisterCompany = () => {
                             </div>
 
                             <div className="md:col-span-2">
-                                <label htmlFor="companyLocalAddress" className="block text-sm font-medium text-gray-700 mb-1">
+                                <label htmlFor="companyLocalAddress"
+                                       className="block text-sm font-medium text-gray-700 mb-1">
                                     회사 주소 <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -368,15 +395,16 @@ const RegisterCompany = () => {
                             </div>
 
                             <div>
-                                <label htmlFor="companyOpenDate" className="block text-sm font-medium text-gray-700 mb-1">
+                                <label htmlFor="companyOpenDate"
+                                       className="block text-sm font-medium text-gray-700 mb-1">
                                     설립일
                                 </label>
                                 <input
-                                    type="date"
+                                    type="text"
                                     id="companyOpenDate"
                                     value={companyOpenDate}
-                                    onChange={(e) => setCompanyOpenDate(e.target.value)}
-                                    className="w-full p-2 border rounded-md"
+                                    disabled
+                                    className="w-full p-2 border rounded-md bg-gray-100 text-gray-500"
                                 />
                             </div>
                         </div>
@@ -493,6 +521,16 @@ const RegisterCompany = () => {
                     </Link>
                 </p>
             </div>
+
+            {/* 알림 모달 */}
+            <AlertModal
+                isOpen={alertModal.isOpen}
+                onClose={alertModal.closeModal}
+                title={alertModal.modalProps.title || '알림'}
+                message={alertModal.modalProps.message}
+                confirmText="확인"
+                type={alertModal.modalProps.type || 'info'}
+            />
         </div>
     );
 };

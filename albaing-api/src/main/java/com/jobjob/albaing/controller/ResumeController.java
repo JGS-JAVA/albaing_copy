@@ -35,4 +35,10 @@ public class ResumeController {
         return resumeService.getResumeByUserId(userId);
     }
 
+    // 회원가입 시 이력서 자동 생성 (POST)
+    @PostMapping("/resume/create")
+    public void createResumeForUser(@RequestBody User user) {
+        resumeService.createResumeForUser(user);
+    }
+
 }

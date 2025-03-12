@@ -4,7 +4,7 @@ import {useAuth} from '../../../contexts/AuthContext';
 import EducationModal from '../../../components/modals/EducationModal';
 import CareerModal from '../../../components/modals/CareerModal';
 import apiResumeService from "../../../service/apiResumeService";
-import {ErrorMessage, LoadingSpinner, SuccessMessage} from "../../../components/common";
+import {ErrorMessage, LoadingSpinner, SuccessMessage} from "../../../components";
 
 const ResumeEdit = () => {
     const [resumeData, setResumeData] = useState({
@@ -103,6 +103,7 @@ const ResumeEdit = () => {
         fetchResume();
     }, [userData, resumeId]);
 
+    //
     const validateForm = () => {
         const errors = {};
 
@@ -125,7 +126,7 @@ const ResumeEdit = () => {
             [name]: value
         }));
 
-        // Clear error for this field if it exists
+
         if (formErrors[name]) {
             setFormErrors(prev => ({
                 ...prev,

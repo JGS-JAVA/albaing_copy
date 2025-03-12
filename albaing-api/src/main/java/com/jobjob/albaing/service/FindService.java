@@ -9,4 +9,12 @@ public interface FindService {
 
     Company findCompanyEmail(String companyName, String companyPhone);
 
+    boolean verifyUserCredentials(String email, String password);
+
+    boolean verifyCompanyCredentials(String email, String password);
+
+    void resetUserPassword(String userEmail, String newPassword);
+
+    void resetCompanyPassword(String companyEmail, String newPassword);
+
 }

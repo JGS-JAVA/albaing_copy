@@ -2,7 +2,9 @@ package com.jobjob.albaing.mapper;
 
 import com.jobjob.albaing.dto.Company;
 import org.apache.ibatis.annotations.Mapper;
+import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -24,8 +26,18 @@ public interface CompanyMapper {
     // 회사 이메일 찾기
     Company findCompanyEmail(String companyName, String companyPhone);
 
+    Company getCompanyByEmail(String email);
+
+    // 비밀번호 재설정 (암호화된 비밀번호 저장)
+    void updateCompanyPassword(@Param("companyEmail") String companyEmail,
+                               @Param("encodedPassword") String encodedPassword);
+
     // 회사 상세 정보 불러오기
     Company companyDetail(long companyId);
-  
 
+    // 모든 회사 목록 조회
+    List<Company> getAllCompanies();
+
+    // 회사명으로 검색
+    List<Company> searchCompaniesByName(@Param("keyword") String keyword);
 }
