@@ -1,4 +1,4 @@
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {ErrorMessage, LoadingSpinner} from "../../components/common";
@@ -11,6 +11,11 @@ const ReviewDetail = () => {
     const [commentInput, setCommentInput] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [editReviewId, setEditReviewId] = useState(null);
+    const [editReviewContent, setEditReviewContent] = useState("");
+    const [editCommentId, setEditCommentId] = useState(null);
+    const [editCommentContent, setEditCommentContent] = useState("");
+    const navigate = useNavigate();
 
     // 조회한 리뷰 내용 불러오기
     useEffect(() => {
@@ -119,6 +124,89 @@ const ReviewDetail = () => {
         }
     };
 
+    //리뷰 수정
+    const handleReviewUpdate = () => {
+        axios.put(`/api/reviews/${reviewId}`, {
+            reviewContent: editReviewContent
+        })
+            .then(() => {
+                    // 수정된 리뷰 내용을 상태에 바로 반영
+                    setReview(preReview => ({
+                        ...preReview,
+                        reviewContent: editReviewContent,
+                        reviewUpdatedAt: new Date().toISOString() // 수정된 시간 갱신
+                    }));
+                    // 수정이 끝난 후 텍스트 영역을 비움
+                    setEditReviewId(null);
+                    setEditReviewContent('');
+
+            })
+            .catch((err) => {
+                alert("리뷰 수정 도중 오류가 발생했습니다. 다시 시도해주세요.");
+                console.error("Error : ", err);
+            });
+    };
+
+    //리뷰 삭제
+    const handleReviewDelete = () => {
+        if (!window.confirm("정말로 리뷰를 삭제하시겠습니까?")) return;
+
+        axios.delete(`/api/reviews/${reviewId}`,
+            { withCredentials: true })
+            .then(() => {
+                alert("리뷰가 삭제되었습니다.");
+
+                // 현재 상태에서 리뷰 데이터를 제거
+                setReview(null);
+
+                // 이전 페이지로 이동
+                navigate(-1);
+            })
+            .catch((err) => {
+                alert("리뷰 삭제 도중 오류가 발생했습니다. 다시 시도해주세요.");
+                console.error("Error:", err);
+            });
+    };
+
+    //댓글 수정
+    const handleCommentEdit = (commentId) => {
+        if (!editCommentContent.trim()) return;
+
+        axios.put(`/api/reviews/${reviewId}/comments/${commentId}`, {
+            commentContent: editCommentContent
+        }, { withCredentials: true })
+            .then(() => {
+                axios.get(`/api/companies/${companyId}/reviews/${reviewId}`)
+                    .then((res) => {
+                        setComments(res.data.comments || []);
+                        setEditCommentId(null);
+                    })
+                    .catch((err) => {
+                        alert("댓글 수정 중 오류가 발생했습니다. 다시 시도해주세요.");
+                        console.error("Error : ", err);
+                    });
+            })
+            .catch((err) => {
+                alert("댓글 수정 중 오류가 발생했습니다. 다시 시도해주세요.");
+                console.error("Error : ", err);
+            });
+    }
+
+    //댓글 삭제
+    const handleCommentDelete = (commentId) => {
+        if (!window.confirm("정말로 댓글을 삭제하시겠습니까?")) return;
+
+        axios.delete(`/api/reviews/${reviewId}/comments/${commentId}`,
+            { withCredentials: true })
+            .then(() => {
+                setComments(comments.filter(comment => comment.commentId !== commentId));
+            })
+            .catch((err) => {
+                alert("댓글 삭제 도중 오류가 발생했습니다. 다시 시도해주세요.");
+                console.error("Error : ", err);
+            });
+    }
+
     if (loading) return <LoadingSpinner message="로딩 중..." />
     if (error) return <ErrorMessage message={error} />
     if (!review) return <div className="text-center py-10">리뷰를 찾을 수 없습니다.</div>
@@ -129,15 +217,42 @@ const ReviewDetail = () => {
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 {/* 리뷰 헤더 */}
                 <div className="p-6 border-b border-gray-200">
-                    <h1 className="text-2xl font-bold text-gray-800">{review.reviewTitle}</h1>
-                    <p className="text-gray-500 text-sm mt-1">
-                        작성일: {new Date(review.reviewCreatedAt).toLocaleString()}
-                    </p>
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-800">{review.reviewTitle}</h1>
+                        <p className="text-gray-500 text-sm mt-1">
+                            작성일: {new Date(review.reviewCreatedAt).toLocaleString()}
+                        </p>
+                    </div>
+                    <div>
+                        <button
+                            onClick={() => {
+                                setEditReviewId(review.reviewId);
+                                setEditReviewContent(review.reviewContent);
+                            }}
+                        >
+                            수정
+                        </button>
+                        <button onClick={() => handleReviewDelete(reviewId)}>리뷰 삭제</button>
+                    </div>
                 </div>
+
 
                 {/* 리뷰 내용 */}
                 <div className="p-6 border-b border-gray-200">
-                    <p className="text-gray-700 whitespace-pre-line">{review.reviewContent}</p>
+                    {editReviewId === review.reviewId ? (
+                        <div>
+                            <textarea
+                                value={editReviewContent}
+                                onChange={(e) => setEditReviewContent(e.target.value)}
+                            ></textarea>
+                            <div>
+                                <button onClick={handleReviewUpdate}>저장</button>
+                                <button onClick={() => setEditReviewId(null)}>취소</button>
+                            </div>
+                        </div>
+                    ) : (
+                        <p className="text-gray-700 whitespace-pre-line">{review.reviewContent}</p>
+                    )}
                 </div>
 
                 {/* 댓글 섹션 */}
@@ -152,7 +267,26 @@ const ReviewDetail = () => {
                                     <p className="text-sm text-gray-500">
                                         {new Date(comment.commentCreatedAt).toLocaleString()}
                                     </p>
-                                    <p className="mt-2 text-gray-700">{comment.commentContent}</p>
+                                    {editCommentId === comment.commentId ? (
+                                        <div>
+                                            <textarea
+                                                value={editCommentContent}
+                                                onChange={(e) => setEditCommentContent(e.target.value)}
+                                            ></textarea>
+                                            <button onClick={() => handleCommentEdit(comment.commentId)}>저장</button>
+                                            <button onClick={() => setEditCommentId(null)}>취소</button>
+                                        </div>
+                                    ) : (
+                                        <p className="mt-2 text-gray-700">{comment.commentContent}</p>
+                                    )}
+                                    <div className>
+                                        <button onClick={() => {
+                                            setEditCommentId(comment.commentId);
+                                            setEditCommentContent(comment.commentContent);
+                                        }}>수정
+                                        </button>
+                                        <button onClick={() => handleCommentDelete(comment.commentId)}>삭제</button>
+                                    </div>
                                 </li>
                             ))}
                         </ul>
