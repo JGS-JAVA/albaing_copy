@@ -15,6 +15,7 @@ const RegisterPerson = () => {
     const [userPhone, setUserPhone] = useState("");
     const [userAddress, setUserAddress] = useState("");
     const [userProfileImage, setUserProfileImage] = useState("");
+    const [userProfileImageUrl, setUserProfileImageUrl] = useState(null);
     const [userTermsAgreement, setUserTermsAgreement] = useState(false);
     const [emailVerified, setEmailVerified] = useState(false);
     const [verificationCode, setVerificationCode] = useState("");
@@ -164,6 +165,18 @@ const RegisterPerson = () => {
         return true;
     };
 
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            // Set the file object
+            setUserProfileImage(file);
+            // Create a URL for previewing the image
+            const imageUrl = URL.createObjectURL(file);
+            setUserProfileImageUrl(imageUrl); // Assuming you have a separate state for image URL
+        }
+    };
+
     const handleSignup = () => {
         if (!validateInputs()) return;
 
@@ -174,31 +187,42 @@ const RegisterPerson = () => {
         const kakaoId = params.get("kakaoId");
         const naverId = params.get("naverId");
 
-        const requestData = {
+        // 사용자 정보 객체 생성
+        const user = {
             userEmail,
             userPassword,
             userName,
-            userBirthdate: userBirthdate ? new Date(userBirthdate).toISOString().split("T")[0] : null,
+            userBirthdate: userBirthdate ? new Date(userBirthdate).toISOString().split("T")[0] : "",
             userGender,
             userPhone,
             userAddress,
-            userProfileImage,
             userTermsAgreement,
             emailVerified: kakaoId || naverId ? true : emailVerified,
-            kakaoId,
-            naverId
+            kakaoId: kakaoId || "",
+            naverId: naverId || "",
         };
 
-        console.log("회원가입 요청 데이터:", requestData);
+        const formData = new FormData();
 
-        axios
-            .post("/api/auth/register/person", requestData)
+        // JSON 문자열로 변환하여 추가 (Spring Boot @RequestPart("user") 에 맞춤)
+        formData.append("user", new Blob([JSON.stringify(user)], { type: "application/json" }));
+
+        // 프로필 이미지가 있을 경우 추가
+        if (userProfileImage) {
+            formData.append("userProfileImage", userProfileImage);
+        }
+
+        axios.post("/api/auth/register/person", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        })
             .then(() => {
                 alertModal.openModal({
-                    title: '가입 완료',
-                    message: '회원가입이 성공적으로 완료되었습니다.',
-                    type: 'success',
-                    onClose: () => navigate("/login")
+                    title: "가입 완료",
+                    message: "회원가입이 성공적으로 완료되었습니다.",
+                    type: "success",
+                    onClose: () => navigate("/login"),
                 });
             })
             .catch(error => {
@@ -209,6 +233,9 @@ const RegisterPerson = () => {
                 setLoading(false);
             });
     };
+
+
+
     return (
         <div className="max-w-2xl mx-auto px-4 py-10">
             <div className="text-center mb-10">
@@ -402,9 +429,9 @@ const RegisterPerson = () => {
 
                         <div className="flex items-center space-x-6">
                             <div className="shrink-0">
-                                {userProfileImage ? (
+                                {userProfileImageUrl ? (
                                     <img
-                                        src={userProfileImage}
+                                        src={userProfileImageUrl}
                                         alt="프로필 미리보기"
                                         className="h-24 w-24 rounded-full object-cover"
                                     />
@@ -421,22 +448,19 @@ const RegisterPerson = () => {
                                 <input
                                     type="file"
                                     accept="image/*"
-                                    onChange={(e) => {
-                                        if (e.target.files && e.target.files[0]) {
-                                            setUserProfileImage(URL.createObjectURL(e.target.files[0]));
-                                        }
-                                    }}
+                                    onChange={handleImageChange} // Use the handleImageChange function
                                     className="block w-full text-sm text-gray-500
-                                    file:mr-4 file:py-2 file:px-4
-                                    file:rounded-md file:border-0
-                                    file:text-sm file:font-semibold
-                                    file:bg-blue-50 file:text-blue-700
-                                    hover:file:bg-blue-100"
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-md file:border-0
+                file:text-sm file:font-semibold
+                file:bg-blue-50 file:text-blue-700
+                hover:file:bg-blue-100"
                                 />
                                 <p className="mt-1 text-xs text-gray-500">PNG, JPG, GIF 파일 (최대 2MB)</p>
                             </div>
                         </div>
                     </div>
+
 
                     {/* 이용약관 동의 */}
                     <div>

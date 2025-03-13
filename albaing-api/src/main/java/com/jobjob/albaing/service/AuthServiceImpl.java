@@ -141,6 +141,9 @@ public class AuthServiceImpl implements AuthService {
             String encodedPassword = passwordEncoder.encode(user.getUserPassword());
             user.setUserPassword(encodedPassword);
 
+            // **DEBUG: 프로필 이미지 확인**
+            System.out.println("DEBUG: 저장될 userProfileImage = " + user.getUserProfileImage());
+
             // 회원가입 실행
             userMapper.registerUser(user);
 
@@ -160,37 +163,80 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void registerCompany(Company company) {
+    public Map<String, Object> registerCompany(Company company) {
+        Map<String, Object> response = new HashMap<>();
 
         // ✅ 이메일 중복 체크
         if (companyMapper.isCompanyExist(company.getCompanyEmail())) {
-            throw new IllegalArgumentException("이미 가입한 이메일입니다.");
+            response.put("status", "fail");
+            response.put("message", "이미 가입한 이메일입니다.");
+            return response;
         }
 
         // ✅ 전화번호 중복 체크
         if (companyMapper.isCompanyPhoneExist(company.getCompanyPhone())) {
-            throw new IllegalArgumentException("이미 가입한 전화번호입니다.");
+            response.put("status", "fail");
+            response.put("message", "이미 가입한 전화번호입니다.");
+            return response;
         }
 
+        if (company.getCompanyEmail() == null || company.getCompanyEmail().trim().isEmpty()) {
+            response.put("status", "fail");
+            response.put("message", "이메일은 필수 입력값입니다.");
+            return response;
+        }
+        if (company.getCompanyPassword() == null || company.getCompanyPassword().trim().isEmpty()) {
+            response.put("status", "fail");
+            response.put("message", "비밀번호는 필수 입력값입니다.");
+            return response;
+        }
+        if (company.getCompanyName() == null || company.getCompanyName().trim().isEmpty()) {
+            response.put("status", "fail");
+            response.put("message", "회사명은 필수 입력값입니다.");
+            return response;
+        }
+
+        // ✅ 이메일 인증 여부 확인
         if (!verificationService.isEmailVerified(company.getCompanyEmail())) {
-            throw new IllegalArgumentException("이메일 인증이 완료되지 않았습니다.");
+            response.put("status", "fail");
+            response.put("message", "이메일 인증이 완료되지 않았습니다.");
+            return response;
         }
 
-        validateCompanyInput(company);
+        try {
+            // ✅ 기본값 설정
+            LocalDateTime now = LocalDateTime.now();
+            company.setCompanyCreatedAt(now);
+            company.setCompanyUpdatedAt(now);
 
-        String encodedPassword = passwordEncoder.encode(company.getCompanyPassword());
-        company.setCompanyPassword(encodedPassword);
+            if (company.getCompanyApprovalStatus() == null) {
+                company.setCompanyApprovalStatus(Company.ApprovalStatus.approving);
+            }
 
-        LocalDateTime now = LocalDateTime.now();
-        company.setCompanyCreatedAt(now);
-        company.setCompanyUpdatedAt(now);
+            // ✅ 비밀번호 암호화 후 저장
+            String encodedPassword = passwordEncoder.encode(company.getCompanyPassword());
+            company.setCompanyPassword(encodedPassword);
 
-        if (company.getCompanyApprovalStatus() == null) {
-            company.setCompanyApprovalStatus(Company.ApprovalStatus.approving);
+            // **DEBUG: 저장될 companyLogo 확인**
+            System.out.println("DEBUG: 저장될 companyLogo = " + company.getCompanyLogo());
+
+            // ✅ 회원가입 실행
+            companyMapper.registerCompany(company);
+
+            // ✅ 이메일 인증 정보 삭제
+            verificationService.removeEmailVerification(company.getCompanyEmail());
+
+            response.put("status", "success");
+            response.put("message", "기업 회원가입이 성공적으로 완료되었습니다.");
+        } catch (Exception e) {
+            response.put("status", "error");
+            response.put("message", "기업 회원가입 중 오류가 발생했습니다: " + e.getMessage());
+            e.printStackTrace();
         }
 
-        companyMapper.registerCompany(company);
+        return response;
     }
+
 
 
     @Override
