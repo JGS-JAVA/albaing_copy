@@ -7,15 +7,19 @@
     <insert id="userApplyForJob">
         INSERT INTO JOB_APPLICATIONS (
             job_post_id,
-            resume_id
+            resume_id,
+            application_at,
+            approve_status
         ) VALUES (
                      #{jobPostId},
-                     #{resumeId}
+                     #{resumeId},
+                     NOW(),
+                     'approving'
                  )
     </insert>
 
-<!--    사용자 지원 공고 불러오기-->
-    <select id="getJobApplications">
+    <!-- 사용자 지원 공고 불러오기 -->
+    <select id="getJobApplications" resultType="JobApplication">
         SELECT
             ja.*,
             jp.job_post_title,
@@ -26,21 +30,33 @@
         WHERE ja.resume_id = #{resumeId}
     </select>
 
-    <select id="getJobApplicationsByJobPostId">
+    <!-- ID로 특정 지원 내역 조회 -->
+    <select id="getJobApplicationById" resultType="JobApplication">
+        SELECT
+            ja.*,
+            jp.job_post_title,
+            c.company_name
+        FROM JOB_APPLICATIONS ja
+                 JOIN JOB_POSTS jp ON ja.job_post_id = jp.job_post_id
+                 JOIN COMPANIES c ON jp.company_id = c.company_id
+        WHERE ja.job_application_id = #{jobApplicationId}
+    </select>
+
+    <select id="getJobApplicationsByJobPostId" resultType="JobApplication">
         SELECT * FROM JOB_APPLICATIONS WHERE job_post_id = #{jobPostId}
     </select>
 
-    <select id="countApplicationsByJobPost">
+    <select id="countApplicationsByJobPost" resultType="int">
         SELECT COUNT(*) FROM JOB_APPLICATIONS WHERE job_post_id = #{jobPostId}
     </select>
 
     <!-- 중복 지원 체크: 같은 공고와 이력서 조합의 건수 조회 -->
-    <select id="countByJobPostIdAndResumeId">
+    <select id="countByJobPostIdAndResumeId" resultType="int">
         SELECT COUNT(*) FROM JOB_APPLICATIONS
         WHERE job_post_id = #{jobPostId} AND resume_id = #{resumeId}
     </select>
 
-    <select id="getApplicationsByCompany">
+    <select id="getApplicationsByCompany" resultType="JobApplication">
         SELECT
             a.job_application_id AS jobApplicationId,
             a.job_post_id        AS jobPostId,

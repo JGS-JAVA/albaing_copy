@@ -11,11 +11,14 @@ public interface JobApplicationMapper {
 
     List<JobApplication> getJobApplicationsByJobPostId(@Param("jobPostId") int jobPostId);
 
+    // ID로 특정 지원 내역 조회 메서드 추가
+    JobApplication getJobApplicationById(@Param("jobApplicationId") int jobApplicationId);
+
     void userApplyForJob(JobApplication jobApplication);
 
     void updateJobApplicationStatus(
-            @Param("jobApplicationId") int jobApplicationId,
-            @Param("approveStatus") String approveStatus
+        @Param("jobApplicationId") int jobApplicationId,
+        @Param("approveStatus") String approveStatus
     );
 
     int countApplicationsByJobPost(@Param("jobPostId") int jobPostId);

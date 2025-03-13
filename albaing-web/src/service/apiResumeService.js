@@ -1,64 +1,50 @@
 import axios from 'axios';
+import { getErrorMessage } from '../components/ErrorHandler';
+
+// API 기본 URL 설정
+const API_URL = process.env.REACT_APP_API_URL || '';
 
 const apiResumeService = {
-
-    // getResumeIdByUser: function (userId,resumeId) {
-    //     axios
-    //         .get(`api/resume/user/${userId}`)
-    //         .then((res) => resumeId(res.data))
-    //         .catch((err) => {
-    //             console.error("resumeId 가져오기 실패:", err);
-    //             return null;
-    //         });
-    // },
-
-    getResume: function (resumeId) {
-        return axios.get(`/api/resume/${resumeId}`)
-            .then(response => {
-                console.log('이력서 조회 성공:', response.data);
-                return response.data;
-            })
-            .catch(error => {
-                console.error('이력서 조회 오류:', error);
-                throw error;
-            });
+    // 이력서 ID로 조회
+    getResume: (resumeId) => {
+        return new Promise((resolve, reject) => {
+            axios.get(`${API_URL}/api/resume/${resumeId}`, { withCredentials: true })
+                .then(response => {
+                    resolve(response.data);
+                })
+                .catch(error => {
+                    console.error('이력서 조회 오류:', getErrorMessage(error));
+                    reject(error);
+                });
+        });
     },
 
-
-    getResumeByUserId: function (userId) {
-        return axios.get(`/api/resume/user/${userId}`)
-            .then(response => {
-                console.log('사용자 ID로 이력서 조회 성공:', response.data);
-                return response.data;
-            })
-            .catch(error => {
-                console.error('사용자 ID로 이력서 조회 오류:', error);
-                throw error;
-            });
+    // 사용자 ID로 이력서 조회
+    getResumeByUserId: (userId) => {
+        return new Promise((resolve, reject) => {
+            axios.get(`${API_URL}/api/resume/user/${userId}`, { withCredentials: true })
+                .then(response => {
+                    resolve(response.data);
+                })
+                .catch(error => {
+                    console.error('이력서 조회 오류:', getErrorMessage(error));
+                    reject(error);
+                });
+        });
     },
 
-    updateResume: function (resumeId, resumeUpdateRequest) {
-        return axios.put(`/api/resume/update/${resumeId}`, resumeUpdateRequest)
-            .then(response => {
-                console.log('이력서 수정 성공:', response.data);
-                return response.data;
-            })
-            .catch(error => {
-                console.error('이력서 수정 오류:', error);
-                throw error;
-            });
-    },
-
-    createResume: function (resumeCreateRequest) {
-        return axios.post('/api/resume/create', resumeCreateRequest)
-            .then(response => {
-                console.log('이력서 생성 성공:', response.data);
-                return response.data;
-            })
-            .catch(error => {
-                console.error('이력서 생성 오류:', error);
-                throw error;
-            });
+    // 이력서 업데이트
+    updateResume: (resumeId, resumeData) => {
+        return new Promise((resolve, reject) => {
+            axios.put(`${API_URL}/api/resume/${resumeId}`, resumeData, { withCredentials: true })
+                .then(response => {
+                    resolve(response.data);
+                })
+                .catch(error => {
+                    console.error('이력서 업데이트 오류:', getErrorMessage(error));
+                    reject(error);
+                });
+        });
     },
 };
 
