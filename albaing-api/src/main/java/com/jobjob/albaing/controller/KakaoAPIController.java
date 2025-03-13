@@ -2,7 +2,6 @@ package com.jobjob.albaing.controller;
 
 import com.jobjob.albaing.dto.User;
 import com.jobjob.albaing.service.AuthServiceImpl;
-import com.jobjob.albaing.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +30,6 @@ public class KakaoAPIController {
 
     @Autowired
     private AuthServiceImpl authService;  // ✅ AuthService로 회원 존재 여부 확인
-
-    @Autowired
-    private UserService userService;  // ✅ UserService로 카카오 ID 업데이트
-
 
     @Value("${kakao.client-id}")
     private String kakaoClientId;
@@ -116,10 +111,6 @@ public class KakaoAPIController {
 
                 // ✅ 로그인한 사용자 정보 가져오기
                 User loggedInUser = authService.getUserByEmail(email);
-
-                userService.updateUserKakaoId(loggedInUser.getUserId(), kakaoId);
-
-                loggedInUser = authService.getUserByEmail(email);
 
                 // ✅ 세션에 사용자 정보 저장 (일반 로그인과 동일)
                 session.setAttribute("userSession", loggedInUser);
