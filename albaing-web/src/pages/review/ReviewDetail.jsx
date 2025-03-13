@@ -3,6 +3,8 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import {ErrorMessage, LoadingSpinner} from "../../components";
 import {useModal,AlertModal} from "../../components";
+import {useAuth} from "../../contexts/AuthContext";
+import apiCompanyService from "../../service/apiCompanyService";
 
 const ReviewDetail = () => {
     const {companyId, reviewId} = useParams();
@@ -11,6 +13,9 @@ const ReviewDetail = () => {
     const [commentInput, setCommentInput] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    const { user } = useAuth(); // 현재 로그인한 사용자 정보 가져오기
+    const currentUserId = user?.type === 'personal' ? user?.data?.userId : null;  // 로그인한 사용자의 userId
   
     const [editReviewId, setEditReviewId] = useState(null);
     const [editReviewContent, setEditReviewContent] = useState("");
@@ -55,6 +60,8 @@ const ReviewDetail = () => {
                 setError("리뷰를 불러오는 중 오류가 발생했습니다.");
                 setLoading(false);
             });
+
+
     }, [reviewId, companyId]);
 
     // 댓글 작성
@@ -234,17 +241,17 @@ const ReviewDetail = () => {
                             작성일: {new Date(review.reviewCreatedAt).toLocaleString()}
                         </p>
                     </div>
-                    <div>
-                        <button
-                            onClick={() => {
+                    {currentUserId && review.userId === currentUserId && (
+                        <div>
+                            <button onClick={() => {
                                 setEditReviewId(review.reviewId);
                                 setEditReviewContent(review.reviewContent);
-                            }}
-                        >
-                            수정
-                        </button>
-                        <button onClick={() => handleReviewDelete(reviewId)}>리뷰 삭제</button>
-                    </div>
+                            }}>
+                                수정
+                            </button>
+                            <button onClick={handleReviewDelete}>리뷰 삭제</button>
+                        </div>
+                    )}
                 </div>
 
 
@@ -290,14 +297,15 @@ const ReviewDetail = () => {
                                     ) : (
                                         <p className="mt-2 text-gray-700">{comment.commentContent}</p>
                                     )}
-                                    <div className>
-                                        <button onClick={() => {
-                                            setEditCommentId(comment.commentId);
-                                            setEditCommentContent(comment.commentContent);
-                                        }}>수정
-                                        </button>
-                                        <button onClick={() => handleCommentDelete(comment.commentId)}>삭제</button>
-                                    </div>
+                                    {comment.userId === currentUserId && (
+                                        <div>
+                                            <button onClick={() => {
+                                                setEditCommentId(comment.commentId);
+                                                setEditCommentContent(comment.commentContent);
+                                            }}>수정</button>
+                                            <button onClick={() => handleCommentDelete(comment.commentId)}>삭제</button>
+                                        </div>
+                                    )}
                                 </li>
                             ))}
                         </ul>

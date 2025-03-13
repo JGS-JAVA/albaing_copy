@@ -40,18 +40,7 @@ const CompanyDetail = () => {
             });
     }, [companyId]);
 
-    // 새 리뷰가 추가되면 리뷰 목록 새로고침
-    const handleReviewAdded = (reviewData) => {
-        return apiCompanyService.addReview(companyId, reviewData)
-            .then(() => apiCompanyService.getReviewsByCompanyId(companyId))
-            .then(updatedReviews => {
-                setReviews(updatedReviews);
-                return true;
-            })
-            .catch(error => {
-                throw error;
-            });
-    };
+
 
     if (loading) {
         return (
@@ -83,7 +72,7 @@ const CompanyDetail = () => {
                 <ReviewListTab
                     reviews={reviews}
                     companyId={companyId}
-                    onReviewAdded={handleReviewAdded}
+                    
                 />
             )}
         </div>
