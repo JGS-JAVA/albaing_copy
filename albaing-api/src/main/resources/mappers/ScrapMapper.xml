@@ -33,6 +33,7 @@
             s.scrap_id,
             s.user_id,
             s.job_post_id,
+            jp.company_id,
             s.scrap_created_at,
             s.scrap_is,
             jp.job_post_title,
