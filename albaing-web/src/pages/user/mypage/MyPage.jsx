@@ -113,7 +113,7 @@ const MyPage = () => {
                             <h3 className="text-xl font-semibold text-gray-900">내 활동</h3>
                         </div>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <Link to="/mypage/scraps">
+                            <Link to={`/mypage/scraps/${userId}`}>
                                 <ActivityCard
                                     icon={
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-500"

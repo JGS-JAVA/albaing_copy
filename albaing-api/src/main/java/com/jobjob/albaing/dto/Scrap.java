@@ -20,8 +20,12 @@ public class Scrap {
     private int scrapId;
     private int userId;
     private int jobPostId;
+    private int companyId;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date scrapCreatedAt;
     private boolean scrapIs;
+
+    private String jobPostTitle;  // 공고 제목
+    private String companyName;   // 회사 이름
 
 }
