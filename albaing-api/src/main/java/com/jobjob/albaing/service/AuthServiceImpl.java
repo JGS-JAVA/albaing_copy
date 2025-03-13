@@ -141,6 +141,9 @@ public class AuthServiceImpl implements AuthService {
             String encodedPassword = passwordEncoder.encode(user.getUserPassword());
             user.setUserPassword(encodedPassword);
 
+            // **DEBUG: 프로필 이미지 확인**
+            System.out.println("DEBUG: 저장될 userProfileImage = " + user.getUserProfileImage());
+
             // 회원가입 실행
             userMapper.registerUser(user);
 

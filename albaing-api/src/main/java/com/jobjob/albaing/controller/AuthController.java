@@ -4,13 +4,16 @@ import com.jobjob.albaing.dto.Company;
 import com.jobjob.albaing.dto.User;
 import com.jobjob.albaing.model.vo.VerificationRequest;
 import com.jobjob.albaing.service.AuthServiceImpl;
+import com.jobjob.albaing.service.FileServiceImpl;
 import com.jobjob.albaing.service.ResumeServiceImpl;
 import com.jobjob.albaing.service.VerificationServiceImpl;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,11 +28,28 @@ public class AuthController {
     private VerificationServiceImpl verificationService;
     @Autowired
     private ResumeServiceImpl resumeService;
+    @Autowired
+    private FileServiceImpl fileService;
 
+    // Multipart form Data
+    @PostMapping(value = "/register/person", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Map<String, Object>> registerUser(
+            @RequestPart("user") User user,
+            @RequestPart(value = "userProfileImage", required = false) MultipartFile userProfileImage) {
 
-    @PostMapping("/register/person")
-    public ResponseEntity<Map<String, Object>> registerUser(@RequestBody User user) {
+        if (userProfileImage != null && !userProfileImage.isEmpty()) {
+            System.out.println("DEBUG: 파일 업로드 시작 - " + userProfileImage.getOriginalFilename());
 
+            // 파일 업로드 실행
+            String imageUrl = fileService.uploadFile(userProfileImage);
+            System.out.println("DEBUG: 업로드된 이미지 URL = " + imageUrl);
+
+            user.setUserProfileImage(imageUrl);
+        } else {
+            System.out.println("DEBUG: userProfileImage가 null 또는 비어 있음");
+        }
+
+        // 회원가입 로직 실행
         Map<String, Object> response = authService.registerUser(user);
 
         if ("success".equals(response.get("status"))) {
@@ -41,6 +61,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
 
 
     @PostMapping("/login/person")

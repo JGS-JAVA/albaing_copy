@@ -15,6 +15,7 @@ const RegisterPerson = () => {
     const [userPhone, setUserPhone] = useState("");
     const [userAddress, setUserAddress] = useState("");
     const [userProfileImage, setUserProfileImage] = useState("");
+    const [userProfileImageUrl, setUserProfileImageUrl] = useState(null);
     const [userTermsAgreement, setUserTermsAgreement] = useState(false);
     const [emailVerified, setEmailVerified] = useState(false);
     const [verificationCode, setVerificationCode] = useState("");
@@ -164,6 +165,18 @@ const RegisterPerson = () => {
         return true;
     };
 
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            // Set the file object
+            setUserProfileImage(file);
+            // Create a URL for previewing the image
+            const imageUrl = URL.createObjectURL(file);
+            setUserProfileImageUrl(imageUrl); // Assuming you have a separate state for image URL
+        }
+    };
+
     const handleSignup = () => {
         if (!validateInputs()) return;
 
@@ -174,25 +187,41 @@ const RegisterPerson = () => {
         const kakaoId = params.get("kakaoId");
         const naverId = params.get("naverId");
 
-        const requestData = {
-            userEmail,
-            userPassword,
-            userName,
-            userBirthdate: userBirthdate ? new Date(userBirthdate).toISOString().split("T")[0] : null,
-            userGender,
-            userPhone,
-            userAddress,
-            userProfileImage,
-            userTermsAgreement,
+        const formData = new FormData();
+        formData.append("userEmail", userEmail);
+        formData.append("userPassword", userPassword);
+        formData.append("userName", userName);
+        formData.append("userBirthdate", userBirthdate ? new Date(userBirthdate).toISOString().split("T")[0] : null);
+        formData.append("userGender", userGender);
+        formData.append("userPhone", userPhone);
+        formData.append("userAddress", userAddress);
+        formData.append("userTermsAgreement", userTermsAgreement);
+        formData.append("emailVerified", kakaoId || naverId ? true : emailVerified);
+        formData.append("kakaoId", kakaoId || "");
+        formData.append("naverId", naverId || "");
+
+        const user = {
+            email: userEmail,
+            name: userName,
+            gender: userGender,
+            phone: userPhone,
+            birthdate: userBirthdate ? new Date(userBirthdate).toISOString().split("T")[0] : null,
+            address: userAddress,
+            termsAgreement: userTermsAgreement,
             emailVerified: kakaoId || naverId ? true : emailVerified,
-            kakaoId,
-            naverId
+            kakaoId: kakaoId || "",
+            naverId: naverId || "",
         };
+        formData.append("user", JSON.stringify(user));
 
-        console.log("회원가입 요청 데이터:", requestData);
+        // Append the profile image if it exists
+        if (userProfileImage) {
+            formData.append("userProfileImage", userProfileImage);
+        }
 
+        // Perform the API request
         axios
-            .post("/api/auth/register/person", requestData)
+            .post("/api/auth/register/person", formData)
             .then(() => {
                 alertModal.openModal({
                     title: '가입 완료',
@@ -209,6 +238,8 @@ const RegisterPerson = () => {
                 setLoading(false);
             });
     };
+
+
     return (
         <div className="max-w-2xl mx-auto px-4 py-10">
             <div className="text-center mb-10">
@@ -402,9 +433,9 @@ const RegisterPerson = () => {
 
                         <div className="flex items-center space-x-6">
                             <div className="shrink-0">
-                                {userProfileImage ? (
+                                {userProfileImageUrl ? (
                                     <img
-                                        src={userProfileImage}
+                                        src={userProfileImageUrl}
                                         alt="프로필 미리보기"
                                         className="h-24 w-24 rounded-full object-cover"
                                     />
@@ -421,22 +452,19 @@ const RegisterPerson = () => {
                                 <input
                                     type="file"
                                     accept="image/*"
-                                    onChange={(e) => {
-                                        if (e.target.files && e.target.files[0]) {
-                                            setUserProfileImage(URL.createObjectURL(e.target.files[0]));
-                                        }
-                                    }}
+                                    onChange={handleImageChange} // Use the handleImageChange function
                                     className="block w-full text-sm text-gray-500
-                                    file:mr-4 file:py-2 file:px-4
-                                    file:rounded-md file:border-0
-                                    file:text-sm file:font-semibold
-                                    file:bg-blue-50 file:text-blue-700
-                                    hover:file:bg-blue-100"
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-md file:border-0
+                file:text-sm file:font-semibold
+                file:bg-blue-50 file:text-blue-700
+                hover:file:bg-blue-100"
                                 />
                                 <p className="mt-1 text-xs text-gray-500">PNG, JPG, GIF 파일 (최대 2MB)</p>
                             </div>
                         </div>
                     </div>
+
 
                     {/* 이용약관 동의 */}
                     <div>
