@@ -18,8 +18,4 @@ public interface UserService {
     // 사용자 정보 수정
     void updateUser(User user);
 
-    // 카카오톡 ID
-    void updateUserKakaoId(Long userId, String kakaoId);
-
-
 }

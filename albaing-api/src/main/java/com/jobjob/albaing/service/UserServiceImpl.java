@@ -37,11 +37,6 @@ public class UserServiceImpl implements UserService {
         userMapper.updateUser(user);
     }
 
-    @Override
-    public void updateUserKakaoId(Long userId, String kakaoId) {
-        userMapper.updateUserKakaoId(userId, kakaoId);
-    }
-
 
 
 
