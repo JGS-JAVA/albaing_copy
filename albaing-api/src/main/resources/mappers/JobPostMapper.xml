@@ -145,4 +145,18 @@
         LEFT JOIN companies c ON j.company_id = c.company_id
         <include refid="searchCriteria" />
     </select>
+
+    <!-- 채용공고 조회 (잔여시간 기준 조회 / 곧마감 or 신규) -->
+    <select id="mainPageJobPostsAlignByDueDate">
+        SELECT
+    </select>
+
+    <!-- 채용공고 조회 (맞춤형 조회) -->
+    <select id="mainPageJobPostsAlignByUserResume">
+
+    </select>
+
+    <select id="mainPageJobPostsRandom">
+
+    </select>
 </mapper>
