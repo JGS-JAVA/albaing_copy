@@ -1,4 +1,4 @@
-import Banner from "../../components/Banner";
+import Banner from "../../components/layout/Banner";
 import JobpostList from "../jobpost/JobpostList";
 
 const Home = () => {
@@ -6,8 +6,6 @@ const Home = () => {
         <div>
             <Banner />
             <JobpostList />
-
-
         </div>
     );
 }

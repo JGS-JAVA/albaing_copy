@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,15 +48,57 @@ public class ReviewController {
 
     // 리뷰 조회
     @GetMapping("/companies/{companyId}/reviews/{reviewId}")
-    public ResponseEntity<Review> reviewCheck(
-        @PathVariable("reviewId") long reviewId,
-        HttpSession session
+    public ResponseEntity<?> reviewCheck(
+        @PathVariable("companyId") long companyId,
+        @PathVariable("reviewId") long reviewId
     ) {
-        Review review = reviewService.reviewCheck(reviewId);
-        if (review == null) {
-            return ResponseEntity.notFound().build();
+        try {
+            Review review = reviewService.reviewCheck(reviewId);
+            if (review == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // companyId가 null이면 pathVariable의 companyId 값을 설정
+            if (review.getCompanyId() == null) {
+                review.setCompanyId(companyId);
+            }
+
+            // 댓글 목록도 함께 조회
+            List<Comment> comments = reviewService.getCommentsByReviewId(reviewId);
+
+            // 응답 데이터 구성
+            Map<String, Object> response = new HashMap<>();
+            response.put("reviewId", review.getReviewId());
+            response.put("userId", review.getUserId());
+            response.put("companyId", review.getCompanyId());
+            response.put("reviewTitle", review.getReviewTitle());
+            response.put("reviewContent", review.getReviewContent());
+            response.put("reviewCreatedAt", review.getReviewCreatedAt());
+            response.put("reviewUpdatedAt", review.getReviewUpdatedAt());
+            response.put("comments", comments);
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("message", "리뷰 조회 중 오류가 발생했습니다: " + e.getMessage()));
         }
-        return ResponseEntity.ok(review);
+    }
+
+    //리뷰 수정
+    @PutMapping("/reviews/{reviewId}")
+    public ResponseEntity<?> updateReview(
+            @PathVariable long reviewId,
+            @RequestBody Review review,
+            HttpSession session
+    ) {
+        User user = (User) session.getAttribute("userSession");
+        if (user == null) {
+            return ResponseEntity.status(401).body(Map.of("message", "로그인이 필요합니다."));
+        }
+
+        review.setReviewId(reviewId);
+        reviewService.updateReview(review);
+
+        return ResponseEntity.ok().build();
     }
 
     // 댓글 등록
@@ -66,12 +109,21 @@ public class ReviewController {
         HttpSession session
     ) {
         User user = (User) session.getAttribute("userSession");
-        if (user == null) {
+        Company company = (Company) session.getAttribute("companySession");
+
+        if (user == null && company == null) {
             return ResponseEntity.status(401).body(Map.of("message", "로그인이 필요합니다."));
         }
 
         comment.setReviewId(reviewId);
-        comment.setUserId(user.getUserId());
+
+        // 사용자 또는 회사 계정으로 댓글 작성
+        if (user != null) {
+            comment.setUserId(user.getUserId());
+        } else {
+            comment.setUserId(company.getCompanyId());
+        }
+
         reviewService.addComment(comment);
         return ResponseEntity.ok().build();
     }
@@ -79,8 +131,8 @@ public class ReviewController {
     // 리뷰 삭제 (일반 사용자)
     @DeleteMapping("/reviews/{reviewId}")
     public ResponseEntity<?> deleteReview(
-        @PathVariable("reviewId") long reviewId,
-        HttpSession session
+            @PathVariable("reviewId") long reviewId,
+            HttpSession session
     ) {
         User user = (User) session.getAttribute("userSession");
         if (user == null) {
@@ -88,6 +140,23 @@ public class ReviewController {
         }
 
         reviewService.deleteReview(reviewId, user.getUserId());
+        return ResponseEntity.ok().build();
+    }
+
+    // 리뷰 댓글 수정(일반 사용자)
+    @PutMapping("/reviews/{reviewId}/comments/{commentId}")
+    public ResponseEntity<?> updateComment(
+            @PathVariable long commentId,
+            @RequestBody Comment comment,
+            HttpSession session
+    ) {
+        User user = (User) session.getAttribute("userSession");
+        if (user == null) {
+            return ResponseEntity.status(401).body(Map.of("message", "로그인이 필요합니다."));
+        }
+
+        comment.setCommentId(commentId);
+        reviewService.updateComment(comment);
         return ResponseEntity.ok().build();
     }
 

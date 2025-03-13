@@ -18,7 +18,6 @@ public class UserController {
     private ResumeServiceImpl resumeService;
 
 
-
     // 마이페이지 - 사용자 정보 조회
     @GetMapping("/user/{userId}")
     public User getUserById(@PathVariable int userId) {
@@ -26,13 +25,9 @@ public class UserController {
     }
 
     // 마이페이지 - 사용자 정보 수정
-    @PutMapping("/user/update/{userId}")
-    public void updateUser(@PathVariable int userId,
-                           @RequestParam("userGender") User.Gender userGender,
-                           @RequestParam("userBirthdate") Date userBirthdate,
-                           @RequestParam("userAddress") String userAddress,
-                           @RequestParam("userProfileImage") String userProfileImage) {
-        userService.updateUser(userId,userGender,userBirthdate,userAddress,userProfileImage);
+    @PutMapping("/update/{userId}")
+    public void updateUser(@RequestBody User user, @PathVariable int userId) {
+        userService.updateUser(user);
     }
 
 }

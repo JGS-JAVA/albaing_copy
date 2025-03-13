@@ -2,25 +2,50 @@ package com.jobjob.albaing.controller;
 
 import com.jobjob.albaing.dto.JobPost;
 import com.jobjob.albaing.service.JobPostService;
-import com.jobjob.albaing.service.JobPostServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/jobs")
 public class JobPostController {
 
     @Autowired
-    private JobPostServiceImpl jobPostService;
+    private JobPostService jobPostService;
 
-    @PostMapping
-    public ResponseEntity<JobPost> createJobPost(@RequestBody JobPost jobPost) {
-        JobPost createdPost = jobPostService.createJobPost(jobPost);
-        return ResponseEntity.ok(createdPost);
+    // GET /api/jobs
+    @GetMapping
+    public ResponseEntity<Map<String, Object>> getJobPostList(
+        @RequestParam(required = false) String jobCategory,
+        @RequestParam(required = false) String jobType,
+        @RequestParam(required = false) String keyword,
+        @RequestParam(required = false) String location,
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(defaultValue = "true") boolean onlyActive
+    ) {
+        List<JobPost> jobPosts = jobPostService.getJobPostList(
+            jobCategory, jobType, keyword, page, size, onlyActive);
+
+        int totalCount = jobPostService.getTotalCount(jobCategory, jobType, keyword, onlyActive);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("content", jobPosts);
+        response.put("page", page);
+        response.put("size", size);
+        response.put("totalElements", totalCount);
+        response.put("totalPages", (int) Math.ceil((double) totalCount / size));
+        response.put("first", page == 1);
+        response.put("last", page >= (int) Math.ceil((double) totalCount / size));
+
+        return ResponseEntity.ok(response);
     }
 
+    // 채용공고 상세 조회
     @GetMapping("/{jobPostId}")
     public ResponseEntity<JobPost> getJobPost(@PathVariable("jobPostId") String jobPostId) {
         try {
@@ -35,11 +60,18 @@ public class JobPostController {
         }
     }
 
+    // 채용공고 등록
+    @PostMapping
+    public ResponseEntity<JobPost> createJobPost(@RequestBody JobPost jobPost) {
+        JobPost createdPost = jobPostService.createJobPost(jobPost);
+        return ResponseEntity.ok(createdPost);
+    }
 
+    // 채용공고 상태 변경
     @PatchMapping("/{jobPostId}/status")
     public ResponseEntity<Void> updateJobPostStatus(
-        @PathVariable int jobPostId,
-        @RequestParam Boolean status
+        @PathVariable("jobPostId") int jobPostId,
+        @RequestParam("status") Boolean status
     ) {
         if (status == null) {
             return ResponseEntity.badRequest().build();
@@ -48,20 +80,32 @@ public class JobPostController {
         return ResponseEntity.ok().build();
     }
 
-    //상세 페이지 기업 채용 공고 출력
+    // 회사별 채용공고 조회
     @GetMapping("/company/{companyId}")
     public ResponseEntity<List<JobPost>> getJobPostsByCompanyId(@PathVariable("companyId") long companyId) {
         List<JobPost> jobPosts = jobPostService.getJobPostsByCompanyId(companyId);
         return ResponseEntity.ok(jobPosts);
     }
 
+    // 채용공고 수정
     @PutMapping("/{jobPostId}")
     public ResponseEntity<JobPost> updateJobPost(
-            @PathVariable long jobPostId,
-            @RequestBody JobPost updatedJobPost
+        @PathVariable("jobPostId") long jobPostId,
+        @RequestBody JobPost updatedJobPost
     ) {
-        // 채용공고 수정 로직
         JobPost jobPost = jobPostService.updateJobPost(jobPostId, updatedJobPost);
         return ResponseEntity.ok(jobPost);
+    }
+
+    // 채용공고 개수 조회
+    @GetMapping("/count")
+    public ResponseEntity<Integer> getJobPostCount(
+        @RequestParam(required = false) String jobCategory,
+        @RequestParam(required = false) String jobType,
+        @RequestParam(required = false) String keyword,
+        @RequestParam(defaultValue = "true") boolean onlyActive
+    ) {
+        int count = jobPostService.getTotalCount(jobCategory, jobType, keyword, onlyActive);
+        return ResponseEntity.ok(count);
     }
 }

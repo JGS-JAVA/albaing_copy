@@ -17,10 +17,11 @@ public class JobPostServiceImpl implements JobPostService {
 
     @Override
     public JobPost createJobPost(JobPost jobPost) {
-        jobPost.setJobPostStatus(true);
+        jobPost.setJobPostStatus(true); // 기본값으로 활성화 상태 설정
         jobPostMapper.insertJobPost(jobPost);
         return jobPost;
     }
+
     @Override
     public JobPost getJobPost(long jobPostId) {
         return jobPostMapper.selectJobPostById(jobPostId);

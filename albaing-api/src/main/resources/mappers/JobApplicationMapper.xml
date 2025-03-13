@@ -3,37 +3,79 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jobjob.albaing.mapper.JobApplicationMapper">
 
-<!--    사용자 공고 지원-->
+    <!-- 지원 요청: job_post_id와 resume_id만 받음 -->
     <insert id="userApplyForJob">
-    INSERT INTO JOB_APPLICATIONS (
-        job_application_id,
-        job_post_id,
-        resume_id,
-        application_at,
-        approve_status
-    ) VALUES (
-              #{jobApplicationId},
+        INSERT INTO JOB_APPLICATIONS (
+            job_post_id,
+            resume_id,
+            application_at,
+            approve_status
+        ) VALUES (
                      #{jobPostId},
                      #{resumeId},
-                    #{applicationAt},
-                    #{approveStatus}
+                     NOW(),
+                     'approving'
                  )
     </insert>
 
-
-<!--    지원한 공고 조회 -->
-    <select id="getJobApplications">
-        SELECT *
-        FROM JOB_APPLICATIONS
-        WHERE resume_id = #{resumeId}
+    <!-- 사용자 지원 공고 불러오기 -->
+    <select id="getJobApplications" resultType="JobApplication">
+        SELECT
+            ja.*,
+            jp.job_post_title,
+            c.company_name
+        FROM JOB_APPLICATIONS ja
+                 JOIN JOB_POSTS jp ON ja.job_post_id = jp.job_post_id
+                 JOIN COMPANIES c ON jp.company_id = c.company_id
+        WHERE ja.resume_id = #{resumeId}
     </select>
 
-
-<!--    지원 상태별 조회-->
-    <select id="getJobApplicationStatus">
-        SELECT *
-        FROM JOB_APPLICATIONS
-        WHERE resume_id = #{resumeId}
-        AND approve_status = #{approveStatus}
+    <!-- ID로 특정 지원 내역 조회 -->
+    <select id="getJobApplicationById" resultType="JobApplication">
+        SELECT
+            ja.*,
+            jp.job_post_title,
+            c.company_name
+        FROM JOB_APPLICATIONS ja
+                 JOIN JOB_POSTS jp ON ja.job_post_id = jp.job_post_id
+                 JOIN COMPANIES c ON jp.company_id = c.company_id
+        WHERE ja.job_application_id = #{jobApplicationId}
     </select>
+
+    <select id="getJobApplicationsByJobPostId" resultType="JobApplication">
+        SELECT * FROM JOB_APPLICATIONS WHERE job_post_id = #{jobPostId}
+    </select>
+
+    <select id="countApplicationsByJobPost" resultType="int">
+        SELECT COUNT(*) FROM JOB_APPLICATIONS WHERE job_post_id = #{jobPostId}
+    </select>
+
+    <!-- 중복 지원 체크: 같은 공고와 이력서 조합의 건수 조회 -->
+    <select id="countByJobPostIdAndResumeId" resultType="int">
+        SELECT COUNT(*) FROM JOB_APPLICATIONS
+        WHERE job_post_id = #{jobPostId} AND resume_id = #{resumeId}
+    </select>
+
+    <select id="getApplicationsByCompany" resultType="JobApplication">
+        SELECT
+            a.job_application_id AS jobApplicationId,
+            a.job_post_id        AS jobPostId,
+            a.resume_id          AS resumeId,
+            a.application_at     AS applicationAt,
+            a.approve_status     AS approveStatus,
+            j.job_post_title     AS jobPostTitle,
+            u.user_name          AS applicantName
+        FROM JOB_APPLICATIONS a
+                 JOIN JOB_POSTS j ON a.job_post_id = j.job_post_id
+                 JOIN RESUMES r   ON a.resume_id = r.resume_id
+                 JOIN USERS u     ON r.user_id = u.user_id
+        WHERE j.company_id = #{companyId}
+    </select>
+
+    <!-- 지원 상태 업데이트 -->
+    <update id="updateJobApplicationStatus">
+        UPDATE JOB_APPLICATIONS
+        SET approve_status = #{approveStatus}
+        WHERE job_application_id = #{jobApplicationId}
+    </update>
 </mapper>

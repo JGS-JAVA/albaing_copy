@@ -29,6 +29,9 @@ public class User {
     private LocalDateTime userUpdatedAt;
     private Boolean userTermsAgreement;
     private Boolean userIsAdmin;
+    private String kakaoId;
+    private String naverId;
+    private String newPassword;
 
     public enum Gender {
         male, female

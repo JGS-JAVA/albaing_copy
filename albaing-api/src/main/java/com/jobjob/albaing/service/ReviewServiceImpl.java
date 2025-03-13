@@ -1,13 +1,12 @@
 package com.jobjob.albaing.service;
 
 import com.jobjob.albaing.dto.Comment;
-import com.jobjob.albaing.dto.Company;
-import com.jobjob.albaing.dto.JobPost;
 import com.jobjob.albaing.dto.Review;
 import com.jobjob.albaing.mapper.ReviewMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +35,22 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewMapper.reviewCheck(reviewId);
     }
 
+    // 리뷰에 속한 댓글 목록 조회
+    @Override
+    public List<Comment> getCommentsByReviewId(long reviewId) {
+        try {
+            return reviewMapper.getCommentsByReviewId(reviewId);
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
+    }
+
+    //회사 리뷰 수정
+    @Override
+    public void updateReview(Review review) {
+        reviewMapper.updateReview(review);
+    }
+
     //회사 리뷰 삭제
     @Override
     public void deleteReview(long reviewId, long userId) {
@@ -46,6 +61,12 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public void addComment(Comment comment) {
         reviewMapper.addComment(comment);
+    }
+
+    //리뷰 댓글 수정
+    @Override
+    public void updateComment(Comment comment) {
+        reviewMapper.updateComment(comment);
     }
 
     //리뷰 댓글 삭제
@@ -81,9 +102,8 @@ public class ReviewServiceImpl implements ReviewService {
     // 자회사 리뷰 삭제
     @Override
     public boolean deleteReviewByCompany(long reviewId, long companyId) {
-
         Review review = reviewMapper.getReviewById(reviewId);
-        if (review == null || review.getCompanyId() != companyId) {
+        if (review == null || review.getCompanyId() == null || review.getCompanyId() != companyId) {
             return false;
         }
 
@@ -94,7 +114,6 @@ public class ReviewServiceImpl implements ReviewService {
     // 자회사 댓글 삭제
     @Override
     public boolean deleteCommentByCompany(long commentId, long reviewId, long companyId) {
-
         Map<String, Object> params = new HashMap<>();
         params.put("commentId", commentId);
         params.put("reviewId", reviewId);

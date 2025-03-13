@@ -17,11 +17,20 @@ public interface ReviewService {
     //회사 리뷰 조회
     Review reviewCheck(long reviewId);
 
+    //회사 리뷰 수정
+    void updateReview(Review review);
+
+    // 리뷰에 속한 댓글 목록 조회
+    List<Comment> getCommentsByReviewId(long reviewId);
+
     //회사 리뷰 삭제
     void deleteReview(long reviewId, long userId);
 
     //리뷰 댓글 등록
     void addComment(Comment comment);
+
+    //리뷰 댓글 수정
+    void updateComment(Comment comment);
 
     //리뷰 댓글 삭제
     void deleteComment(long commentId, long userId);

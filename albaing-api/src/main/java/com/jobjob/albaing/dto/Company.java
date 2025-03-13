@@ -31,6 +31,7 @@ public class Company {
     private LocalDateTime companyUpdatedAt;
     private String companyLogo;
     private String companyDescription;
+    private String newPassword;
 
     public enum ApprovalStatus {
         approved, approving, hidden
