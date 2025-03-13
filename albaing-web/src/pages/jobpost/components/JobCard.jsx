@@ -17,19 +17,19 @@ const JobCard = ({
             {/* 스크랩 버튼 */}
             {isLoggedIn && userType === "personal" && (
                 <button
-                    onClick={(e) => toggleScrap(job.jobPostId, e)}
+                    onClick={(e) => toggleScrap(job.jobPostId)}
                     className={`absolute top-4 right-4 z-20 p-2 rounded-full transition-all duration-200 ${
-                        isScraped
+                        job.isScraped
                             ? "bg-blue-600 text-white hover:bg-blue-700"
                             : "bg-white text-gray-500 hover:bg-gray-100"
                     }`}
                     style={{ boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}
-                    aria-label={isScraped ? "스크랩 취소" : "스크랩하기"}
+                    aria-label={job.isScraped ? "스크랩 취소" : "스크랩하기"}
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="h-5 w-5"
-                        fill={isScraped ? "currentColor" : "none"}
+                        fill={job.isScraped ? "currentColor" : "none"}
                         viewBox="0 0 24 24"
                         stroke="currentColor"
                     >
