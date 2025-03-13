@@ -22,6 +22,10 @@ public class AdminController {
                                             @RequestParam(required = false) String sortOrderBy,
                                             @RequestParam(required = false) Boolean isDESC) {
 
+        System.out.println(userName);
+        if (sortOrderBy == null) {
+            sortOrderBy = "이름";
+        }
         return adminService.adminSearchUsers(userName, userEmail, userPhone, sortOrderBy, isDESC);
     }
 
@@ -34,6 +38,9 @@ public class AdminController {
                                                @RequestParam(required = false) String sortOrderBy,
                                                @RequestParam(required = false) Boolean isDESC) {
 
+        if (sortOrderBy == null) {
+            sortOrderBy = "이름";
+        }
         return adminService.adminSearchResumes(userName, resumeTitle, resumeCategory, resumeJobType, sortOrderBy, isDESC);
     }
 
@@ -45,6 +52,9 @@ public class AdminController {
                                                                @RequestParam(required = false) String sortOrderBy,
                                                                @RequestParam(required = false) Boolean isDESC) {
 
+        if (sortOrderBy == null) {
+            sortOrderBy = "지원자명";
+        }
         return adminService.adminSearchJobApplications(userName, companyName, jobPostTitle, sortOrderBy, isDESC);
     }
 
@@ -57,6 +67,9 @@ public class AdminController {
                                               @RequestParam(required = false) String sortOrderBy,
                                               @RequestParam(required = false) Boolean isDESC) {
 
+        if (sortOrderBy == null) {
+            sortOrderBy = "법인명";
+        }
         return adminService.adminSearchCompanies(companyName, companyOwnerName, companyPhone, companyRegistrationNumber, sortOrderBy, isDESC);
     }
 
@@ -67,6 +80,10 @@ public class AdminController {
                                                  @RequestParam(required = false) String jobPostStatus,
                                                  @RequestParam(required = false) String sortOrderBy,
                                                  @RequestParam(required = false) Boolean isDESC) {
+
+        if (sortOrderBy == null) {
+            sortOrderBy = "법인명";
+        }
         return adminService.adminSearchJobPosts(companyName, jobPostTitle, jobPostStatus, sortOrderBy, isDESC);
     }
 

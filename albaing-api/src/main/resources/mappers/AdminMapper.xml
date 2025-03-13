@@ -28,21 +28,17 @@
             </trim>
         </where>
         <trim prefix="ORDER BY">
-            <if test="sortOrderBy != null and sortOrderBy != ''">
-                <choose>
-                    <when test="sortOrderBy == '이름'">
-                        user_name
-                    </when>
-                    <when test="sortOrderBy == '전화번호'">
-                        user_phone
-                    </when>
-                    <when test="sortOrderBy == '가입일'">
-                        user_created_at
-                    </when>
-                </choose>
-                <if test="isDESC == true">
-                    DESC
-                </if>
+            <if test="sortOrderBy == '이름'">
+                user_name
+            </if>
+            <if test="sortOrderBy == '전화번호'">
+                user_phone
+            </if>
+            <if test="sortOrderBy == '가입일'">
+                user_created_at
+            </if>
+            <if test="isDESC == true">
+                DESC
             </if>
         </trim>
     </select>
