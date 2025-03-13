@@ -15,41 +15,34 @@ const RegisterCompany = () => {
     const [companyPhone, setCompanyPhone] = useState("");
     const [companyLocalAddress, setCompanyLocalAddress] = useState("");
     const [companyLogo, setCompanyLogo] = useState("");
+    const [companyLogoUrl, setCompanyLogoUrl] = useState(null);
     const [companyDescription, setCompanyDescription] = useState("");
     const [termsAgreement, setTermsAgreement] = useState(false);
     const [emailVerified, setEmailVerified] = useState(false);
     const [verificationCode, setVerificationCode] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-    const alertModal = useModal();
 
+    // Fixed: Properly destructure the modal state and functions
+    const { isOpen, modalProps, openModal, closeModal } = useModal();
     const navigate = useNavigate();
 
-    // 로컬스토리지에서 데이터 불러오기
     useEffect(() => {
         const storedCompanyRegistrationNumber = localStorage.getItem("companyRegistrationNumber") || '';
         const storedCompanyOwnerName = localStorage.getItem("companyOwnerName") || '';
         const storedCompanyOpenDate = localStorage.getItem("companyOpenDate") || '';
-
         setCompanyRegistrationNumber(storedCompanyRegistrationNumber);
         setCompanyOwnerName(storedCompanyOwnerName);
         setCompanyOpenDate(storedCompanyOpenDate);
     }, []);
 
     const requestVerificationCode = () => {
-        if (!companyEmail) {
-            setError("이메일을 입력해주세요.");
-            return;
-        }
-
-        setLoading(true);
-        setError("");
-
-        axios.post("/api/auth/sendCode", {
-            email: companyEmail
-        })
+        if (!companyEmail) { setError("이메일을 입력해주세요.");  return;  }
+        setLoading(true); setError("");
+        axios.post("/api/auth/sendCode", { email: companyEmail })
             .then(response => {
-                alertModal.openModal({
+                // Fixed: Use openModal directly
+                openModal({
                     title: '인증번호 발송',
                     message: '인증번호가 이메일로 발송되었습니다.',
                     type: 'success'
@@ -59,27 +52,17 @@ const RegisterCompany = () => {
                 setError(`인증번호 발송 실패: ${error.response?.data?.message || "알 수 없는 오류가 발생했습니다."}`);
                 console.error("인증번호 발송 오류:", error);
             })
-            .finally(() => {
-                setLoading(false);
-            });
+            .finally(() => { setLoading(false); });
     };
 
     const verifyCode = () => {
-        if (!verificationCode) {
-            setError("인증번호를 입력해주세요.");
-
-            return;
-        }
-        setLoading(true);
-        setError("");
-
-        axios.post("/api/auth/checkCode", {
-            email: companyEmail,
-            code: verificationCode
-        })
+        if (!verificationCode) { setError("인증번호를 입력해주세요."); return; }
+        setLoading(true); setError("");
+        axios.post("/api/auth/checkCode", { email: companyEmail, code: verificationCode })
             .then(response => {
                 setEmailVerified(true);
-                alertModal.openModal({
+                // Fixed: Use openModal directly
+                openModal({
                     title: '인증 완료',
                     message: '이메일 인증이 완료되었습니다.',
                     type: 'success'
@@ -89,104 +72,87 @@ const RegisterCompany = () => {
                 setError(`인증번호 확인 실패: ${error.response?.data?.message || "알 수 없는 오류가 발생했습니다."}`);
                 console.error("인증번호 확인 오류:", error);
             })
-            .finally(() => {
-                setLoading(false);
-            });
+            .finally(() => { setLoading(false); });
     };
 
     const validateInputs = () => {
         if (!companyEmail) {
-            setError("이메일을 입력해주세요.");
-            return false;
+            setError("이메일을 입력해주세요."); return false;
         }
-
         if (!emailVerified) {
-            setError("이메일 인증을 완료해주세요.");
-            return false;
+            setError("이메일 인증을 완료해주세요."); return false;
         }
-
         if (!companyPassword) {
             setError("비밀번호를 입력해주세요.");
             return false;
         }
-
         if (companyPassword.length < 8) {
-            setError("비밀번호는 최소 8자 이상이어야 합니다.");
-            return false;
+            setError("비밀번호는 최소 8자 이상이어야 합니다.");  return false;
         }
-
         if (!/[0-9]/.test(companyPassword) || !/[!@#$%^&*]/.test(companyPassword)) {
-            setError("비밀번호는 숫자와 특수문자를 포함해야 합니다.");
-            return false;
+            setError("비밀번호는 숫자와 특수문자를 포함해야 합니다."); return false;
         }
-
         if (companyPassword !== confirmPassword) {
-            setError("비밀번호가 일치하지 않습니다.");
-            return false;
+            setError("비밀번호가 일치하지 않습니다.");  return false;
         }
-
         if (!companyName) {
             setError("회사명을 입력해주세요.");
             return false;
         }
-
         if (!companyRegistrationNumber) {
-            setError("사업자 등록번호를 입력해주세요.");
-            return false;
+            setError("사업자 등록번호를 입력해주세요.");  return false;
         }
-
         const regNumPattern = /^\d{3}-\d{2}-\d{5}$/;
         if (!regNumPattern.test(companyRegistrationNumber)) {
-            setError("사업자 등록번호 형식이 올바르지 않습니다. (예: 123-45-67890)");
-            return false;
+            setError("사업자 등록번호 형식이 올바르지 않습니다. (예: 123-45-67890)"); return false;
         }
-
         if (!companyOwnerName) {
             setError("대표자 이름을 입력해주세요.");
             return false;
         }
-
         if (!companyPhone) {
-            setError("전화번호를 입력해주세요.");
-            return false;
+            setError("전화번호를 입력해주세요."); return false;
         }
-
         if (!companyLocalAddress) {
             setError("회사 주소를 입력해주세요.");
             return false;
         }
-
         if (!termsAgreement) {
             setError("이용약관에 동의해주세요.");
             return false;
         }
-
         return true;
     };
 
-    const handleSignup = () => {
-        if (!validateInputs()) {
-            return;
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setCompanyLogo(file);
+            const imageUrl = URL.createObjectURL(file);
+            setCompanyLogoUrl(imageUrl);
         }
+    };
 
-        setLoading(true);
-        setError("");
+    const handleSignup = () => {
+        if (!validateInputs()) return;
+        setLoading(true); setError("");
+        const company = {
+            companyEmail, companyPassword,
+            companyName,  companyRegistrationNumber,
+            companyOwnerName, companyPhone,
+            companyLocalAddress, companyDescription,
+            companyOpenDate, termsAgreement
+        };
+        const formData = new FormData();
+        formData.append("company", new Blob([JSON.stringify(company)], { type: "application/json" }));
+        if (companyLogo) {  formData.append("companyLogo", companyLogo);}
 
-        axios.post("/api/auth/register/company", {
-            companyEmail,
-            companyPassword,
-            companyName,
-            companyRegistrationNumber,
-            companyOwnerName,
-            companyPhone,
-            companyLocalAddress,
-            companyLogo,
-            companyDescription,
-            companyOpenDate,
-            termsAgreement
+        axios.post("/api/auth/register/company", formData, {
+            headers: { "Content-Type": "multipart/form-data" },
         })
             .then(response => {
-                alertModal.openModal({
+                // Fixed: Use openModal directly
+                openModal({
                     title: '가입 완료',
                     message: '회원가입이 성공적으로 완료되었습니다.',
                     type: 'success',
@@ -197,25 +163,21 @@ const RegisterCompany = () => {
                 setError(`회원가입 실패: ${error.response?.data?.message || "알 수 없는 오류가 발생했습니다."}`);
                 console.error("회원가입 오류:", error);
             })
-            .finally(() => {
-                setLoading(false);
-            });
+            .finally(() => { setLoading(false); });
     };
+
     return (
         <div className="max-w-2xl mx-auto px-4 py-10">
             <div className="text-center mb-10">
                 <h1 className="text-3xl font-bold text-gray-900">기업 회원가입</h1>
                 <p className="mt-2 text-gray-600">알바잉에 가입하고 인재를 모집해보세요.</p>
             </div>
-
             {error && <ErrorMessage message={error} />}
-
             <div className="bg-white shadow-md rounded-lg p-6 mb-8">
                 <div className="space-y-6">
                     {/* 이메일 인증 섹션 */}
                     <div className="border-b border-gray-200 pb-6">
                         <h2 className="text-lg font-medium text-gray-900 mb-4">계정 정보</h2>
-
                         <div className="mb-4">
                             <label htmlFor="companyEmail" className="block text-sm font-medium text-gray-700 mb-1">
                                 기업 이메일 <span className="text-red-500">*</span>
@@ -241,7 +203,6 @@ const RegisterCompany = () => {
                                 </button>
                             </div>
                         </div>
-
                         {!emailVerified && companyEmail && (
                             <div className="mb-4">
                                 <label htmlFor="verificationCode" className="block text-sm font-medium text-gray-700 mb-1">
@@ -271,7 +232,6 @@ const RegisterCompany = () => {
                                 </p>
                             </div>
                         )}
-
                         <div className="grid grid-cols-1 gap-6 mt-6">
                             <div>
                                 <label htmlFor="companyPassword" className="block text-sm font-medium text-gray-700 mb-1">
@@ -290,7 +250,6 @@ const RegisterCompany = () => {
                                     비밀번호는 최소 8자 이상, 숫자와 특수문자를 포함해야 합니다.
                                 </p>
                             </div>
-
                             <div>
                                 <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
                                     비밀번호 확인 <span className="text-red-500">*</span>
@@ -307,11 +266,9 @@ const RegisterCompany = () => {
                             </div>
                         </div>
                     </div>
-
                     {/* 기업 정보 섹션 */}
                     <div className="border-b border-gray-200 pb-6">
                         <h2 className="text-lg font-medium text-gray-900 mb-4">기업 정보</h2>
-
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label htmlFor="companyName" className="block text-sm font-medium text-gray-700 mb-1">
@@ -327,12 +284,14 @@ const RegisterCompany = () => {
                                     required
                                 />
                             </div>
-
                             <div>
-                                <label htmlFor="companyRegistrationNumber"
-                                       className="block text-sm font-medium text-gray-700 mb-1">
+                                <label
+                                    htmlFor="companyRegistrationNumber"
+                                    className="block text-sm font-medium text-gray-700 mb-1"
+                                >
                                     사업자등록번호 <span className="text-red-500">*</span>
                                 </label>
+
                                 <input
                                     type="text"
                                     id="companyRegistrationNumber"
@@ -437,11 +396,7 @@ const RegisterCompany = () => {
                                         <input
                                             type="file"
                                             accept="image/*"
-                                            onChange={(e) => {
-                                                if (e.target.files && e.target.files[0]) {
-                                                    setCompanyLogo(URL.createObjectURL(e.target.files[0]));
-                                                }
-                                            }}
+                                            onChange={handleImageChange}
                                             className="block w-full text-sm text-gray-500
                                             file:mr-4 file:py-2 file:px-4
                                             file:rounded-md file:border-0
@@ -524,12 +479,12 @@ const RegisterCompany = () => {
 
             {/* 알림 모달 */}
             <AlertModal
-                isOpen={alertModal.isOpen}
-                onClose={alertModal.closeModal}
-                title={alertModal.modalProps.title || '알림'}
-                message={alertModal.modalProps.message}
+                isOpen={AlertModal.isOpen}
+                onClose={AlertModal.closeModal}
+                title={AlertModal.modalProps.title || '알림'}
+                message={AlertModal.modalProps.message}
                 confirmText="확인"
-                type={alertModal.modalProps.type || 'info'}
+                type={AlertModal.modalProps.type || 'info'}
             />
         </div>
     );
