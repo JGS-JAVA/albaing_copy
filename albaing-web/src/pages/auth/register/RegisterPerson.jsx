@@ -187,47 +187,42 @@ const RegisterPerson = () => {
         const kakaoId = params.get("kakaoId");
         const naverId = params.get("naverId");
 
-        const formData = new FormData();
-        formData.append("userEmail", userEmail);
-        formData.append("userPassword", userPassword);
-        formData.append("userName", userName);
-        formData.append("userBirthdate", userBirthdate ? new Date(userBirthdate).toISOString().split("T")[0] : null);
-        formData.append("userGender", userGender);
-        formData.append("userPhone", userPhone);
-        formData.append("userAddress", userAddress);
-        formData.append("userTermsAgreement", userTermsAgreement);
-        formData.append("emailVerified", kakaoId || naverId ? true : emailVerified);
-        formData.append("kakaoId", kakaoId || "");
-        formData.append("naverId", naverId || "");
-
+        // 사용자 정보 객체 생성
         const user = {
-            email: userEmail,
-            name: userName,
-            gender: userGender,
-            phone: userPhone,
-            birthdate: userBirthdate ? new Date(userBirthdate).toISOString().split("T")[0] : null,
-            address: userAddress,
-            termsAgreement: userTermsAgreement,
+            userEmail,
+            userPassword,
+            userName,
+            userBirthdate: userBirthdate ? new Date(userBirthdate).toISOString().split("T")[0] : "",
+            userGender,
+            userPhone,
+            userAddress,
+            userTermsAgreement,
             emailVerified: kakaoId || naverId ? true : emailVerified,
             kakaoId: kakaoId || "",
             naverId: naverId || "",
         };
-        formData.append("user", JSON.stringify(user));
 
-        // Append the profile image if it exists
+        const formData = new FormData();
+
+        // JSON 문자열로 변환하여 추가 (Spring Boot @RequestPart("user") 에 맞춤)
+        formData.append("user", new Blob([JSON.stringify(user)], { type: "application/json" }));
+
+        // 프로필 이미지가 있을 경우 추가
         if (userProfileImage) {
             formData.append("userProfileImage", userProfileImage);
         }
 
-        // Perform the API request
-        axios
-            .post("/api/auth/register/person", formData)
+        axios.post("/api/auth/register/person", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        })
             .then(() => {
                 alertModal.openModal({
-                    title: '가입 완료',
-                    message: '회원가입이 성공적으로 완료되었습니다.',
-                    type: 'success',
-                    onClose: () => navigate("/login")
+                    title: "가입 완료",
+                    message: "회원가입이 성공적으로 완료되었습니다.",
+                    type: "success",
+                    onClose: () => navigate("/login"),
                 });
             })
             .catch(error => {
@@ -238,6 +233,7 @@ const RegisterPerson = () => {
                 setLoading(false);
             });
     };
+
 
 
     return (
