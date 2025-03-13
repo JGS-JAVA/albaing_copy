@@ -5,22 +5,36 @@ import apiScrapService from "../../../service/apiScrapService";
 const ScrapPage = () => {
     const {userId} = useParams();
     const [scrapedPosts, setScrapedPosts] = useState([]);
-    const [error, setError] = useState(null);
+
 
     useEffect(() => {
         apiScrapService.getScrapsByUser(userId, setScrapedPosts)
     }, [userId]);
 
     const handleRemoveScrap = (jobPostId) => {
-        apiScrapService.removeScrap(userId, jobPostId);
-        alert("스크랩한 공고에서 제거했습니다.");
+        apiScrapService.removeScrap(userId, jobPostId)
+            .then(() => {
+                // 성공 시 즉시 목록 업데이트
+                const updatedScraps = scrapedPosts.filter(job => job.jobPostId !== jobPostId);
+                setScrapedPosts(updatedScraps);
+
+                // localStorage 업데이트
+                const scrapIds = updatedScraps.map(job => job.jobPostId);
+                localStorage.setItem("scrapedPosts", JSON.stringify(scrapIds));
+
+                alert("스크랩한 공고에서 제거했습니다.");
+            })
+            .catch((err) => {
+                console.error("스크랩 삭제 실패", err);
+                alert("스크랩 삭제 중 오류가 발생했습니다.");
+            });
     };
+
 
     return (
         <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
             <h3 className="text-2xl font-semibold mb-6 text-center">내 스크랩 목록</h3>
 
-            {error && <p className="text-red-500 text-center">{error}</p>}
 
             {scrapedPosts.length === 0 ? (
                 <p className="text-center text-gray-600">스크랩한 공고가 없습니다.</p>
