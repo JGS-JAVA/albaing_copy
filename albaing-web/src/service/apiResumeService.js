@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getErrorMessage } from '../utils/ErrorHandler';
+import { getErrorMessage } from '../components/ErrorHandler';
 
 // API 기본 URL 설정
 const API_URL = process.env.REACT_APP_API_URL || '';
