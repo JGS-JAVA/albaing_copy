@@ -18,6 +18,9 @@ public interface UserMapper {
     // 유저 로그인
     User loginUser(Map<String, Object> param);
 
+    // 유저 카카오 ID 업데이트
+    void updateUserKakaoId(@Param("userId") Long userId, @Param("kakaoId") String kakaoId);
+
     // 유저 존재여부 확인
     boolean isUserExist(String email);
 

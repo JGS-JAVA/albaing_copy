@@ -50,32 +50,62 @@ public class JobApplicationServiceImpl implements JobApplicationService {
 
     @Override
     public void updateJobApplicationStatus(int jobApplicationId, String approveStatus) {
-        // 상태 업데이트 전에 현재 지원 정보 조회
         JobApplication currentApplication = jobApplicationMapper.getJobApplicationById(jobApplicationId);
 
-        // 상태 업데이트
         jobApplicationMapper.updateJobApplicationStatus(jobApplicationId, approveStatus);
 
-        // "approved" 상태로 변경된 경우 알림 발송
-        if ("approved".equals(approveStatus) && currentApplication != null) {
+        // 상태 변경 후 알림 발송 (합격 또는 불합격)
+        if (currentApplication != null) {
             try {
                 // 관련 정보 조회
                 JobPost jobPost = jobPostMapper.selectJobPostById(currentApplication.getJobPostId());
                 Resume resume = resumeMapper.resumeDetails(currentApplication.getResumeId());
 
                 if (jobPost != null && resume != null) {
-                    // 알림 발송
-                    notificationService.sendJobApprovalNotification(
-                        Long.valueOf(resume.getUserId()),
-                        jobPost.getJobPostTitle(),
-                        jobPost.getCompanyName() // JobPost 클래스에 companyName 필드 추가됨
-                    );
+
+                    String companyName = jobPost.getCompanyName();
+                    if (companyName == null || companyName.trim().isEmpty()) {
+                        // 회사 ID로 회사명 조회 시도
+                        try {
+
+                            companyName = "알바잉 기업";
+                        } catch (Exception ex) {
+                            companyName = "알바잉 기업";
+                        }
+                    }
+
+                    System.out.println("공고 상태 변경 알림 발송 정보:");
+                    System.out.println("- 유저 ID: " + resume.getUserId());
+                    System.out.println("- 공고명: " + jobPost.getJobPostTitle());
+                    System.out.println("- 회사명: " + companyName);
+                    System.out.println("- 상태: " + approveStatus);
+
+                    if ("approved".equals(approveStatus)) {
+                        // 합격 알림 발송
+                        notificationService.sendJobApprovalNotification(
+                            Long.valueOf(resume.getUserId()),
+                            jobPost.getJobPostTitle(),
+                            companyName
+                        );
+                    } else if ("denied".equals(approveStatus)) {
+                        // 불합격 알림 발송
+                        notificationService.sendJobDeniedNotification(
+                            Long.valueOf(resume.getUserId()),
+                            jobPost.getJobPostTitle(),
+                            companyName
+                        );
+                    }
+                } else {
+                    System.err.println("공고 또는 이력서 정보를 찾을 수 없음:");
+                    System.err.println("- JobPost null: " + (jobPost == null));
+                    System.err.println("- Resume null: " + (resume == null));
                 }
             } catch (Exception e) {
-                // 알림 발송 실패시 로깅만 하고 진행 (지원 상태 업데이트는 성공해야 함)
-                System.err.println("공고 승인 알림 발송 중 오류 발생: " + e.getMessage());
-                e.printStackTrace(); // 스택 트레이스 출력으로 디버깅 용이
+                System.err.println("공고 상태 변경 알림 발송 중 오류 발생: " + e.getMessage());
+                e.printStackTrace();
             }
+        } else {
+            System.err.println("지원 정보를 찾을 수 없음 (ID: " + jobApplicationId + ")");
         }
     }
 
