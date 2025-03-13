@@ -109,13 +109,13 @@
         </where>
         <trim prefix="ORDER BY">
             <if test="sortOrderBy == '지원자명'">
-                USERS.user_name
+                user_name
             </if>
             <if test="sortOrderBy == '법인명'">
-                COMPANIES.company_name
+                company_name
             </if>
             <if test="sortOrderBy == '지원일'">
-                JOB_APPLICATIONS.application_at
+                application_at
             </if>
             <if test="isDESC == true">
                 DESC
