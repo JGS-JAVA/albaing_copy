@@ -2,7 +2,7 @@ package com.jobjob.albaing.service;
 
 public interface NotificationService {
     /**
-     * 공고 합격 알림 발송
+     * 공고 승인 알림 발송
      * @param userId 사용자 ID
      * @param jobPostTitle 공고 제목
      * @param companyName 회사명
