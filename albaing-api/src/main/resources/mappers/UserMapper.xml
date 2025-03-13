@@ -5,18 +5,20 @@
 
     <!-- 회원가입 -->
     <insert id="registerUser">
-        INSERT INTO users (user_email,
-                           user_password,
-                           user_name,
-                           user_birthdate,
-                           user_gender,
-                           user_phone,
-                           user_address,
-                           user_profile_image,
-                           user_created_at,
-                           user_updated_at,
-                           user_terms_agreement,
-                           user_is_admin)
+        INSERT INTO users (
+            user_email,
+            user_password,
+            user_name,
+            user_birthdate,
+            user_gender,
+            user_phone,
+            user_address,
+            user_profile_image,
+            user_created_at,
+            user_updated_at,
+            user_terms_agreement,
+            user_is_admin,
+            kakao_id)
         VALUES (#{userEmail},
                 #{userPassword},
                 #{userName},
@@ -28,9 +30,16 @@
                 #{userCreatedAt},
                 #{userUpdatedAt},
                 #{userTermsAgreement},
-                #{userIsAdmin});
-
+                #{userIsAdmin},
+                #{kakaoId});
     </insert>
+
+    <!-- 카카오 ID 업데이트용 쿼리 추가 -->
+    <update id="updateUserKakaoId">
+        UPDATE USERS
+        SET kakao_id = #{kakaoId}
+        WHERE user_id = #{userId}
+    </update>
 
 
 
