@@ -1,36 +1,39 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import {LoadingSpinner, ErrorMessage, useModal, AlertModal} from '../../components';
 import Pagination from '../../components/common/Pagination';
-import { useAuth } from '../../contexts/AuthContext';
+import {useAuth} from '../../contexts/AuthContext';
 import JobCard from "./components/JobCard";
+import apiScrapService from "../../service/apiScrapService";
+import {useParams} from "react-router-dom";
 
 // 카테고리 분류 데이터
 const categories = [
-    { name: '전체', value: 'all' },
-    { name: '사무직', value: 'office' },
-    { name: '서비스업', value: 'service' },
-    { name: 'IT/개발', value: 'it' },
-    { name: '판매/영업', value: 'sales' },
-    { name: '교육', value: 'education' },
-    { name: '생산/건설', value: 'production' },
-    { name: '운전/배달', value: 'delivery' },
+    {name: '전체', value: 'all'},
+    {name: '사무직', value: 'office'},
+    {name: '서비스업', value: 'service'},
+    {name: 'IT/개발', value: 'it'},
+    {name: '판매/영업', value: 'sales'},
+    {name: '교육', value: 'education'},
+    {name: '생산/건설', value: 'production'},
+    {name: '운전/배달', value: 'delivery'},
 ];
 
 // 지역 분류 데이터
 const locations = [
-    { name: '전체', value: 'all' },
-    { name: '서울', value: 'seoul' },
-    { name: '경기', value: 'gyeonggi' },
-    { name: '인천', value: 'incheon' },
-    { name: '부산', value: 'busan' },
-    { name: '대구', value: 'daegu' },
-    { name: '대전', value: 'daejeon' },
-    { name: '광주', value: 'gwangju' },
+    {name: '전체', value: 'all'},
+    {name: '서울', value: 'seoul'},
+    {name: '경기', value: 'gyeonggi'},
+    {name: '인천', value: 'incheon'},
+    {name: '부산', value: 'busan'},
+    {name: '대구', value: 'daegu'},
+    {name: '대전', value: 'daejeon'},
+    {name: '광주', value: 'gwangju'},
 ];
 
 export default function JobpostList() {
-    const { isLoggedIn, userType, userData } = useAuth();
+    const {isLoggedIn, userType, userData} = useAuth();
+    const {userId, jobPostId} = useParams();
 
     // 상태 관리
     const [jobListings, setJobListings] = useState([]);
@@ -60,33 +63,10 @@ export default function JobpostList() {
     // 스크랩된 공고 목록 로드
     useEffect(() => {
         if (isLoggedIn && userType === "personal") {
-            const localScrapedPosts = JSON.parse(localStorage.getItem("scrapedPosts") || "[]");
-            setScrapedPosts(localScrapedPosts);
-
-            if (userData && userData.userId) {
-                fetchUserScraps(userData.userId);
-            }
+            apiScrapService.getScrapsByUser(userData.userId, setScrapedPosts);
         }
     }, [isLoggedIn, userType, userData]);
 
-    // 사용자 스크랩 목록 가져오기
-    const fetchUserScraps = (userId) => {
-        axios.get(`/api/scrap/user/${userId}`, { withCredentials: true })
-            .then(response => {
-                if (response.data && Array.isArray(response.data)) {
-                    const apiScrapedPosts = response.data.map(scrap => Number(scrap.jobPostId));
-
-                    const localScrapedPosts = JSON.parse(localStorage.getItem("scrapedPosts") || "[]");
-                    const mergedScraps = [...new Set([...localScrapedPosts, ...apiScrapedPosts])];
-
-                    setScrapedPosts(mergedScraps);
-                    localStorage.setItem("scrapedPosts", JSON.stringify(mergedScraps));
-                }
-            })
-            .catch(error => {
-                console.error("스크랩 목록 조회 실패", error);
-            });
-    };
 
     // 회사 정보 데이터 조회
     const fetchCompanyInfo = () => {
@@ -102,11 +82,11 @@ export default function JobpostList() {
         if (idsToFetch.length === 0) return;
 
         // 회사 정보 조회
-        const newCompanyInfo = { ...companyInfo };
+        const newCompanyInfo = {...companyInfo};
 
         Promise.all(
             idsToFetch.map(companyId => {
-                return axios.get(`/api/companies/${companyId}`, { withCredentials: true })
+                return axios.get(`/api/companies/${companyId}`, {withCredentials: true})
                     .then(response => {
                         if (response.data) {
                             newCompanyInfo[companyId] = {
@@ -240,10 +220,7 @@ export default function JobpostList() {
     };
 
     // 스크랩 토글 함수
-    const toggleScrap = (jobPostId, event) => {
-
-        event.preventDefault();
-        event.stopPropagation();
+    const toggleScrap = (jobPostId) => {
 
         if (!isLoggedIn) {
             alertModal.openModal({
@@ -263,29 +240,35 @@ export default function JobpostList() {
             return;
         }
 
-        const jobId = Number(jobPostId);
-        const isCurrentlyScraped = scrapedPosts.includes(jobId);
+        const isCurrentlyScraped = scrapedPosts.includes(jobPostId);
         let updatedScraps = [...scrapedPosts];
 
-        if (isCurrentlyScraped) {
-
-            updatedScraps = updatedScraps.filter(id => id !== jobId);
-
-            if (userData && userData.userId) {
-                axios.delete(`/api/scrap/remove/${userData.userId}/${jobId}`, { withCredentials: true })
-                    .catch(() => {/* 실패 시 특별한 처리 없음 */});
+            if (isCurrentlyScraped) {
+                apiScrapService.removeScrap(userData.userId, jobPostId)
+                    .then(() => {
+                        console.log("스크랩 목록에서 제거");
+                        alert("스크랩에서 제거되었습니다.");
+                        setScrapedPosts(updatedScraps);
+                        localStorage.setItem("scrapedPosts", JSON.stringify(updatedScraps));
+                    })
+                    .catch((err) => {
+                        console.error("스크랩 삭제 실패", error);
+                        alert("스크랩 삭제중 오류가 발생했습니다.");
+                    })
+            } else {
+                apiScrapService.addScrap(userData.userId, jobPostId)
+                    .then(() => {
+                        console.log("스크랩 목록 추가");
+                        alert("스크랩에 추가되었습니다.");
+                        setScrapedPosts(updatedScraps);
+                        localStorage.setItem("scrapedPosts", JSON.stringify(updatedScraps));
+                    })
+                    .catch((err)=>{
+                        console.error("스크랩 추가 실패",err);
+                        alert("스크랩 추가중 오류가 발생했습니다.");
+                    })
             }
-        } else {
-            updatedScraps.push(jobId);
 
-            if (userData && userData.userId) {
-                axios.post(`/api/scrap/add/${userData.userId}/${jobId}`, {}, { withCredentials: true })
-                    .catch(() => {/* 실패 시 특별한 처리 없음 */});
-            }
-        }
-
-        setScrapedPosts(updatedScraps);
-        localStorage.setItem("scrapedPosts", JSON.stringify(updatedScraps));
     };
 
     return (
@@ -314,7 +297,8 @@ export default function JobpostList() {
                             />
                         </div>
                         <div>
-                            <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">직종</label>
+                            <label htmlFor="category"
+                                   className="block text-sm font-medium text-gray-700 mb-1">직종</label>
                             <select
                                 id="category"
                                 className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 transition-all"
@@ -329,7 +313,8 @@ export default function JobpostList() {
                             </select>
                         </div>
                         <div>
-                            <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">지역</label>
+                            <label htmlFor="location"
+                                   className="block text-sm font-medium text-gray-700 mb-1">지역</label>
                             <select
                                 id="location"
                                 className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 transition-all"
@@ -356,8 +341,8 @@ export default function JobpostList() {
                 </div>
 
                 {/* 로딩 및 에러 상태 */}
-                {loading && <LoadingSpinner message="채용 공고를 불러오는 중..." fullScreen={false} className="py-10" />}
-                {error && <ErrorMessage message={error} />}
+                {loading && <LoadingSpinner message="채용 공고를 불러오는 중..." fullScreen={false} className="py-10"/>}
+                {error && <ErrorMessage message={error}/>}
 
                 {/* 채용 공고 목록 - 카드 형식 */}
                 {!loading && !error && (
