@@ -3,6 +3,7 @@ import {useParams, useNavigate, Link} from "react-router-dom";
 import axios from "axios";
 import {AlertModal, ConfirmModal, ErrorMessage, LoadingSpinner, Modal, useModal} from "../../components";
 import { useAuth } from "../../contexts/AuthContext";
+import apiScrapService from "../../service/apiScrapService";
 
 export default function JobPostDetail() {
     const { jobPostId } = useParams();
@@ -232,30 +233,57 @@ export default function JobPostDetail() {
             return;
         }
 
-        let scrapedPosts = JSON.parse(localStorage.getItem("scrapedPosts") || "[]");
-
         if (isScraped) {
             // 스크랩 취소
-            scrapedPosts = scrapedPosts.filter((id) => id !== Number(jobPostId));
+            apiScrapService.removeScrap(userData.userId, jobPostId)
+                .then(() => {
+                    setIsScraped(false);
 
-            // API 호출 (사용자 ID가 있는 경우)
-            if (userData && userData.userId) {
-                axios.delete(`/api/scrap/remove/${userData.userId}/${jobPostId}`, { withCredentials: true })
-                    .catch(() => {/* 실패 시 특별한 처리 없음 */});
-            }
+                    // localStorage 업데이트
+                    let scrapedPosts = JSON.parse(localStorage.getItem("scrapedPosts") || "[]");
+                    scrapedPosts = scrapedPosts.filter(id => id !== Number(jobPostId));
+                    localStorage.setItem("scrapedPosts", JSON.stringify(scrapedPosts));
+
+                    alertModal.openModal({
+                        title: '스크랩 취소',
+                        message: '스크랩에서 제거되었습니다.',
+                        type: 'success'
+                    });
+                })
+                .catch((err) => {
+                    console.error("스크랩 삭제 실패", err);
+                    alertModal.openModal({
+                        title: '오류',
+                        message: '스크랩 삭제 중 오류가 발생했습니다.',
+                        type: 'error'
+                    });
+                });
         } else {
             // 스크랩 추가
-            scrapedPosts.push(Number(jobPostId));
+            apiScrapService.addScrap(userData.userId, jobPostId)
+                .then(() => {
+                    setIsScraped(true);
 
-            // API 호출 (사용자 ID가 있는 경우)
-            if (userData && userData.userId) {
-                axios.post(`/api/scrap/add/${userData.userId}/${jobPostId}`, {}, { withCredentials: true })
-                    .catch(() => {/* 실패 시 특별한 처리 없음 */});
-            }
+                    // localStorage 업데이트
+                    let scrapedPosts = JSON.parse(localStorage.getItem("scrapedPosts") || "[]");
+                    scrapedPosts.push(Number(jobPostId));
+                    localStorage.setItem("scrapedPosts", JSON.stringify(scrapedPosts));
+
+                    alertModal.openModal({
+                        title: '스크랩 추가',
+                        message: '스크랩에 추가되었습니다.',
+                        type: 'success'
+                    });
+                })
+                .catch((err) => {
+                    console.error("스크랩 추가 실패", err);
+                    alertModal.openModal({
+                        title: '오류',
+                        message: '스크랩 추가 중 오류가 발생했습니다.',
+                        type: 'error'
+                    });
+                });
         }
-
-        localStorage.setItem("scrapedPosts", JSON.stringify(scrapedPosts));
-        setIsScraped(!isScraped);
     };
 
     // 날짜 포맷팅 함수

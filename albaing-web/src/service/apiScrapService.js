@@ -8,7 +8,10 @@ const apiScrapService = {
     addScrap: function (userId, jobPostId) {
        return axios
             .post(`${API_SCRAP_URL}/add/${userId}/${jobPostId}`)
-            .then((res) => res.data)
+            .then((res) => {
+                console.log("스크랩 추가 성공");
+                return jobPostId;
+            })
             .catch((err) => {
                 console.error("스크랩 추가 실패:", err);
                 throw err;
@@ -19,7 +22,10 @@ const apiScrapService = {
     removeScrap: function (userId, jobPostId)  {
         return axios
             .delete(`${API_SCRAP_URL}/remove/${userId}/${jobPostId}`)
-            .then((res) => res.data)
+            .then((res) => {
+                console.log("스크랩 삭제 성공");
+                return jobPostId;
+            })
             .catch((err) => {
                 console.error("스크랩 삭제 실패:", err);
                 throw err;
