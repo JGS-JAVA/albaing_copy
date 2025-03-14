@@ -4,6 +4,7 @@ const API_MYPAGE_URL = "http://localhost:8080/api";
 
 // API 서비스
 const apiMyPageService = {
+
     getUserById: function (userId,setUser) {
         return axios
             .get(`${API_MYPAGE_URL}/user/${userId}`)
