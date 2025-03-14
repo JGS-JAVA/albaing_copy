@@ -266,7 +266,11 @@ export default function JobpostList() {
                     })
                     .catch((err) => {
                         console.error("스크랩 삭제 실패", error);
-                        alert("스크랩 삭제중 오류가 발생했습니다.");
+                        alertModal.openModal({
+                            title: '오류',
+                            message: '스크랩 추가 중 오류가 발생했습니다.',
+                            type: 'error'
+                        });
                     })
             } else {
                 // 스크랩 추가
