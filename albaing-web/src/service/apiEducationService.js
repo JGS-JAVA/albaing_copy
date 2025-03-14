@@ -46,21 +46,25 @@ export const getAllSchools = () => {
         });
 };
 
-// 전공 목록 가져오기
+// 전공 목록 가져오기 (facilName을 ',' 기준으로 분리)
 export const getAllMajors = () => {
     return Promise.all([
         fetchData(MAJOR_API_URLS.high),
         fetchData(MAJOR_API_URLS.university),
     ])
         .then(([highMajors, universityMajors]) => {
-            return [
-                ...highMajors.map((major) => ({ name: major.facilName, type: "고등학교 전공" })),
-                ...universityMajors.map((major) => ({ name: major.facilName, type: "대학교 전공" })),
-            ];
+            const highMajorList = highMajors.flatMap((major) =>
+                major.facilName ? major.facilName.split(',').map((name) => ({ name: name.trim(), type: "고등학교 전공" })) : []
+            );
+
+            const universityMajorList = universityMajors.flatMap((major) =>
+                major.facilName ? major.facilName.split(',').map((name) => ({ name: name.trim(), type: "대학교 전공" })) : []
+            );
+
+            return [...highMajorList, ...universityMajorList];
         })
         .catch((error) => {
             console.error("전공 목록 가져오기 오류:", error);
             return [];
         });
-
 };
