@@ -36,7 +36,7 @@ const apiResumeService = {
     // 이력서 업데이트
     updateResume: (resumeId, resumeData) => {
         return new Promise((resolve, reject) => {
-            axios.put(`${API_URL}/api/resume/${resumeId}`, resumeData, { withCredentials: true })
+            axios.put(`${API_URL}/api/resume/update/${resumeId}`, resumeData, { withCredentials: true })
                 .then(response => {
                     resolve(response.data);
                 })
