@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import {getAllSchools} from "../../service/apiEducationService"; // 학교 api
-import {getAllMajors} from "../../service/apiEducationService"; //전공 api
+import {getAllSchools} from "../../service/apiEducationService";
+import {getAllMajors} from "../../service/apiEducationService";
 
 const EducationModal = ({ educationData, majorData, onSave, onCancel }) => {
     const [formData, setFormData] = useState({
@@ -64,27 +64,21 @@ const EducationModal = ({ educationData, majorData, onSave, onCancel }) => {
         setFilteredSchools(filtered);
     }, [searchTerm, schoolList]);
 
-    // // 전공 검색어 입력 시 필터링
-    // useEffect(() => {
-    //     if (majorSearchTerm === "") {
-    //         setFilteredMajors([]);
-    //         return;
-    //     }
-    //     const filtered = majorList.filter((major) =>
-    //         major.name && major.name.includes(majorSearchTerm) // major.name이 undefined가 아니어야 .includes() 호출
-    //     );
-    //     setFilteredMajors(filtered);
-    // }, [majorSearchTerm, majorList]);
-
+// 전공 검색어 입력 시 필터링
     useEffect(() => {
         if (majorSearchTerm === "") {
-            setFilteredMajors([]);  // 검색어가 없으면 필터링된 목록을 비웁니다.
+            setFilteredMajors([]);
             return;
         }
 
         const filtered = majorList.filter((major) => {
-            // facilName이 유효한지 확인하고 majorSearchTerm을 포함하는지 여부만 체크
-            return major.name && major.name.toLowerCase().includes(majorSearchTerm.toLowerCase());
+            // major.name이 존재하고, major.name에 검색어가 포함되어 있는지 확인
+            // facilName을 ','로 분리하여 각 전공 이름에 대해 검색어가 포함되는지 체크
+            if (major.name) {
+                const majorNames = major.name.split(','); // ','로 전공 이름 분리
+                return majorNames.some((name) => name.toLowerCase().includes(majorSearchTerm.toLowerCase()));
+            }
+            return false;
         });
 
         setFilteredMajors(filtered);

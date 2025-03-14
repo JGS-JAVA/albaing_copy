@@ -103,7 +103,7 @@ const ResumeEdit = () => {
         fetchResume();
     }, [userData, resumeId]);
 
-    //
+
     const validateForm = () => {
         const errors = {};
 

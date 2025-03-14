@@ -62,4 +62,5 @@ export const getAllMajors = () => {
             console.error("전공 목록 가져오기 오류:", error);
             return [];
         });
+
 };
