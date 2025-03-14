@@ -15,6 +15,7 @@ const RegisterCompany = () => {
     const [companyPhone, setCompanyPhone] = useState("");
     const [companyLocalAddress, setCompanyLocalAddress] = useState("");
     const [companyLogo, setCompanyLogo] = useState("");
+    const [companyLogoUrl, setCompanyLogoUrl] = useState(null);
     const [companyDescription, setCompanyDescription] = useState("");
     const [termsAgreement, setTermsAgreement] = useState(false);
     const [emailVerified, setEmailVerified] = useState(false);
@@ -171,26 +172,44 @@ const RegisterCompany = () => {
         return true;
     };
 
-    const handleSignup = () => {
-        if (!validateInputs()) {
-            return;
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setCompanyLogo(file);
+            const imageUrl = URL.createObjectURL(file);
+            setCompanyLogoUrl(imageUrl);
         }
+    };
+
+    const handleSignup = () => {
+        if (!validateInputs()) return;
 
         setLoading(true);
         setError("");
 
-        axios.post("/api/auth/register/company", {
-            companyEmail,
-            companyPassword,
-            companyName,
-            companyRegistrationNumber,
-            companyOwnerName,
-            companyPhone,
-            companyLocalAddress,
-            companyLogo,
-            companyDescription,
-            companyOpenDate,
-            termsAgreement
+        // 기업 정보 객체 생성
+        const company = {
+            companyEmail, companyPassword,
+            companyName,  companyRegistrationNumber,
+            companyOwnerName, companyPhone,
+            companyLocalAddress, companyDescription,
+            companyOpenDate, termsAgreement
+        };
+
+        const formData = new FormData();
+
+        // JSON 문자열로 변환하여 추가
+        formData.append("company", new Blob([JSON.stringify(company)], { type: "application/json" }));
+
+        // 로고 이미지가 있을 경우 추가
+        if (companyLogo) {
+            formData.append("companyLogo", companyLogo);
+        }
+
+        axios.post("/api/auth/register/company", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data"
+            },
         })
             .then(response => {
                 alertModal.openModal({
@@ -208,6 +227,7 @@ const RegisterCompany = () => {
                 setLoading(false);
             });
     };
+
     return (
         <div className="max-w-2xl mx-auto px-4 py-10">
             <div className="text-center mb-10">
@@ -428,9 +448,9 @@ const RegisterCompany = () => {
                                 </label>
                                 <div className="flex items-center space-x-6">
                                     <div className="shrink-0">
-                                        {companyLogo ? (
+                                        {companyLogoUrl ? (
                                             <img
-                                                src={companyLogo}
+                                                src={companyLogoUrl}
                                                 alt="로고 미리보기"
                                                 className="h-24 w-24 object-contain border rounded-md"
                                             />
@@ -444,11 +464,7 @@ const RegisterCompany = () => {
                                         <input
                                             type="file"
                                             accept="image/*"
-                                            onChange={(e) => {
-                                                if (e.target.files && e.target.files[0]) {
-                                                    setCompanyLogo(URL.createObjectURL(e.target.files[0]));
-                                                }
-                                            }}
+                                            onChange={handleImageChange}
                                             className="block w-full text-sm text-gray-500
                                             file:mr-4 file:py-2 file:px-4
                                             file:rounded-md file:border-0

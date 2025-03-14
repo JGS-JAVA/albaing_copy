@@ -77,22 +77,31 @@ public class AuthController {
     }
 
 
-    @PostMapping("/register/company")
-    public ResponseEntity<Map<String, Object>> registerCompany(@RequestBody Company company) {
-        Map<String, Object> response = new HashMap<>();
+    @PostMapping(value = "/register/company", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Map<String, Object>> registerCompany(
+            @RequestPart("company") Company company,
+            @RequestPart(value = "companyLogo", required = false) MultipartFile companyLogo) {
 
-        try {
-            authService.registerCompany(company);
-            response.put("status", "success");
-            response.put("message", "기업 회원가입이 성공적으로 완료되었습니다.");
+        if (companyLogo != null && !companyLogo.isEmpty()) {
+            System.out.println("DEBUG: 파일 업로드 시작 - " + companyLogo.getOriginalFilename());
+
+            // 파일 업로드 실행
+            String logoUrl = fileService.uploadFile(companyLogo);
+            System.out.println("DEBUG: 업로드된 로고 URL = " + logoUrl);
+
+            company.setCompanyLogo(logoUrl);
+        } else {
+            System.out.println("DEBUG: companyLogo가 null 또는 비어 있음");
+        }
+
+        // 회원가입 로직 실행
+        Map<String, Object> response = authService.registerCompany(company);
+
+        if ("success".equals(response.get("status"))) {
             return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            response.put("status", "fail");
-            response.put("message", e.getMessage());
+        } else if ("fail".equals(response.get("status"))) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        } catch (Exception e) {
-            response.put("status", "error");
-            response.put("message", "기업 회원가입 중 오류가 발생했습니다: " + e.getMessage());
+        } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
