@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {getAllSchools} from "../../service/apiEducationService"; // 학교 api
 import {getAllMajors} from "../../service/apiEducationService"; //전공 api
 
-const EducationModal = ({ educationData, onSave, onCancel }) => {
+const EducationModal = ({ educationData, majorData, onSave, onCancel }) => {
     const [formData, setFormData] = useState({
         eduDegree: '',
         eduStatus: '',
@@ -64,17 +64,34 @@ const EducationModal = ({ educationData, onSave, onCancel }) => {
         setFilteredSchools(filtered);
     }, [searchTerm, schoolList]);
 
-    // 전공 검색어 입력 시 필터링
+    // // 전공 검색어 입력 시 필터링
+    // useEffect(() => {
+    //     if (majorSearchTerm === "") {
+    //         setFilteredMajors([]);
+    //         return;
+    //     }
+    //     const filtered = majorList.filter((major) =>
+    //         major.name && major.name.includes(majorSearchTerm) // major.name이 undefined가 아니어야 .includes() 호출
+    //     );
+    //     setFilteredMajors(filtered);
+    // }, [majorSearchTerm, majorList]);
+
     useEffect(() => {
         if (majorSearchTerm === "") {
-            setFilteredMajors([]);
+            setFilteredMajors([]);  // 검색어가 없으면 필터링된 목록을 비웁니다.
             return;
         }
-        const filtered = majorList.filter((major) =>
-            major.name && major.name.includes(majorSearchTerm) // major.name이 undefined가 아니어야 .includes() 호출
-        );
+
+        const filtered = majorList.filter((major) => {
+            // facilName이 유효한지 확인하고 majorSearchTerm을 포함하는지 여부만 체크
+            return major.name && major.name.toLowerCase().includes(majorSearchTerm.toLowerCase());
+        });
+
         setFilteredMajors(filtered);
     }, [majorSearchTerm, majorList]);
+
+
+
 
 
     const handleSelect = (school) => {
@@ -103,12 +120,16 @@ const EducationModal = ({ educationData, onSave, onCancel }) => {
                 eduDegree: educationData.eduDegree || '',
                 eduStatus: educationData.eduStatus || '',
                 eduSchool: educationData.eduSchool || '',
-                eduMajor: educationData.eduMajor || '',
                 eduAdmissionYear: educationData.eduAdmissionYear || '',
                 eduGraduationYear: educationData.eduGraduationYear || ''
             });
         }
-    }, [educationData]);
+        if(majorData){
+            setFormData({
+                eduMajor: majorData.eduMajor || ''
+            })
+        }
+    }, [educationData,majorData]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -123,6 +144,11 @@ const EducationModal = ({ educationData, onSave, onCancel }) => {
 
         if (!formData.eduSchool.trim()) {
             alert('학교명을 입력해주세요.');
+            return;
+        }
+
+        if (!formData.eduMajor.trim()) {
+            alert('전공을 입력해주세요.');
             return;
         }
 

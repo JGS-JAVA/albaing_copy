@@ -9,8 +9,8 @@ const API_URLS = {
 
 // 전공 API URL 목록
 const MAJOR_API_URLS = {
-    high: "https://www.career.go.kr/cnet/openapi/getOpenApi?apiKey=cdd817e14883a15964aff585352a4b8f&svcType=api&svcCode=MAJOR&contentType=json&gubun=high_list",
-    university: "https://www.career.go.kr/cnet/openapi/getOpenApi?apiKey=cdd817e14883a15964aff585352a4b8f&svcType=api&svcCode=MAJOR&contentType=json&gubun=univ_list",
+    high: "http://www.career.go.kr/cnet/openapi/getOpenApi.json?apiKey=cdd817e14883a15964aff585352a4b8f&svcType=api&svcCode=MAJOR&contentType=json&gubun=high_list&thisPage=1&perPage=1000",
+    university: "http://www.career.go.kr/cnet/openapi/getOpenApi.json?apiKey=cdd817e14883a15964aff585352a4b8f&svcType=api&svcCode=MAJOR&contentType=json&gubun=univ_list&thisPage=1&perPage=1000",
 };
 
 // API 호출 함수
@@ -54,8 +54,8 @@ export const getAllMajors = () => {
     ])
         .then(([highMajors, universityMajors]) => {
             return [
-                ...highMajors.map((major) => ({ name: major.majorName, type: "고등학교 전공" })),
-                ...universityMajors.map((major) => ({ name: major.majorName, type: "대학교 전공" })),
+                ...highMajors.map((major) => ({ name: major.facilName, type: "고등학교 전공" })),
+                ...universityMajors.map((major) => ({ name: major.facilName, type: "대학교 전공" })),
             ];
         })
         .catch((error) => {

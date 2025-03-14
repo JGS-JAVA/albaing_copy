@@ -738,6 +738,7 @@ const ResumeEdit = () => {
                 {showEducationModal && (
                     <EducationModal
                         educationData={resumeData.educationHistory}
+                        majorData={resumeData.educationHistory}
                         onSave={handleEducationUpdate}
                         onCancel={() => setShowEducationModal(false)}
                     />
