@@ -190,7 +190,7 @@ const RegisterPerson = () => {
         const kakaoId = params.get("kakaoId");
         const naverId = params.get("naverId");
 
-        // 사용자 정보 객체 생성
+        // Create user object with common properties
         const user = {
             userEmail,
             userPassword,
@@ -205,31 +205,25 @@ const RegisterPerson = () => {
             naverId: naverId || "",
         };
 
+        // Special handling for social login image URLs
+        if (typeof userProfileImage === "string" && userProfileImage.startsWith("http")) {
+            // Add the URL directly to the user object for social login images
+            user.userProfileImage = userProfileImage;
+        }
+
         const formData = new FormData();
         formData.append("user", new Blob([JSON.stringify(user)], { type: "application/json" }));
 
-        // ✅ userProfileImage가 URL이면 Blob으로 변환 후 추가
-        if (typeof userProfileImage === "string" && userProfileImage.startsWith("http")) {
-            fetch(userProfileImage)
-                .then(res => res.blob())
-                .then(blob => {
-                    const file = new File([blob], "profile.jpg", { type: blob.type });
-                    formData.append("userProfileImage", file);
-                    sendRequest(formData);  // ✅ 파일 변환 후 서버 요청
-                })
-                .catch(error => {
-                    console.error("프로필 이미지 변환 실패:", error);
-                    sendRequest(formData); // 이미지 변환 실패 시라도 회원가입 요청은 진행
-                });
-        } else {
-            if (userProfileImage) {
-                formData.append("userProfileImage", userProfileImage);
-            }
-            sendRequest(formData); // ✅ 기존 파일 업로드
+        // Only append actual file uploads to formData
+        if (userProfileImage instanceof File) {
+            formData.append("userProfileImage", userProfileImage);
         }
+
+        // Send the request
+        sendRequest(formData);
     };
 
-// ✅ Axios 요청 함수 분리
+// The sendRequest function remains the same
     const sendRequest = (formData) => {
         axios.post("/api/auth/register/person", formData, {
             headers: { "Content-Type": "multipart/form-data" },
