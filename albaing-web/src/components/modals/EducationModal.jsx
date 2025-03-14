@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import {getAllSchools} from "../../service/apiEducationService";
 
 const EducationModal = ({ educationData, onSave, onCancel }) => {
     const [formData, setFormData] = useState({
@@ -9,6 +10,42 @@ const EducationModal = ({ educationData, onSave, onCancel }) => {
         eduAdmissionYear: '',
         eduGraduationYear: ''
     });
+
+    const [searchTerm, setSearchTerm] = useState("");
+    const [schoolList, setSchoolList] = useState([]);
+    const [filteredSchools, setFilteredSchools] = useState([]);
+    const [selectedSchool, setSelectedSchool] = useState(null);
+
+    useEffect(() => {
+        const fetchSchools = () => {
+            getAllSchools()
+                .then((schools) => {
+                    setSchoolList(schools);
+                })
+                .catch((error) => {
+                    console.error('학교 데이터를 가져오는 중 오류 발생:', error);
+                });
+        };
+        fetchSchools();
+    }, []);
+    // 검색어 입력 시 필터링
+    useEffect(() => {
+        if (searchTerm === "") {
+            setFilteredSchools([]);
+            return;
+        }
+        const filtered = schoolList.filter((school) =>
+            school.name.includes(searchTerm)
+        );
+        setFilteredSchools(filtered);
+    }, [searchTerm, schoolList]);
+
+    const handleSelect = (school) => {
+        setSelectedSchool(school);
+        setSearchTerm(school.name); // 선택한 학교 이름을 입력창에 표시
+        setFilteredSchools([]); // 리스트 닫기
+    };
+
 
     const degreeTypes = ['고등학교', '전문학사', '학사', '석사', '박사', '기타'];
 
@@ -88,12 +125,27 @@ const EducationModal = ({ educationData, onSave, onCancel }) => {
                                 type="text"
                                 id="eduSchool"
                                 name="eduSchool"
-                                value={formData.eduSchool}
-                                onChange={handleChange}
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
                                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm"
-                                placeholder="학교명을 입력하세요"
+                                placeholder="학교 검색"
                                 required
                             />
+                            <ul style={{maxHeight: "150px", overflowY: "auto", padding: 0}}>
+                                {filteredSchools.map((school, index) => (
+                                    <li
+                                        key={index}
+                                        onClick={() => handleSelect(school)}
+                                        style={{
+                                            padding: "5px",
+                                            cursor: "pointer",
+                                            backgroundColor: selectedSchool?.name === school.name ? "#ddd" : "white"
+                                        }}
+                                    >
+                                        {school.name} ({school.type})
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
