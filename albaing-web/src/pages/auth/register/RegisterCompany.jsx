@@ -31,9 +31,16 @@ const RegisterCompany = () => {
         const storedCompanyOwnerName = localStorage.getItem("companyOwnerName") || '';
         const storedCompanyOpenDate = localStorage.getItem("companyOpenDate") || '';
 
-        setCompanyRegistrationNumber(storedCompanyRegistrationNumber);
+        // 사업자등록번호 변환 함수
+        const formatCompanyRegistrationNumber = (number) => {
+            if (!number) return '';
+            return number.replace(/^(\d{3})(\d{2})(\d{5})$/, "$1-$2-$3");
+        };
+
+        setCompanyRegistrationNumber(formatCompanyRegistrationNumber(storedCompanyRegistrationNumber));
         setCompanyOwnerName(storedCompanyOwnerName);
         setCompanyOpenDate(storedCompanyOpenDate);
+
     }, []);
 
     const requestVerificationCode = () => {
