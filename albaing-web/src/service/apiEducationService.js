@@ -44,23 +44,22 @@ export const getAllSchools = () => {
             console.error("학교 목록 가져오기 오류:", error);
             return [];
         });
+};
 
-
-    // 전공 목록 가져오기
-    export const getAllMajors = () => {
-        return Promise.all([
-            fetchData(MAJOR_API_URLS.high),
-            fetchData(MAJOR_API_URLS.university),
-        ])
-            .then(([highMajors, universityMajors]) => {
-                return [
-                    ...highMajors.map((major) => ({name: major.majorName, type: "고등학교 전공"})),
-                    ...universityMajors.map((major) => ({name: major.majorName, type: "대학교 전공"})),
-                ];
-            })
-            .catch((error) => {
-                console.error("전공 목록 가져오기 오류:", error);
-                return [];
-            });
-    }
+// 전공 목록 가져오기
+export const getAllMajors = () => {
+    return Promise.all([
+        fetchData(MAJOR_API_URLS.high),
+        fetchData(MAJOR_API_URLS.university),
+    ])
+        .then(([highMajors, universityMajors]) => {
+            return [
+                ...highMajors.map((major) => ({ name: major.majorName, type: "고등학교 전공" })),
+                ...universityMajors.map((major) => ({ name: major.majorName, type: "대학교 전공" })),
+            ];
+        })
+        .catch((error) => {
+            console.error("전공 목록 가져오기 오류:", error);
+            return [];
+        });
 };
