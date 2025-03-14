@@ -145,15 +145,14 @@ const JobPostAdd = () => {
 
     // 급여 입력 관련: 입력값 변화 시 formData.jobPostSalary 업데이트
     useEffect(() => {
-        let formattedSalary = "";
-        if (salaryAmount) {
-            if (salaryType === "월급" || salaryType === "연봉") {
-                formattedSalary = `${salaryType} ${salaryAmount}만원`;
-            } else {
-                formattedSalary = `${salaryType} ${salaryAmount}원`;
-            }
+        if (!salaryAmount) {
+            // 금액이 없으면 formData에 빈 문자열로 저장
+            setFormData((prev) => ({ ...prev, jobPostSalary: "" }));
+            return;
         }
-        setFormData(prev => ({ ...prev, jobPostSalary: formattedSalary }));
+        // 모든 유형을 원 단위로 통일하여 표시
+        const formatted = `${salaryType} ${Number(salaryAmount).toLocaleString()}원`;
+        setFormData((prev) => ({ ...prev, jobPostSalary: formatted }));
     }, [salaryType, salaryAmount]);
 
     const handleSalaryTypeChange = (e) => {
