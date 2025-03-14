@@ -72,7 +72,6 @@ const EducationModal = ({ educationData, majorData, onSave, onCancel }) => {
         }
 
         const filtered = majorList.filter((major) => {
-            // major.name이 존재하고, major.name에 검색어가 포함되어 있는지 확인
             // facilName을 ','로 분리하여 각 전공 이름에 대해 검색어가 포함되는지 체크
             if (major.name) {
                 const majorNames = major.name.split(','); // ','로 전공 이름 분리
