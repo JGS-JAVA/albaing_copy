@@ -3,11 +3,10 @@ package com.jobjob.albaing.controller;
 import com.jobjob.albaing.dto.*;
 import com.jobjob.albaing.service.AdminServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -16,64 +15,121 @@ public class AdminController {
     @Autowired
     private AdminServiceImpl adminService;
 
-    // 유저 검색
+    // 개인 검색
     @GetMapping("/users")
-    public List<User> adminSearchUsers(@PathVariable String userName,
-                                       @PathVariable String userEmail,
-                                       @PathVariable String userPhone,
-                                       @PathVariable String sortOrderBy,
-                                       @PathVariable Boolean isDESC) {
+    public List<AdminUser> adminSearchUsers(@RequestParam(required = false) String userName,
+                                            @RequestParam(required = false) String userEmail,
+                                            @RequestParam(required = false) String userPhone,
+                                            @RequestParam(required = false) String sortOrderBy,
+                                            @RequestParam(required = false) Boolean isDESC) {
+        if (Objects.equals(sortOrderBy, "") || sortOrderBy == null) {
+            sortOrderBy = "이름";
+        }
 
-        List<User> usersSearchResults = adminService.adminSearchUsers(userName, userEmail, userPhone, sortOrderBy, isDESC);
-        return usersSearchResults;
+        return adminService.adminSearchUsers(userName, userEmail, userPhone, sortOrderBy, isDESC);
     }
 
     // 이력서 검색
     @GetMapping("/resumes")
-    public List<Resume> adminSearchResumes(@PathVariable String resumeTitle,
-                                           @PathVariable String resumeCategory,
-                                           @PathVariable String resumeJobType,
-                                           @PathVariable String sortOrderBy,
-                                           @PathVariable Boolean isDESC) {
-        List<Resume> resumesSearchResults = adminService.adminSearchResumes(resumeTitle, resumeCategory, resumeJobType, sortOrderBy, isDESC);
-        return resumesSearchResults;
+    public List<ViewResume> adminSearchResumes(@RequestParam(required = false) String userName,
+                                               @RequestParam(required = false) String resumeTitle,
+                                               @RequestParam(required = false) String resumeCategory,
+                                               @RequestParam(required = false) String resumeJobType,
+                                               @RequestParam(required = false) String sortOrderBy,
+                                               @RequestParam(required = false) Boolean isDESC) {
+
+        if (Objects.equals(sortOrderBy, "") || sortOrderBy == null) {
+            sortOrderBy = "이름";
+        }
+        return adminService.adminSearchResumes(userName, resumeTitle, resumeCategory, resumeJobType, sortOrderBy, isDESC);
     }
-  
+
+    // 공고지원 검색
     @GetMapping("/job-applications")
-    public List<JobApplication> adminSearchJobApplications(@PathVariable String userName,
-                                                           @PathVariable String companyName,
-                                                           @PathVariable String jobPostTitle,
-                                                           @PathVariable String sortOrderBy,
-                                                           @PathVariable Boolean isDESC) {
+    public List<ViewJobApplication> adminSearchJobApplications(@RequestParam(required = false) String userName,
+                                                               @RequestParam(required = false) String companyName,
+                                                               @RequestParam(required = false) String jobPostTitle,
+                                                               @RequestParam(required = false) String sortOrderBy,
+                                                               @RequestParam(required = false) Boolean isDESC) {
 
-        List<JobApplication> jobApplicationsSearchResults = adminService.adminSearchJobApplications(userName, companyName, jobPostTitle, sortOrderBy, isDESC);
-        return jobApplicationsSearchResults;
+        if (Objects.equals(sortOrderBy, "") || sortOrderBy == null) {
+            sortOrderBy = "지원자명";
+        }
+        return adminService.adminSearchJobApplications(userName, companyName, jobPostTitle, sortOrderBy, isDESC);
     }
 
+    // 법인 검색
     @GetMapping("/companies")
-    public List<Company> adminSearchCompanies(@PathVariable String companyName,
-                                              @PathVariable String companyOwnerName,
-                                              @PathVariable String companyPhone,
-                                              @PathVariable String companyRegistrationNumber,
-                                              @PathVariable String sortOrderBy,
-                                              @PathVariable Boolean isDESC) {
+    public List<Company> adminSearchCompanies(@RequestParam(required = false) String companyName,
+                                              @RequestParam(required = false) String companyOwnerName,
+                                              @RequestParam(required = false) String companyPhone,
+                                              @RequestParam(required = false) String companyRegistrationNumber,
+                                              @RequestParam(required = false) String sortOrderBy,
+                                              @RequestParam(required = false) Boolean isDESC) {
 
-        List<Company> companiesSearchResults = adminService.adminSearchCompanies(companyName, companyOwnerName, companyPhone, companyRegistrationNumber, sortOrderBy, isDESC);
-        return companiesSearchResults;
-
-        // 최적화를 생각하면서 다시 짜야하나?
-        // SQL 에서 이중으로 JOIN 문 사용과 단순 SELECT 3번 조회와 어느쪽이 더 
-
+        if (Objects.equals(sortOrderBy, "") || sortOrderBy == null) {
+            sortOrderBy = "법인명";
+        }
+        return adminService.adminSearchCompanies(companyName, companyOwnerName, companyPhone, companyRegistrationNumber, sortOrderBy, isDESC);
     }
 
+    // 공고 검색
     @GetMapping("/job-posts")
-    public List<JobPost> adminSearchJobPosts(@PathVariable String companyName,
-                                             @PathVariable String jobPostTitle,
-                                             @PathVariable String jobPostStatus,
-                                             @PathVariable String sortOrderBy,
-                                             @PathVariable Boolean isDESC) {
+    public List<ViewJobPost> adminSearchJobPosts(@RequestParam(required = false) String companyName,
+                                                 @RequestParam(required = false) String jobPostTitle,
+                                                 @RequestParam(required = false) String jobPostStatus,
+                                                 @RequestParam(required = false) String sortOrderBy,
+                                                 @RequestParam(required = false) Boolean isDESC) {
 
-        List<JobPost> jobPostsSearchResults = adminService.adminSearchJobPosts(companyName, jobPostTitle, jobPostStatus, sortOrderBy, isDESC);
-        return jobPostsSearchResults;
+        if (Objects.equals(sortOrderBy, "") || sortOrderBy == null) {
+            sortOrderBy = "공고 제목";
+        }
+        return adminService.adminSearchJobPosts(companyName, jobPostTitle, jobPostStatus, sortOrderBy, isDESC);
     }
+
+    // 개인 상세 조회
+    @GetMapping("/users/{userId}")
+    public User adminUserDetail(@PathVariable String userId) {
+        return adminService.adminUserDetail(userId);
+    }
+
+    // 개인 유저 삭제 + 이력서 삭제
+    @DeleteMapping("/users/{userId}")
+    public void adminUserDelete(@PathVariable String userId) {
+        adminService.adminUserDelete(userId);
+        adminService.adminResumeDelete(userId);
+    }
+
+    // 이력서 상세 조회
+    @GetMapping("/resumes/{resumeId}")
+    public Resume adminResumeDetail(@PathVariable String resumeId) {
+        return adminService.adminResumeDetail(resumeId);
+    }
+
+    // 회사 상세 조회
+    @GetMapping("/companies/{companyId}")
+    public Company adminCompanyDetail(@PathVariable String companyId) {
+        return adminService.adminCompanyDetail(companyId);
+    }
+
+    // 회사 유저 삭제 + 공고 상태 전환
+    @DeleteMapping("/companies/{companyId}")
+    public void adminCompanyDelete(@PathVariable String companyId) {
+        adminService.adminCompanyDelete(companyId);
+        // 공고 상태 비공개로 전환
+        adminService.adminJobPostStatusChange(companyId);
+    }
+
+    // 공고 상세 조회
+    @GetMapping("/job-posts/{jobPostId}")
+    public JobPost adminJobPostDetail(@PathVariable String jobPostId) {
+        return adminService.adminJobPostDetail(jobPostId);
+    }
+
+    // 공고 삭제
+    @DeleteMapping("/job-posts/{jobPostId}")
+    public void adminJobPostDelete(@PathVariable String jobPostId) {
+        adminService.adminJobPostDelete(jobPostId);
+    }
+
 }

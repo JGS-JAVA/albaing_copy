@@ -45,7 +45,7 @@ public class KakaoAPIController {
         String kakaoAuthUrl = "https://kauth.kakao.com/oauth/authorize?response_type=code" +
                 "&client_id=" + kakaoClientId +
                 "&redirect_uri=" + redirectUri +
-                "&scope=profile_nickname,account_email,name,gender,birthday,birthyear";
+                "&scope=profile_nickname,profile_image,account_email,name,gender,birthday,birthyear";
 
         return new RedirectView(kakaoAuthUrl);
     }
@@ -97,6 +97,7 @@ public class KakaoAPIController {
                 : new HashMap<>();
 
         String nickname = (String) properties.get("nickname");
+        String profileImg = (String) properties.get("profile_image");
         String email = kakaoAccount.getOrDefault("email", "").toString();
         String gender = kakaoAccount.getOrDefault("gender", "").toString();
         String birthday = kakaoAccount.getOrDefault("birthday", "").toString();
@@ -133,6 +134,9 @@ public class KakaoAPIController {
         }
         if (!birthyear.isEmpty()) {
             frontendRedirectUri += "&birthyear=" + birthyear;
+        }
+        if (!profileImg.isEmpty()) {
+            frontendRedirectUri += "&profileImage=" + URLEncoder.encode(profileImg, StandardCharsets.UTF_8);
         }
 
 

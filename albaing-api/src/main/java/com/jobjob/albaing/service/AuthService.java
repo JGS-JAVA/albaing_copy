@@ -20,7 +20,7 @@ public interface AuthService {
      */
     Map<String, Object> registerUser(User user);
 
-    void registerCompany(Company company);
+    Map<String, Object> registerCompany(Company company);
 
     boolean isUserExist(String email);
 
