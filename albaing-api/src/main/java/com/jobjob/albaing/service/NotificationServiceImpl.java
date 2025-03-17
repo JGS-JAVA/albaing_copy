@@ -28,7 +28,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public boolean sendJobApprovalNotification(Long userId, String jobPostTitle, String companyName) {
         try {
-            User user = userService.getUserById(userId.intValue());
+            User user = userService.getUserById(userId);
             if (user == null) return false;
 
             String title = "[알바잉] 축하합니다! 지원하신 공고에 합격하셨습니다";
@@ -48,7 +48,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public boolean sendJobDeniedNotification(Long userId, String jobPostTitle, String companyName) {
         try {
-            User user = userService.getUserById(userId.intValue());
+            User user = userService.getUserById(userId);
             if (user == null) return false;
 
             String title = "[알바잉] 지원하신 공고에 대한 결과 안내";

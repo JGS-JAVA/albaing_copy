@@ -3,63 +3,107 @@ import { useParams, useNavigate } from "react-router-dom";
 import apiMyPageService from "../../../service/apiMyPageService";
 import defaultProfileImage from "../mypage/default-profile.png"// 기본 프로필 이미지
 import {useModal,AlertModal} from "../../../components";
+import axios from "axios";
 
 const EditUserPage = () => {
     const { userId } = useParams();
     const navigate = useNavigate();
     const alertModal = useModal();
 
+    const [loading, setLoading] = useState(true);
+    const [profileImage, setProfileImage] = useState(null);
+
     // 사용자 정보 상태
-    const [user, setUser] = useState({
+    const [user, setUserData] = useState({
         userName: "",
         userEmail: "",
+        userPassword: "",
         userPhone: "",
         userGender: "",
         userBirthdate: "",
         userAddress: "",
-        userProfileImage: "" // 프로필 이미지 URL 대신 파일로 변경
+        userProfileImage: ""
     });
 
 
     useEffect(() => {
-        apiMyPageService.getUserById(userId, (data) => {
-            setUser({ ...data, userProfileImage: null });
-        });
+        axios.get(`/api/user/${userId}`)
+            .then((res)=>{
+                setUserData({
+                    userEmail: res.data.userEmail || "",
+                    userPassword: res.data.userPassword || "",
+                    userName: res.data.userName || "",
+                    userPhone: res.data.userPhone || "",
+                    userGender: res.data.userGender || "",
+                    userBirthdate: res.data.userBirthdate || "",
+                    userAddress:res.data.userAddress || "",
+                    userProfileImage:res.data.userProfileImage || ""
+                });
+                setLoading(false);
+            })
+            .catch(()=>{
+                alert("사용자 정보를 불러오는데 실패했습니다.");
+                setLoading(false);
+            })
     }, [userId]);
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setUser((prev) => ({
-            ...prev,
-            [name]: value
-        }));
+        e.preventDefault();
+
+        const formDataToSend = new FormData();
+
+        formDataToSend.append('user', new Blob([JSON.stringify({
+            userEmail: user.userEmail,
+            userPassword: user.userPassword,
+            userName: user.userName,
+            userPhone: user.userPhone,
+            userGender: user.userGender,
+            userBirthdate: user.userBirthdate,
+            userAddress: user.userAddress,
+            userProfileImage: user.userProfileImage
+        })], {type: 'application/json'}));
+
+        if (profileImage) {
+            formDataToSend.append('profileImage', profileImage);
+        }
+
+        axios.put(`/api/user/update/${userId}`, formDataToSend, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        })
+            .then((res) => {
+                alert('사용자 정보가 성공적으로 수정되었습니다!');
+                setUserData(res.data);
+                navigate(-1);
+            })
+            .catch((error) => {
+                alert(error.response?.data || "회사의 정보를 수정하는 데 실패했습니다.");
+            });
+
+
     };
 
     // 프로필 이미지 변경 핸들러
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            setUser((prev) => ({
-                ...prev,
-                userProfileImage: file
-            }));
+            // 파일 크기 제한 (예: 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert("파일 크기는 5MB를 초과할 수 없습니다.");
+                return;
+            }
+
+            // 파일 유형 제한
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            if (!allowedTypes.includes(file.type)) {
+                alert("지원되는 이미지 형식은 JPEG, PNG, GIF입니다.");
+                return;
+            }
+
+            profileImage(file);
+            setProfileImage(URL.createObjectURL(file));
         }
     };
 
-    const handleUpdate = () => {
-        const formData = new FormData();
-        Object.entries(user).forEach(([key, value]) => {
-            formData.append(key, value);
-        });
-
-        apiMyPageService.updateUser(userId, formData);
-        alertModal.openModal({
-            title: '수정 완료',
-            message: '정보가 수정되었습니다.',
-            type: 'success',
-            onClose: () => navigate(`/mypage/${userId}`)
-        });
-    };
 
     return (
         <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
@@ -75,7 +119,7 @@ const EditUserPage = () => {
                 <input
                     type="file"
                     accept="image/*"
-                    onChange={handleImageChange}
+                    onChange={handleChange}
                     className="text-sm text-gray-600"
                 />
             </div>
@@ -87,6 +131,7 @@ const EditUserPage = () => {
                     type="text"
                     name="userName"
                     value={user.userName}
+                    onChange={handleChange}
                     disabled
                     className="w-full p-2 border border-gray-300 rounded bg-[#F2F8FF] text-[#A0A0A0] cursor-not-allowed"
                 />
@@ -99,6 +144,7 @@ const EditUserPage = () => {
                     type="email"
                     name="userEmail"
                     value={user.userEmail}
+                    onChange={handleChange}
                     disabled
                     className="w-full p-2 border border-gray-300 rounded bg-[#F2F8FF] text-[#A0A0A0] cursor-not-allowed"
                 />
@@ -158,7 +204,7 @@ const EditUserPage = () => {
             {/* 수정 버튼 */}
             <div className="text-center mt-6">
                 <button
-                    onClick={handleUpdate}
+                    onClick={handleChange}
                     className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                 >
                     수정 완료
