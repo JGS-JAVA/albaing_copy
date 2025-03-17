@@ -30,7 +30,7 @@ const apiResumeService = {
     // 이력서 업데이트
     updateResume: (resumeId, resumeData) => {
         return axios
-            .put(`${API_URL}/api/resume/${resumeId}`, resumeData, { withCredentials: true })
+            .put(`${API_URL}/api/resume/update/${resumeId}`, resumeData, { withCredentials: true })
             .then(response => response.data)
             .catch(error => {
                 console.error('이력서 업데이트 오류:', getErrorMessage(error));

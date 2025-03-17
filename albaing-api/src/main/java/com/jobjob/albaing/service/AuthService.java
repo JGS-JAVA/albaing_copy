@@ -16,7 +16,7 @@ public interface AuthService {
 
     /**
      * ✅ 유저 회원가입
-     * @param user 회원가입할 유저 객체
+     * @param user 회원가입할 유저 객체..
      */
     Map<String, Object> registerUser(User user);
 
@@ -31,4 +31,9 @@ public interface AuthService {
     boolean isCompanyPhoneExist(String companyPhone);
 
     User getUserByEmail(String email);
+
+    void validateUserInput(User user);
+
+    // ✅ 기업 입력값 검증
+    void validateCompanyInput(Company company);
 }
