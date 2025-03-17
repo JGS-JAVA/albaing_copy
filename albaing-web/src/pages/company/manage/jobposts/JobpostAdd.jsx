@@ -28,7 +28,6 @@ const JobPostAdd = () => {
     const jobTypes = ['알바', '정규직', '계약직', '파견직', '인턴'];
     const workingPeriods = ['무관', '하루', '1일~1개월', '1~3개월', '3~6개월', '6개월이상'];
     const workSchedules = ['무관', '평일', '주말'];
-    // 기존 근무시간 옵션에 "무관" 대신 직접 입력 옵션 추가
     const shiftHours = ['오전(06:00~12:00)', '오후(12:00~18:00)', '저녁(18:00~24:00)', '새벽(00:00~06:00)'];
 
     const [activeTab, setActiveTab] = useState("edit");
@@ -39,16 +38,13 @@ const JobPostAdd = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // 추가: 급여 관련 상태
     const [salaryType, setSalaryType] = useState("월급");
     const [salaryAmount, setSalaryAmount] = useState("");
     const [salaryComparison, setSalaryComparison] = useState("");
 
-    // 추가: 근무시간 직접 입력 관련 상태
     const [showCustomShiftHours, setShowCustomShiftHours] = useState(false);
     const [customShiftHours, setCustomShiftHours] = useState("");
 
-    // 초기 formData (companyId 포함)
     const [formData, setFormData] = useState({
         companyId: companyId,
         jobPostTitle: '',
@@ -61,14 +57,13 @@ const JobPostAdd = () => {
         jobWorkSchedule: '',
         jobPostShiftHours: '',
         jobPostSalary: '',
-        jobPostWorkPlace: '', // 기본 주소
-        jobPostWorkPlaceDetail: '', // 상세 주소
-        jobPostWorkPlaceFullAddress: '', // 전체 주소 (기본 주소 + 상세 주소)
+        jobPostWorkPlace: '',
+        jobPostWorkPlaceDetail: '',
+        jobPostWorkPlaceFullAddress: '',
         jobPostStatus: true,
         jobPostDueDate: '',
     });
 
-    // companyId 업데이트 시 formData 갱신
     useEffect(() => {
         setFormData(prev => ({
             ...prev,
@@ -76,7 +71,6 @@ const JobPostAdd = () => {
         }));
     }, [companyId]);
 
-    // 카카오맵 스크립트 로드
     useEffect(() => {
         const script = document.createElement('script');
         script.async = true;
@@ -85,12 +79,10 @@ const JobPostAdd = () => {
 
         script.onload = () => {
             window.kakao.maps.load(() => {
-                // 카카오맵 API 로드 완료
             });
         };
 
         return () => {
-            // 필요시 cleanup
         };
     }, []);
 
@@ -100,7 +92,6 @@ const JobPostAdd = () => {
             ...prev,
             [name]: value
         }));
-        // 상세 주소 변경 시 전체 주소 업데이트
         if (name === 'jobPostWorkPlaceDetail') {
             setFormData(prev => ({
                 ...prev,
@@ -109,7 +100,6 @@ const JobPostAdd = () => {
         }
     };
 
-    // 주소 검색 함수
     const searchAddress = () => {
         if (!searchKeyword.trim()) return;
         setIsSearching(true);
@@ -131,7 +121,6 @@ const JobPostAdd = () => {
         });
     };
 
-    // 주소 선택 시 처리
     const selectAddress = (result) => {
         setFormData(prev => ({
             ...prev,
@@ -143,14 +132,11 @@ const JobPostAdd = () => {
         setSearchKeyword('');
     };
 
-    // 급여 입력 관련: 입력값 변화 시 formData.jobPostSalary 업데이트
     useEffect(() => {
         if (!salaryAmount) {
-            // 금액이 없으면 formData에 빈 문자열로 저장
             setFormData((prev) => ({ ...prev, jobPostSalary: "" }));
             return;
         }
-        // 모든 유형을 원 단위로 통일하여 표시
         const formatted = `${salaryType} ${Number(salaryAmount).toLocaleString()}원`;
         setFormData((prev) => ({ ...prev, jobPostSalary: formatted }));
     }, [salaryType, salaryAmount]);
@@ -165,17 +151,6 @@ const JobPostAdd = () => {
         setSalaryComparison("");
     };
 
-    // 시급일 경우 최저시급 체크 (예: 9620원)
-    const handleSalaryAmountBlur = () => {
-        if (salaryType === "시급") {
-            const amount = parseInt(salaryAmount, 10);
-            if (amount < 9620) {
-                alert("입력하신 금액이 최저시급보다 낮습니다.");
-            }
-        }
-    };
-
-    // 급여 비교 기능: 입력한 금액과 기준 비교 (시급 10,030원, 일급 80,240원, 월급 2,096,270원)
     const compareSalary = () => {
         if (!salaryAmount) {
             setSalaryComparison("금액을 입력해주세요.");
@@ -202,12 +177,10 @@ const JobPostAdd = () => {
         }
     };
 
-    // 근무시간 직접 입력 처리
     const handleShiftHoursChange = (e) => {
         const value = e.target.value;
         if (value === "직접 입력") {
             setShowCustomShiftHours(true);
-            // 아직 직접 입력값이 없으면 formData는 빈 값 유지
             setFormData(prev => ({ ...prev, jobPostShiftHours: customShiftHours }));
         } else {
             setShowCustomShiftHours(false);
@@ -311,7 +284,6 @@ const JobPostAdd = () => {
 
             {activeTab === "edit" ? (
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* 채용공고 제목 */}
                     <div>
                         <label htmlFor="jobPostTitle" className="block text-sm font-medium text-gray-700 mb-1">
                             채용공고 제목 <span className="text-red-500">*</span>
@@ -328,7 +300,6 @@ const JobPostAdd = () => {
                         />
                     </div>
 
-                    {/* 이미지 URL */}
                     <div>
                         <label htmlFor="jobPostOptionalImage" className="block text-sm font-medium text-gray-700 mb-1">
                             이미지 URL (선택사항)
@@ -344,7 +315,6 @@ const JobPostAdd = () => {
                         />
                     </div>
 
-                    {/* 연락처 */}
                     <div>
                         <label htmlFor="jobPostContactNumber" className="block text-sm font-medium text-gray-700 mb-1">
                             연락처 <span className="text-red-500">*</span>
@@ -361,7 +331,6 @@ const JobPostAdd = () => {
                         />
                     </div>
 
-                    {/* 필요 학력 */}
                     <div>
                         <label htmlFor="jobPostRequiredEducations" className="block text-sm font-medium text-gray-700 mb-1">
                             필요 학력
@@ -378,7 +347,6 @@ const JobPostAdd = () => {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* 직종 카테고리 */}
                         <div>
                             <label htmlFor="jobPostJobCategory" className="block text-sm font-medium text-gray-700 mb-1">
                                 직종 카테고리 <span className="text-red-500">*</span>
@@ -398,7 +366,6 @@ const JobPostAdd = () => {
                             </select>
                         </div>
 
-                        {/* 고용형태 */}
                         <div>
                             <label htmlFor="jobPostJobType" className="block text-sm font-medium text-gray-700 mb-1">
                                 고용형태 <span className="text-red-500">*</span>
@@ -418,7 +385,6 @@ const JobPostAdd = () => {
                             </select>
                         </div>
 
-                        {/* 근무기간 */}
                         <div>
                             <label htmlFor="jobPostWorkingPeriod" className="block text-sm font-medium text-gray-700 mb-1">
                                 근무기간 <span className="text-red-500">*</span>
@@ -438,7 +404,6 @@ const JobPostAdd = () => {
                             </select>
                         </div>
 
-                        {/* 근무요일 */}
                         <div>
                             <label htmlFor="jobWorkSchedule" className="block text-sm font-medium text-gray-700 mb-1">
                                 근무요일 <span className="text-red-500">*</span>
@@ -458,7 +423,6 @@ const JobPostAdd = () => {
                             </select>
                         </div>
 
-                        {/* 근무시간 - 직접 입력 기능 포함 */}
                         <div>
                             <label htmlFor="jobPostShiftHours" className="block text-sm font-medium text-gray-700 mb-1">
                                 근무시간 <span className="text-red-500">*</span>
@@ -493,7 +457,6 @@ const JobPostAdd = () => {
                             </div>
                         </div>
 
-                        {/* 급여 - 시급/일급/월급 선택 및 비교 기능 */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 급여 <span className="text-red-500">*</span>
@@ -520,7 +483,6 @@ const JobPostAdd = () => {
                                         id="salaryAmount"
                                         value={salaryAmount}
                                         onChange={handleSalaryAmountChange}
-                                        onBlur={handleSalaryAmountBlur}
                                         placeholder="숫자만 입력"
                                         className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                         required
@@ -544,7 +506,6 @@ const JobPostAdd = () => {
                         </div>
                     </div>
 
-                    {/* 근무지 */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                             근무지 <span className="text-red-500">*</span>
@@ -561,7 +522,7 @@ const JobPostAdd = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowAddressSearch(true)}
-                                    className="p-3 bg-blue-500 text-white rounded-r-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-500"
+                                    className="w-1/6 p-3 bg-blue-500 text-white rounded-r-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-500"
                                 >
                                     주소 검색
                                 </button>
@@ -578,7 +539,6 @@ const JobPostAdd = () => {
                         </div>
                     </div>
 
-                    {/* 채용 마감일 */}
                     <div>
                         <label htmlFor="jobPostDueDate" className="block text-sm font-medium text-gray-700 mb-1">
                             채용 마감일 <span className="text-red-500">*</span>
@@ -625,7 +585,6 @@ const JobPostAdd = () => {
                 </div>
             )}
 
-            {/* 주소 검색 모달 */}
             {showAddressSearch && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-xl max-h-[80vh] overflow-y-auto">
