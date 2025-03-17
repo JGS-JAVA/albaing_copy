@@ -33,7 +33,7 @@ public class UserController {
     }
 
     // 마이페이지 - 사용자 정보 수정
-    @PutMapping(value = "update/{userId}", consumes = {"multipart/form-data", "application/json"})
+    @PutMapping(value = "/update/{userId}", consumes = {"multipart/form-data", "application/json"})
     public ResponseEntity<?> updateUser(
             @PathVariable Long userId,
             @RequestPart(value = "user", required = false) User user,
