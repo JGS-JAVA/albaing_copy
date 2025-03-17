@@ -27,6 +27,7 @@ public class AuthController {
     private ResumeServiceImpl resumeService;
     @Autowired
     private FileService fileService;
+
     // Multipart form Data..
     @PostMapping(value = "/register/person", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String, Object>> registerUser(
