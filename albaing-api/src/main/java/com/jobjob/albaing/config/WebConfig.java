@@ -23,7 +23,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("file:"+uploadPath+"/");
     }
     @Bean
-//    @CrossOrigin(origins = {"http://localhost:3000", "https://your-production-domain.com"})
+    @CrossOrigin(origins = {"http://localhost:3000"})
     public FileService fileService() {
         return new FirebaseFileServiceImpl();
     }
