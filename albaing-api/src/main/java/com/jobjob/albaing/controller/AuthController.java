@@ -3,10 +3,7 @@ package com.jobjob.albaing.controller;
 import com.jobjob.albaing.dto.Company;
 import com.jobjob.albaing.dto.User;
 import com.jobjob.albaing.model.vo.VerificationRequest;
-import com.jobjob.albaing.service.AuthServiceImpl;
-import com.jobjob.albaing.service.FileServiceImpl;
-import com.jobjob.albaing.service.ResumeServiceImpl;
-import com.jobjob.albaing.service.VerificationServiceImpl;
+import com.jobjob.albaing.service.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,7 +26,7 @@ public class AuthController {
     @Autowired
     private ResumeServiceImpl resumeService;
     @Autowired
-    private FileServiceImpl fileService;
+    private FileService fileService;
 
     // Multipart form Data
     @PostMapping(value = "/register/person", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
