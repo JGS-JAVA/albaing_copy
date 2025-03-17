@@ -30,9 +30,7 @@ const ResumeView = () => {
         if (userType !== 'company') {
             navigate('/');
             return;
-
         }
-
 
         const fetchResumeDetail = () => {
             axios.get(`/api/resume/${resumeId}`)
@@ -49,6 +47,7 @@ const ResumeView = () => {
 
         apiMyPageService.getUserById(userId, setUserData);
         fetchResumeDetail();
+
     }, [resumeId,userId,userType,navigate]);
 
     // PDF 다운로드 함수
@@ -97,9 +96,9 @@ const ResumeView = () => {
                 <div className="border-b pb-6 mb-6">
                     <div className="flex items-center space-x-6">
                         <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center">
-                            {userData.profileImage ? (
+                            {userData?.userProfileImage ? (
                                 <img
-                                    src={userData.profileImage}
+                                    src={userData?.userProfileImage}
                                     alt="프로필 사진"
                                     className="w-full h-full object-cover rounded-full"
                                 />
@@ -108,15 +107,15 @@ const ResumeView = () => {
                             )}
                         </div>
                         <div>
-                            <h2 className="text-2xl font-bold text-gray-900">{userData.userName}</h2>
+                            <h2 className="text-2xl font-bold text-gray-900">{userData?.userName}</h2>
                             <div className="mt-2 space-y-1 text-gray-600">
                                 <div className="flex items-center">
                                     <MailIcon className="h-4 w-4 mr-2 text-blue-500" />
-                                    <span>{userData.userEmail}</span>
+                                    <span>{userData?.userEmail}</span>
                                 </div>
                                 <div className="flex items-center">
                                     <PhoneIcon className="h-4 w-4 mr-2 text-blue-500" />
-                                    <span>{userData.userPhone}</span>
+                                    <span>{userData?.userPhone}</span>
                                 </div>
                             </div>
                         </div>
