@@ -1,6 +1,7 @@
 package com.jobjob.albaing.mapper;
 
 import com.jobjob.albaing.dto.JobPost;
+import com.jobjob.albaing.dto.ViewJobPost;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -17,4 +18,10 @@ public interface JobPostMapper {
                              @Param("status") boolean status);
     int countJobPost(Map<String, Object> params);
     List<JobPost> getJobPostsByCompanyId(long companyId);
+
+    List<JobPost> mainPageJobPostsAlignByDueDateASC();
+    List<JobPost> mainPageJobPostsAlignByDueDateDESC();
+    List<JobPost> mainPageJobPostsAlignByUserResume(String resumeLocation, String resumeJobDuration);
+    List<JobPost> mainPageJobPostsRandom();
+    List<ViewJobPost> searchJobPosts(String regionSelect, String jobCategorySelect, String searchKeyword);
 }

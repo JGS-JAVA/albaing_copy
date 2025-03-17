@@ -1,6 +1,7 @@
 package com.jobjob.albaing.service;
 
 import com.jobjob.albaing.dto.JobPost;
+import com.jobjob.albaing.dto.ViewJobPost;
 import com.jobjob.albaing.mapper.JobPostMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -67,5 +68,30 @@ public class JobPostServiceImpl implements JobPostService {
     @Override
     public List<JobPost> getJobPostsByCompanyId(long companyId) {
         return jobPostMapper.getJobPostsByCompanyId(companyId);
+    }
+
+    @Override
+    public List<JobPost> mainPageJobPostsAlignByDueDateASC() {
+        return jobPostMapper.mainPageJobPostsAlignByDueDateASC();
+    }
+
+    @Override
+    public List<JobPost> mainPageJobPostsAlignByDueDateDESC() {
+        return jobPostMapper.mainPageJobPostsAlignByDueDateDESC();
+    }
+
+    @Override
+    public List<JobPost> mainPageJobPostsAlignByUserResume(String resumeLocation, String resumeJobDuration) {
+        return jobPostMapper.mainPageJobPostsAlignByUserResume(resumeLocation, resumeJobDuration);
+    }
+
+    @Override
+    public List<JobPost> mainPageJobPostsRandom() {
+        return jobPostMapper.mainPageJobPostsRandom();
+    }
+
+    @Override
+    public List<ViewJobPost> searchJobPosts(String regionSelect, String jobCategorySelect, String searchKeyword) {
+        return jobPostMapper.searchJobPosts(regionSelect, jobCategorySelect, searchKeyword);
     }
 }
