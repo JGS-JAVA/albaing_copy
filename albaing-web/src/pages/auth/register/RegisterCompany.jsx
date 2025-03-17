@@ -31,9 +31,17 @@ const RegisterCompany = () => {
         const storedCompanyRegistrationNumber = localStorage.getItem("companyRegistrationNumber") || '';
         const storedCompanyOwnerName = localStorage.getItem("companyOwnerName") || '';
         const storedCompanyOpenDate = localStorage.getItem("companyOpenDate") || '';
-        setCompanyRegistrationNumber(storedCompanyRegistrationNumber);
+
+        // 사업자등록번호 변환 함수
+        const formatCompanyRegistrationNumber = (number) => {
+            if (!number) return '';
+            return number.replace(/^(\d{3})(\d{2})(\d{5})$/, "$1-$2-$3");
+        };
+
+        setCompanyRegistrationNumber(formatCompanyRegistrationNumber(storedCompanyRegistrationNumber));
         setCompanyOwnerName(storedCompanyOwnerName);
         setCompanyOpenDate(storedCompanyOpenDate);
+
     }, []);
 
     const requestVerificationCode = () => {
@@ -135,7 +143,11 @@ const RegisterCompany = () => {
 
     const handleSignup = () => {
         if (!validateInputs()) return;
-        setLoading(true); setError("");
+
+        setLoading(true);
+        setError("");
+
+        // 기업 정보 객체 생성
         const company = {
             companyEmail, companyPassword,
             companyName,  companyRegistrationNumber,
@@ -143,12 +155,21 @@ const RegisterCompany = () => {
             companyLocalAddress, companyDescription,
             companyOpenDate, termsAgreement
         };
+
         const formData = new FormData();
+
+        // JSON 문자열로 변환하여 추가
         formData.append("company", new Blob([JSON.stringify(company)], { type: "application/json" }));
-        if (companyLogo) {  formData.append("companyLogo", companyLogo);}
+
+        // 로고 이미지가 있을 경우 추가
+        if (companyLogo) {
+            formData.append("companyLogo", companyLogo);
+        }
 
         axios.post("/api/auth/register/company", formData, {
-            headers: { "Content-Type": "multipart/form-data" },
+            headers: {
+                "Content-Type": "multipart/form-data"
+            },
         })
             .then(response => {
                 // Fixed: Use openModal directly
@@ -380,9 +401,9 @@ const RegisterCompany = () => {
                                 </label>
                                 <div className="flex items-center space-x-6">
                                     <div className="shrink-0">
-                                        {companyLogo ? (
+                                        {companyLogoUrl ? (
                                             <img
-                                                src={companyLogo}
+                                                src={companyLogoUrl}
                                                 alt="로고 미리보기"
                                                 className="h-24 w-24 object-contain border rounded-md"
                                             />
