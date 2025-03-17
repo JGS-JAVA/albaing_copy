@@ -34,12 +34,15 @@ const RegisterPerson = () => {
         const genderParam = params.get("gender");
         const birthyearParam = params.get("birthyear"); // YYYY 형식
         const birthdayParam = params.get("birthday"); // MMDD 형식
+        const profileImageParam = params.get("profileImage");
 
         console.log("birthyearParam:", birthyearParam);
         console.log("birthdayParam:", birthdayParam);
 
         setUserName(nicknameParam || "");
         setUserEmail(email || "");
+        setUserProfileImage(profileImageParam || "");
+        setUserProfileImageUrl(profileImageParam || "");
 
         if (email && kakaoId) {
             setEmailVerified(true);
@@ -187,7 +190,7 @@ const RegisterPerson = () => {
         const kakaoId = params.get("kakaoId");
         const naverId = params.get("naverId");
 
-        // 사용자 정보 객체 생성
+        // Create user object with common properties
         const user = {
             userEmail,
             userPassword,
@@ -202,20 +205,28 @@ const RegisterPerson = () => {
             naverId: naverId || "",
         };
 
-        const formData = new FormData();
+        // Special handling for social login image URLs
+        if (typeof userProfileImage === "string" && userProfileImage.startsWith("http")) {
+            // Add the URL directly to the user object for social login images
+            user.userProfileImage = userProfileImage;
+        }
 
-        // JSON 문자열로 변환하여 추가 (Spring Boot @RequestPart("user") 에 맞춤)
+        const formData = new FormData();
         formData.append("user", new Blob([JSON.stringify(user)], { type: "application/json" }));
 
-        // 프로필 이미지가 있을 경우 추가
-        if (userProfileImage) {
+        // Only append actual file uploads to formData
+        if (userProfileImage instanceof File) {
             formData.append("userProfileImage", userProfileImage);
         }
 
+        // Send the request
+        sendRequest(formData);
+    };
+
+// The sendRequest function remains the same
+    const sendRequest = (formData) => {
         axios.post("/api/auth/register/person", formData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
+            headers: { "Content-Type": "multipart/form-data" },
         })
             .then(() => {
                 alertModal.openModal({
@@ -233,6 +244,7 @@ const RegisterPerson = () => {
                 setLoading(false);
             });
     };
+
 
 
 
@@ -456,6 +468,9 @@ const RegisterPerson = () => {
                 file:bg-blue-50 file:text-blue-700
                 hover:file:bg-blue-100"
                                 />
+                                {userProfileImageUrl && (
+                                    <img src={userProfileImageUrl} alt="Profile Preview" className="mt-2 w-24 h-24 rounded-full object-cover" />
+                                )}
                                 <p className="mt-1 text-xs text-gray-500">PNG, JPG, GIF 파일 (최대 2MB)</p>
                             </div>
                         </div>

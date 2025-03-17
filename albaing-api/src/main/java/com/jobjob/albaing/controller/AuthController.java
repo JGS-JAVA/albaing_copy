@@ -37,21 +37,24 @@ public class AuthController {
             @RequestPart("user") User user,
             @RequestPart(value = "userProfileImage", required = false) MultipartFile userProfileImage) {
 
+        // Check if we received a file upload
         if (userProfileImage != null && !userProfileImage.isEmpty()) {
             System.out.println("DEBUG: 파일 업로드 시작 - " + userProfileImage.getOriginalFilename());
 
-            // 파일 업로드 실행
+            // Process file upload
             String imageUrl = fileService.uploadFile(userProfileImage);
             System.out.println("DEBUG: 업로드된 이미지 URL = " + imageUrl);
 
             user.setUserProfileImage(imageUrl);
         } else {
-            System.out.println("DEBUG: userProfileImage가 null 또는 비어 있음");
+            System.out.println("DEBUG: userProfileImage 파일이 제공되지 않음, 이미 설정된 URL을 유지: " + user.getUserProfileImage());
+            // Don't overwrite existing URL in user object if no file is provided
         }
 
-        // 회원가입 로직 실행
+        // Continue with user registration
         Map<String, Object> response = authService.registerUser(user);
 
+        // Rest of your code remains the same
         if ("success".equals(response.get("status"))) {
             resumeService.createResumeForUser(user);
             return ResponseEntity.ok(response);
