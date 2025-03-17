@@ -1,8 +1,10 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { ErrorMessage, LoadingSpinner } from "../../components";
-import { useModal, AlertModal, ConfirmModal } from "../../components";
+import {ErrorMessage, LoadingSpinner} from "../../components";
+import {useModal,AlertModal} from "../../components";
+import {useAuth} from "../../contexts/AuthContext";
+import apiCompanyService from "../../service/apiCompanyService";
 
 const ReviewDetail = () => {
     const { companyId, reviewId } = useParams();
@@ -11,6 +13,10 @@ const ReviewDetail = () => {
     const [commentInput, setCommentInput] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    const { user } = useAuth(); // 현재 로그인한 사용자 정보 가져오기
+    const currentUserId = user?.type === 'personal' ? user?.data?.userId : null;  // 로그인한 사용자의 userId
+  
     const [editReviewId, setEditReviewId] = useState(null);
     const [editReviewContent, setEditReviewContent] = useState("");
     const [editCommentId, setEditCommentId] = useState(null);
@@ -49,6 +55,8 @@ const ReviewDetail = () => {
                 setError("리뷰를 불러오는 중 오류가 발생했습니다.");
                 setLoading(false);
             });
+
+
     }, [reviewId, companyId]);
 
     // 댓글 작성
@@ -256,27 +264,21 @@ const ReviewDetail = () => {
                 <div className="p-6 border-b border-gray-200">
                     <div className="flex justify-between items-start">
                         <h1 className="text-2xl font-bold text-gray-800">{review.reviewTitle}</h1>
-                        <div className="flex space-x-2">
-                            <button
-                                onClick={() => {
-                                    setEditReviewId(review.reviewId);
-                                    setEditReviewContent(review.reviewContent);
-                                }}
-                                className="px-3 py-1 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors"
-                            >
+                        <p className="text-gray-500 text-sm mt-1">
+                            작성일: {new Date(review.reviewCreatedAt).toLocaleString()}
+                        </p>
+                    </div>
+                    {currentUserId && review.userId === currentUserId && (
+                        <div>
+                            <button onClick={() => {
+                                setEditReviewId(review.reviewId);
+                                setEditReviewContent(review.reviewContent);
+                            }}>
                                 수정
                             </button>
-                            <button
-                                onClick={handleReviewDelete}
-                                className="px-3 py-1 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors"
-                            >
-                                삭제
-                            </button>
+                            <button onClick={handleReviewDelete}>리뷰 삭제</button>
                         </div>
-                    </div>
-                    <p className="text-gray-500 text-sm mt-1">
-                        작성일: {new Date(review.reviewCreatedAt).toLocaleString()}
-                    </p>
+                    )}
                 </div>
 
                 {/* 리뷰 내용 */}
@@ -365,6 +367,15 @@ const ReviewDetail = () => {
                                         </div>
                                     ) : (
                                         <p className="mt-2 text-gray-700">{comment.commentContent}</p>
+                                    )}
+                                    {comment.userId === currentUserId && (
+                                        <div>
+                                            <button onClick={() => {
+                                                setEditCommentId(comment.commentId);
+                                                setEditCommentContent(comment.commentContent);
+                                            }}>수정</button>
+                                            <button onClick={() => handleCommentDelete(comment.commentId)}>삭제</button>
+                                        </div>
                                     )}
                                 </li>
                             ))}
