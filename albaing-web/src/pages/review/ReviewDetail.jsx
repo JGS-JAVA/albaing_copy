@@ -1,10 +1,9 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import {ErrorMessage, LoadingSpinner} from "../../components";
+import {ConfirmModal, ErrorMessage, LoadingSpinner} from "../../components";
 import {useModal,AlertModal} from "../../components";
 import {useAuth} from "../../contexts/AuthContext";
-import apiCompanyService from "../../service/apiCompanyService";
 
 const ReviewDetail = () => {
     const { companyId, reviewId } = useParams();
