@@ -103,7 +103,7 @@ const ResumeEdit = () => {
         fetchResume();
     }, [userData, resumeId]);
 
-    //
+
     const validateForm = () => {
         const errors = {};
 
@@ -137,6 +137,7 @@ const ResumeEdit = () => {
 
     const handleEducationUpdate = (educationData) => {
         console.log("학력 정보 업데이트 받음:", educationData);
+
         setResumeData(prev => {
             const updated = {
                 ...prev,
@@ -148,8 +149,10 @@ const ResumeEdit = () => {
             console.log("학력 정보 업데이트 후 이력서 데이터:", updated);
             return updated;
         });
+
         setShowEducationModal(false);
     };
+
 
     const handleCareerUpdate = (careerData) => {
         console.log("경력 정보 업데이트 받음:", careerData);
@@ -738,6 +741,7 @@ const ResumeEdit = () => {
                 {showEducationModal && (
                     <EducationModal
                         educationData={resumeData.educationHistory}
+                        majorData={resumeData.educationHistory}
                         onSave={handleEducationUpdate}
                         onCancel={() => setShowEducationModal(false)}
                     />
