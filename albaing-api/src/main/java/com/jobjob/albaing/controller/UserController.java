@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/user")
 public class UserController {
 
     @Autowired
@@ -19,7 +19,7 @@ public class UserController {
 
 
     // 마이페이지 - 사용자 정보 조회
-    @GetMapping("/user/{userId}")
+    @GetMapping("/{userId}")
     public User getUserById(@PathVariable int userId) {
         return userService.getUserById(userId);
     }
