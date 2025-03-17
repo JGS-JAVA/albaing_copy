@@ -167,14 +167,14 @@ public class AuthServiceImpl implements AuthService {
         Map<String, Object> response = new HashMap<>();
 
         // ✅ 이메일 중복 체크
-        if (companyMapper.isCompanyExist(company.getCompanyEmail())) {
+        if (isCompanyExist(company.getCompanyEmail())) {
             response.put("status", "fail");
             response.put("message", "이미 가입한 이메일입니다.");
             return response;
         }
 
         // ✅ 전화번호 중복 체크
-        if (companyMapper.isCompanyPhoneExist(company.getCompanyPhone())) {
+        if (isCompanyPhoneExist(company.getCompanyPhone())) {
             response.put("status", "fail");
             response.put("message", "이미 가입한 전화번호입니다.");
             return response;
@@ -264,7 +264,8 @@ public class AuthServiceImpl implements AuthService {
         return userMapper.getUserByEmail(email);
     }
 
-    private void validateUserInput(User user) {
+    @Override
+    public void validateUserInput(User user) {
         if (user.getUserEmail() == null || user.getUserEmail().trim().isEmpty()) {
             throw new IllegalArgumentException("이메일은 필수 입력 사항입니다.");
         }
@@ -300,8 +301,9 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-    // ✅ 기업 입력값 검증
-    private void validateCompanyInput(Company company) {
+    // ✅ 기업 입력값 검증..
+    @Override
+    public void validateCompanyInput(Company company) {
         if (company.getCompanyRegistrationNumber() == null || company.getCompanyRegistrationNumber().trim().isEmpty()) {
             throw new IllegalArgumentException("사업자 등록번호는 필수 입력 사항입니다.");
         }
@@ -322,6 +324,21 @@ public class AuthServiceImpl implements AuthService {
         }
         if (company.getCompanyLocalAddress() == null || company.getCompanyLocalAddress().trim().isEmpty()) {
             throw new IllegalArgumentException("사업장 주소는 필수 입력 사항입니다.");
+        }
+
+        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+        if (!company.getCompanyEmail().matches(emailRegex)) {
+            throw new IllegalArgumentException("유효하지 않은 이메일 형식입니다.");
+        }
+
+        String passwordRegex = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{8,}$";
+        if (!company.getCompanyPassword().matches(passwordRegex)) {
+            throw new IllegalArgumentException("비밀번호는 최소 8자 이상이며, 숫자와 특수문자를 포함해야 합니다.");
+        }
+
+        String phoneRegex = "^(?:0(2|[3-6][1-5]|70))-?\\d{3,4}-?\\d{4}$";
+        if (!company.getCompanyPhone().matches(phoneRegex)) {
+            throw new IllegalArgumentException("유효하지 않은 전화번호 형식입니다.");
         }
 
         String registrationNumberRegex = "^\\d{3}-\\d{2}-\\d{5}$";
