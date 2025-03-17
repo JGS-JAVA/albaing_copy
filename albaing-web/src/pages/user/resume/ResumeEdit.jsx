@@ -331,7 +331,7 @@ const ResumeEdit = () => {
                             <div>
                                 <label htmlFor="resumeJobCategory"
                                        className="block text-sm font-medium text-gray-700 mb-1">
-                                    희망 직종
+                                    희망 직종 <span className="text-red-500">*</span>
                                 </label>
                                 <select
                                     id="resumeJobCategory"
@@ -349,7 +349,7 @@ const ResumeEdit = () => {
 
                             <div>
                                 <label htmlFor="resumeJobType" className="block text-sm font-medium text-gray-700 mb-1">
-                                    희망 고용형태
+                                    희망 고용형태 <span className="text-red-500">*</span>
                                 </label>
                                 <select
                                     id="resumeJobType"
@@ -368,7 +368,7 @@ const ResumeEdit = () => {
                             <div>
                                 <label htmlFor="resumeJobDuration"
                                        className="block text-sm font-medium text-gray-700 mb-1">
-                                    희망 근무기간
+                                    희망 근무기간 <span className="text-red-500">*</span>
                                 </label>
                                 <select
                                     id="resumeJobDuration"
@@ -387,7 +387,7 @@ const ResumeEdit = () => {
                             <div>
                                 <label htmlFor="resumeWorkSchedule"
                                        className="block text-sm font-medium text-gray-700 mb-1">
-                                    희망 근무요일
+                                    희망 근무요일 <span className="text-red-500">*</span>
                                 </label>
                                 <select
                                     id="resumeWorkSchedule"
@@ -406,7 +406,7 @@ const ResumeEdit = () => {
                             <div>
                                 <label htmlFor="resumeWorkTime"
                                        className="block text-sm font-medium text-gray-700 mb-1">
-                                    희망 근무시간
+                                    희망 근무시간 <span className="text-red-500">*</span>
                                 </label>
                                 <select
                                     id="resumeWorkTime"

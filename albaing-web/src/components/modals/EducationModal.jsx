@@ -135,17 +135,38 @@ const EducationModal = ({ educationData, majorData, onSave, onCancel }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        if (!formData.eduSchool.trim()) {
+        // selectedSchool이 있는지 확인
+        if (!selectedSchool || !searchTerm) {
             alert('학교명을 입력해주세요.');
             return;
         }
 
-        if (!formData.eduMajor.trim()) {
+        // selectedMajor가 있는지 확인
+        if (!selectedMajor || !majorSearchTerm) {
             alert('전공을 입력해주세요.');
             return;
         }
 
-        if (formData.eduStatus === '졸업' && !formData.eduGraduationYear) {
+        // 학위 선택 필수
+        if (!formData.eduDegree) {
+            alert('학위를 선택해주세요.');
+            return;
+        }
+
+        // 재학상태 선택 필수
+        if (!formData.eduStatus) {
+            alert('재학상태를 선택해주세요.');
+            return;
+        }
+
+        // 입학년도 필수
+        if (!formData.eduAdmissionYear) {
+            alert('입학년도를 선택해주세요.');
+            return;
+        }
+
+        // 재학중이나 휴학중이 아닌 경우, 졸업년도도 필수로 입력받음
+        if (formData.eduStatus !== '재학중' && formData.eduStatus !== '휴학중' && !formData.eduGraduationYear) {
             alert('졸업년도를 선택해주세요.');
             return;
         }
@@ -156,7 +177,18 @@ const EducationModal = ({ educationData, majorData, onSave, onCancel }) => {
             return;
         }
 
-        onSave({ ...formData });
+        // 저장할 때 formData에 학교명과 전공명 업데이트
+        const updatedFormData = {
+            ...formData,
+            eduSchool: selectedSchool.name,
+            eduMajor: selectedMajor.name
+        };
+
+        if (formData.eduStatus === '재학중' || formData.eduStatus === '휴학중') {
+            updatedFormData.eduGraduationYear = formData.eduAdmissionYear; // 임시로 입학년도와 같게 설정
+        }
+
+        onSave(updatedFormData);
     };
 
     return (
@@ -213,7 +245,7 @@ const EducationModal = ({ educationData, majorData, onSave, onCancel }) => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <label htmlFor="eduDegree" className="block text-sm font-medium text-gray-700">
-                                    학위
+                                    학위 <span className="text-red-500">*</span>
                                 </label>
                                 <select
                                     id="eduDegree"
@@ -231,7 +263,7 @@ const EducationModal = ({ educationData, majorData, onSave, onCancel }) => {
 
                             <div className="space-y-2">
                                 <label htmlFor="eduMajor" className="block text-sm font-medium text-gray-700">
-                                    전공
+                                    전공 <span className="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -262,7 +294,7 @@ const EducationModal = ({ educationData, majorData, onSave, onCancel }) => {
 
                         <div className="space-y-2">
                             <label htmlFor="eduStatus" className="block text-sm font-medium text-gray-700">
-                                재학상태
+                                재학상태 <span className="text-red-500">*</span>
                             </label>
                             <div className="flex flex-wrap gap-3">
                                 {statusTypes.map((type, index) => (
