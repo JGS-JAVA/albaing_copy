@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { AlertModal } from "../../../components";
-import {useModal} from "../../../components";
 
 const BusinessValidation = () => {
     const [companyRegistrationNumber, setCompanyRegistrationNumber] = useState('');
@@ -10,12 +9,12 @@ const BusinessValidation = () => {
     const [companyOpenDate, setCompanyOpenDate] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const alertModal = useModal();
+
 
     // 사업자 등록번호 인증
     const validateBusinessNumber = (callback) => {
         if (!companyRegistrationNumber || !companyOpenDate || !companyOwnerName) {
-            alertModal.openModal({
+            AlertModal.openModal({
                 title: '입력 오류',
                 message: '모든 필드를 입력해주세요.',
                 type: 'warning'
@@ -46,7 +45,7 @@ const BusinessValidation = () => {
                 if (valid === '01') {
                     callback(true);
                 } else {
-                    alertModal.openModal({
+                    AlertModal.openModal({
                         title: '인증 실패',
                         message: '사업자 정보가 일치하지 않거나 회원가입이 불가능합니다.',
                         type: 'warning'
@@ -55,7 +54,7 @@ const BusinessValidation = () => {
                 }
             })
             .catch(error => {
-                alertModal.openModal({
+                AlertModal.openModal({
                     title: '오류 발생',
                     message: '사업자 번호 인증 중 오류가 발생했습니다. 다시 시도해주세요.',
                     type: 'error'
@@ -166,12 +165,12 @@ const BusinessValidation = () => {
             </div>
 
             <AlertModal
-                isOpen={alertModal.isOpen}
-                onClose={alertModal.closeModal}
-                title={alertModal.modalProps.title || '알림'}
-                message={alertModal.modalProps.message}
+                isOpen={AlertModal.isOpen}
+                onClose={AlertModal.closeModal}
+                title={AlertModal?.title || '알림'}
+                message={AlertModal?.message || ''}
                 confirmText="확인"
-                type={alertModal.modalProps.type || 'info'}
+                type={AlertModal?.type || 'info'}
             />
         </div>
     );
