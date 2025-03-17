@@ -13,15 +13,27 @@ import java.util.Date;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class ViewResume {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int resumeId;
+    private String resumeTitle;
+    private String resumeLocation;
+    private String resumeJobCategory;
+    private String resumeJobType;
+    private String resumeJobDuration;
+    private String resumeWorkSchedule;
+    private String resumeWorkTime;
+    private String resumeJobSkill;
+    private String resumeIntroduction;
+
     private Long userId;
     private String userEmail;
     private String userPassword;
     private String userName;
     private Date userBirthdate;
-    private Gender userGender;
+    private User.Gender userGender;
     private String userPhone;
     private String userAddress;
     private String userProfileImage;
@@ -29,11 +41,13 @@ public class User {
     private LocalDateTime userUpdatedAt;
     private Boolean userTermsAgreement;
     private Boolean userIsAdmin;
-    private String kakaoId;
-    private String naverId;
-    private String newPassword;
 
     public enum Gender {
         male, female
     }
+
+    private String sortOrderBy;
+    private Boolean isDESC;
+
+
 }

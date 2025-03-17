@@ -31,6 +31,8 @@ import ResumeView from "../pages/company/manage/applications/resume/ResumeView";
 import Companies from "../pages/company/public/Companies";
 import ChangePassword from "../pages/auth/find/ChangePassword";
 import Find from "../pages/auth/find/Find";
+import MyScrap from "../pages/user/mypage/MyScrap";
+import CompanyProfileEdit from "../pages/company/manage/profile/CompanyProfileEdit";
 
 // 메인 레이아웃 컴포넌트
 const MainLayout = ({children}) => (
@@ -44,6 +46,10 @@ const MainLayout = ({children}) => (
         <Footer/>
     </div>
 );
+
+function MyReviews() {
+    return null;
+}
 
 function PathRoute() {
     return (
@@ -75,8 +81,8 @@ function PathRoute() {
                 <Route element={<ProtectedRoute userTypeRequired="personal"/>}>
                     <Route path="/mypage/:userId" element={<MainLayout><MyPage /></MainLayout>} /> {/* 일반 사용자 마이페이지 메인 */}
                     <Route path="/mypage/applications/:resumeId" element={<MainLayout><MyApplication /></MainLayout>} /> {/* 일반 사용자 지원 내역 페이지 */}
-                    {/*<Route path="/mypage/scraps" element={<MainLayout><MyScrap /></MainLayout>} /> /!* 일반 사용자 스크랩 목록 페이지 *!/ */}
-                    {/*<Route path="/mypage/reviews" element={<MainLayout><MyReviews /></MainLayout>} /> /!* 일반 사용자 작성 리뷰 목록 페이지 *!/ */}
+                    <Route path="/mypage/scraps/:userId" element={<MainLayout><MyScrap /></MainLayout>} /> {/* 일반 사용자 스크랩 목록 페이지 */}
+                    <Route path="/mypage/reviews" element={<MainLayout><MyReviews /></MainLayout>} /> {/* 일반 사용자 작성 리뷰 목록 페이지 */}
                     <Route path="/mypage/user/:userId/edit" element={<MainLayout><UserEdit /></MainLayout>} /> {/* 사용자 정보 수정 페이지*/}
                     <Route path="/resumes/edit" element={<MainLayout><ResumeEdit /></MainLayout>} /> {/* 이력서 편집 페이지 */}
                 </Route>
@@ -85,6 +91,7 @@ function PathRoute() {
                 <Route element={<ProtectedRoute userTypeRequired="company"/>}>
                     <Route path="/company/manage/:companyId" element={<CompanyManage/>}/> {/* 회사 관리 메인 페이지 */}
                     <Route path="/company/:companyId/reviews/:reviewId" element={<ReviewDetail/>}/> {/* 회사 리뷰 상세 페이지 */}
+                    <Route path="/company/edit/:companyId" element={<CompanyProfileEdit/>}/> {/* 회사 상세 정보 페이지 수정*/}
                     <Route path="/jobs/new" element={<MainLayout><JobpostAdd/></MainLayout>}/> {/* 채용공고 등록 페이지 */}
                     <Route path="/jobs/edit/:jobPostId" element={<MainLayout><JobpostEdit/></MainLayout>}/> {/* 채용공고 수정 페이지 */}
                     <Route path="/resumes/:resumeId" element={<MainLayout><ResumeView /></MainLayout>}/> {/* 지원자 이력서 상세 보기 */}

@@ -13,7 +13,7 @@ import java.util.Date;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class AdminUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
@@ -29,11 +29,11 @@ public class User {
     private LocalDateTime userUpdatedAt;
     private Boolean userTermsAgreement;
     private Boolean userIsAdmin;
-    private String kakaoId;
-    private String naverId;
-    private String newPassword;
 
     public enum Gender {
         male, female
     }
+
+    private String sortOrderBy;
+    private Boolean isDESC;
 }

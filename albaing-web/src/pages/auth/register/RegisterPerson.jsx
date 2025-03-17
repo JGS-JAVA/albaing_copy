@@ -15,6 +15,7 @@ const RegisterPerson = () => {
     const [userPhone, setUserPhone] = useState("");
     const [userAddress, setUserAddress] = useState("");
     const [userProfileImage, setUserProfileImage] = useState("");
+    const [userProfileImageUrl, setUserProfileImageUrl] = useState(null);
     const [userTermsAgreement, setUserTermsAgreement] = useState(false);
     const [emailVerified, setEmailVerified] = useState(false);
     const [verificationCode, setVerificationCode] = useState("");
@@ -33,12 +34,15 @@ const RegisterPerson = () => {
         const genderParam = params.get("gender");
         const birthyearParam = params.get("birthyear"); // YYYY 형식
         const birthdayParam = params.get("birthday"); // MMDD 형식
+        const profileImageParam = params.get("profileImage");
 
         console.log("birthyearParam:", birthyearParam);
         console.log("birthdayParam:", birthdayParam);
 
         setUserName(nicknameParam || "");
         setUserEmail(email || "");
+        setUserProfileImage(profileImageParam || "");
+        setUserProfileImageUrl(profileImageParam || "");
 
         if (email && kakaoId) {
             setEmailVerified(true);
@@ -164,6 +168,18 @@ const RegisterPerson = () => {
         return true;
     };
 
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            // Set the file object
+            setUserProfileImage(file);
+            // Create a URL for previewing the image
+            const imageUrl = URL.createObjectURL(file);
+            setUserProfileImageUrl(imageUrl); // Assuming you have a separate state for image URL
+        }
+    };
+
     const handleSignup = () => {
         if (!validateInputs()) return;
 
@@ -174,31 +190,50 @@ const RegisterPerson = () => {
         const kakaoId = params.get("kakaoId");
         const naverId = params.get("naverId");
 
-        const requestData = {
+        // Create user object with common properties
+        const user = {
             userEmail,
             userPassword,
             userName,
-            userBirthdate: userBirthdate ? new Date(userBirthdate).toISOString().split("T")[0] : null,
+            userBirthdate: userBirthdate ? new Date(userBirthdate).toISOString().split("T")[0] : "",
             userGender,
             userPhone,
             userAddress,
-            userProfileImage,
             userTermsAgreement,
             emailVerified: kakaoId || naverId ? true : emailVerified,
-            kakaoId,
-            naverId
+            kakaoId: kakaoId || "",
+            naverId: naverId || "",
         };
 
-        console.log("회원가입 요청 데이터:", requestData);
+        // Special handling for social login image URLs
+        if (typeof userProfileImage === "string" && userProfileImage.startsWith("http")) {
+            // Add the URL directly to the user object for social login images
+            user.userProfileImage = userProfileImage;
+        }
 
-        axios
-            .post("/api/auth/register/person", requestData)
+        const formData = new FormData();
+        formData.append("user", new Blob([JSON.stringify(user)], { type: "application/json" }));
+
+        // Only append actual file uploads to formData
+        if (userProfileImage instanceof File) {
+            formData.append("userProfileImage", userProfileImage);
+        }
+
+        // Send the request
+        sendRequest(formData);
+    };
+
+// The sendRequest function remains the same
+    const sendRequest = (formData) => {
+        axios.post("/api/auth/register/person", formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+        })
             .then(() => {
                 alertModal.openModal({
-                    title: '가입 완료',
-                    message: '회원가입이 성공적으로 완료되었습니다.',
-                    type: 'success',
-                    onClose: () => navigate("/login")
+                    title: "가입 완료",
+                    message: "회원가입이 성공적으로 완료되었습니다.",
+                    type: "success",
+                    onClose: () => navigate("/login"),
                 });
             })
             .catch(error => {
@@ -209,6 +244,10 @@ const RegisterPerson = () => {
                 setLoading(false);
             });
     };
+
+
+
+
     return (
         <div className="max-w-2xl mx-auto px-4 py-10">
             <div className="text-center mb-10">
@@ -402,9 +441,9 @@ const RegisterPerson = () => {
 
                         <div className="flex items-center space-x-6">
                             <div className="shrink-0">
-                                {userProfileImage ? (
+                                {userProfileImageUrl ? (
                                     <img
-                                        src={userProfileImage}
+                                        src={userProfileImageUrl}
                                         alt="프로필 미리보기"
                                         className="h-24 w-24 rounded-full object-cover"
                                     />
@@ -421,22 +460,22 @@ const RegisterPerson = () => {
                                 <input
                                     type="file"
                                     accept="image/*"
-                                    onChange={(e) => {
-                                        if (e.target.files && e.target.files[0]) {
-                                            setUserProfileImage(URL.createObjectURL(e.target.files[0]));
-                                        }
-                                    }}
+                                    onChange={handleImageChange} // Use the handleImageChange function
                                     className="block w-full text-sm text-gray-500
-                                    file:mr-4 file:py-2 file:px-4
-                                    file:rounded-md file:border-0
-                                    file:text-sm file:font-semibold
-                                    file:bg-blue-50 file:text-blue-700
-                                    hover:file:bg-blue-100"
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-md file:border-0
+                file:text-sm file:font-semibold
+                file:bg-blue-50 file:text-blue-700
+                hover:file:bg-blue-100"
                                 />
+                                {userProfileImageUrl && (
+                                    <img src={userProfileImageUrl} alt="Profile Preview" className="mt-2 w-24 h-24 rounded-full object-cover" />
+                                )}
                                 <p className="mt-1 text-xs text-gray-500">PNG, JPG, GIF 파일 (최대 2MB)</p>
                             </div>
                         </div>
                     </div>
+
 
                     {/* 이용약관 동의 */}
                     <div>

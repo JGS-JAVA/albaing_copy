@@ -10,19 +10,19 @@ const JobCard = ({
                      toggleScrap,
                      formatDate
                  }) => {
+
     const isActive = new Date(job.jobPostDueDate) > new Date() && (job.jobPostStatus !== false);
+
 
     return (
         <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 border border-gray-100 relative h-full">
             {/* 스크랩 버튼 */}
             {isLoggedIn && userType === "personal" && (
                 <button
-                    onClick={(e) => toggleScrap(job.jobPostId, e)}
-                    className={`absolute top-4 right-4 z-20 p-2 rounded-full transition-all duration-200 ${
-                        isScraped
-                            ? "bg-blue-600 text-white hover:bg-blue-700"
-                            : "bg-white text-gray-500 hover:bg-gray-100"
-                    }`}
+                    onClick={(e) => toggleScrap(job.jobPostId)}
+                    className={`absolute top-4 right-4 z-20 p-2 rounded-full transition-all duration-200 
+                    ${isScraped ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-600"}
+                    `}
                     style={{ boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}
                     aria-label={isScraped ? "스크랩 취소" : "스크랩하기"}
                 >
