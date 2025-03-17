@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import {ErrorMessage} from "../../../components";
-import { AlertModal } from '../../../components';
+import {AlertModal, useModal} from '../../../components';
 
 const RegisterCompany = () => {
     const [companyRegistrationNumber, setCompanyRegistrationNumber] = useState("");
@@ -23,6 +23,7 @@ const RegisterCompany = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const navigate = useNavigate();
+    const alertModal = useModal();
 
     useEffect(() => {
         const storedCompanyRegistrationNumber = localStorage.getItem("companyRegistrationNumber") || '';
@@ -38,7 +39,6 @@ const RegisterCompany = () => {
         setCompanyRegistrationNumber(formatCompanyRegistrationNumber(storedCompanyRegistrationNumber));
         setCompanyOwnerName(storedCompanyOwnerName);
         setCompanyOpenDate(storedCompanyOpenDate);
-
     }, []);
 
     const requestVerificationCode = () => {
@@ -46,7 +46,7 @@ const RegisterCompany = () => {
         setLoading(true); setError("");
         axios.post("/api/auth/sendCode", { email: companyEmail })
             .then(response => {
-                AlertModal({
+                alertModal.openModal({
                     title: '인증번호 발송',
                     message: '인증번호가 이메일로 발송되었습니다.',
                     type: 'success'
@@ -65,7 +65,7 @@ const RegisterCompany = () => {
         axios.post("/api/auth/checkCode", { email: companyEmail, code: verificationCode })
             .then(response => {
                 setEmailVerified(true);
-                AlertModal({
+                alertModal.openModal({
                     title: '인증 완료',
                     message: '이메일 인증이 완료되었습니다.',
                     type: 'success'
@@ -167,7 +167,7 @@ const RegisterCompany = () => {
             },
         })
             .then(response => {
-                AlertModal({
+                alertModal.openModal({
                     title: '가입 완료',
                     message: '회원가입이 성공적으로 완료되었습니다.',
                     type: 'success',
@@ -493,12 +493,12 @@ const RegisterCompany = () => {
             </div>
 
             <AlertModal
-                isOpen={AlertModal.isOpen}
-                onClose={AlertModal.closeModal}
-                title={AlertModal?.title || '알림'}
-                message={AlertModal?.message || ''}
+                isOpen={alertModal.isOpen}
+                onClose={alertModal.closeModal}
+                title={alertModal.modalProps.title || '알림'}
+                message={alertModal.modalProps.message}
                 confirmText="확인"
-                type={AlertModal?.type || 'info'}
+                type={alertModal.modalProps.type || 'info'}
             />
         </div>
     );
