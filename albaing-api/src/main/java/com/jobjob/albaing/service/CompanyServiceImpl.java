@@ -32,11 +32,6 @@ public class CompanyServiceImpl implements CompanyService {
         companyMapper.updateDetail(company);
     }
 
-    //회사 로고 수정
-    @Override
-    public int updateLogo(long companyId, String companyLogo) {
-        return companyMapper.updateLogo(companyId, companyLogo);
-    }
 
     // 회사 등록
     @Override

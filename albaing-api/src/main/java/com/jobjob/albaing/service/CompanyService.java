@@ -16,9 +16,6 @@ public interface CompanyService {
     //회사 상세 정보 수정
     void updateDetail(Company company);
 
-    //회사 로고 수정
-    int updateLogo(long companyId, String companyLogo);
-
     // 회사 등록
     void registerCompany(Company company);
 

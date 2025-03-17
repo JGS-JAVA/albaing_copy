@@ -97,14 +97,8 @@
             company_phone = #{companyPhone},
             company_local_address = #{companyLocalAddress},
             company_description = #{companyDescription},
+            company_logo = #{companyLogo},
             company_updated_at = NOW()
-        WHERE company_id = #{companyId}
-    </update>
-
-    <!-- 기업 로고 수정 -->
-    <update id="updateLogo">
-        UPDATE COMPANIES
-        SET company_logo = #{companyLogo}
         WHERE company_id = #{companyId}
     </update>
 
