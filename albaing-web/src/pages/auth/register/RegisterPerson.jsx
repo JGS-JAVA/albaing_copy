@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import {ErrorMessage} from "../../../components";
-import {useModal} from "../../../components";
+import {AlertModal, ErrorMessage, useModal} from "../../../components";
 
 const RegisterPerson = () => {
 
@@ -528,6 +527,14 @@ const RegisterPerson = () => {
                     </Link>
                 </p>
             </div>
+            <AlertModal
+                isOpen={alertModal.isOpen}
+                onClose={alertModal.closeModal}
+                title={alertModal.modalProps.title || '알림'}
+                message={alertModal.modalProps.message}
+                confirmText="확인"
+                type={alertModal.modalProps.type || 'info'}
+            />
         </div>
     );
 };

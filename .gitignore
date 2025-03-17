@@ -5,6 +5,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 albaing-api/src/main/resources/config.properties
+albaing-api/src/main/resources/firebase-config.json
 
 ### STS ###
 .apt_generated
