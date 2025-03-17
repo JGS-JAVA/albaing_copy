@@ -16,7 +16,7 @@ public interface AuthService {
 
     /**
      * ✅ 유저 회원가입
-     * @param user 회원가입할 유저 객체
+     * @param user 회원가입할 유저 객체..
      */
     Map<String, Object> registerUser(User user);
 

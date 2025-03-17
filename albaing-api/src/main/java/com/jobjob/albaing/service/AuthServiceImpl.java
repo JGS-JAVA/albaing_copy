@@ -301,7 +301,7 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-    // ✅ 기업 입력값 검증
+    // ✅ 기업 입력값 검증..
     @Override
     public void validateCompanyInput(Company company) {
         if (company.getCompanyRegistrationNumber() == null || company.getCompanyRegistrationNumber().trim().isEmpty()) {
