@@ -578,7 +578,7 @@ const ResumeEdit = () => {
                                             <>
                                                 <h3 className="text-xl font-bold text-gray-900">{resumeData.careerHistory.careerCompanyName || '회사명 미입력'}</h3>
                                                 <p className="text-gray-600">
-                                                    {resumeData.careerHistory.careerJobPosition || '직무 미입력'}
+                                                    {resumeData.careerHistory.careerJobDescription || '직무 미입력'}
                                                 </p>
                                             </>
                                         )}
