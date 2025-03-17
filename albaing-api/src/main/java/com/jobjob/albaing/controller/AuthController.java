@@ -107,6 +107,7 @@ public class AuthController {
     }
 
 
+
     @PostMapping("/login/company")
     public ResponseEntity<Map<String, Object>> loginCompany(@RequestBody Company company, HttpSession session) {
         Map<String, Object> result = authService.loginCompany(company.getCompanyEmail(), company.getCompanyPassword());
