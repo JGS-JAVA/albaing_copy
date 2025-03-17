@@ -4,6 +4,7 @@ import com.jobjob.albaing.dto.Company;
 import com.jobjob.albaing.mapper.CompanyMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -29,6 +30,12 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public void updateDetail(Company company) {
         companyMapper.updateDetail(company);
+    }
+
+    //회사 로고 수정
+    @Override
+    public int updateLogo(long companyId, String companyLogo) {
+        return companyMapper.updateLogo(companyId, companyLogo);
     }
 
     // 회사 등록

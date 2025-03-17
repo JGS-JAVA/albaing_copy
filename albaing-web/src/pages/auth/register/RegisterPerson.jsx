@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import {AlertModal, ErrorMessage} from "../../../components";
-import {useModal} from "../../../components";
+import {AlertModal, ErrorMessage, useModal} from "../../../components";
 
 const RegisterPerson = () => {
 

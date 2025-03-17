@@ -101,6 +101,13 @@
         WHERE company_id = #{companyId}
     </update>
 
+    <!-- 기업 로고 수정 -->
+    <update id="updateLogo">
+        UPDATE COMPANIES
+        SET company_logo = #{companyLogo}
+        WHERE company_id = #{companyId}
+    </update>
+
     <!-- 모든 회사 목록 조회 -->
     <select id="getAllCompanies" resultType="Company">
         SELECT *

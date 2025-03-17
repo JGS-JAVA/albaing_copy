@@ -3,10 +3,7 @@ package com.jobjob.albaing.controller;
 import com.jobjob.albaing.dto.Company;
 import com.jobjob.albaing.dto.User;
 import com.jobjob.albaing.model.vo.VerificationRequest;
-import com.jobjob.albaing.service.AuthServiceImpl;
-import com.jobjob.albaing.service.FileServiceImpl;
-import com.jobjob.albaing.service.ResumeServiceImpl;
-import com.jobjob.albaing.service.VerificationServiceImpl;
+import com.jobjob.albaing.service.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,8 +26,7 @@ public class AuthController {
     @Autowired
     private ResumeServiceImpl resumeService;
     @Autowired
-    private FileServiceImpl fileService;
-
+    private FileService fileService;
     // Multipart form Data..
     @PostMapping(value = "/register/person", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String, Object>> registerUser(
@@ -73,6 +69,27 @@ public class AuthController {
             errorResponse.put("status", "fail");
             errorResponse.put("message", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+          
+        if (userProfileImage != null && !userProfileImage.isEmpty()) {
+            System.out.println("DEBUG: 파일 업로드 시작 - " + userProfileImage.getOriginalFilename());
+
+            String imageUrl = fileService.uploadFile(userProfileImage);
+            System.out.println("DEBUG: 업로드된 이미지 URL = " + imageUrl);
+
+            user.setUserProfileImage(imageUrl);
+        } else {
+            System.out.println("DEBUG: userProfileImage 파일이 제공되지 않음, 이미 설정된 URL을 유지: " + user.getUserProfileImage());
+        }
+
+        Map<String, Object> response = authService.registerUser(user);
+
+        if ("success".equals(response.get("status"))) {
+            resumeService.createResumeForUser(user);
+            return ResponseEntity.ok(response);
+        } else if ("fail".equals(response.get("status"))) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
@@ -94,7 +111,6 @@ public class AuthController {
     public ResponseEntity<Map<String, Object>> registerCompany(
             @RequestPart("company") Company company,
             @RequestPart(value = "companyLogo", required = false) MultipartFile companyLogo) {
-
         try {
             // 입력값 검증
             authService.validateCompanyInput(company);
@@ -127,6 +143,27 @@ public class AuthController {
             errorResponse.put("status", "fail");
             errorResponse.put("message", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+          
+        if (companyLogo != null && !companyLogo.isEmpty()) {
+            System.out.println("DEBUG: 파일 업로드 시작 - " + companyLogo.getOriginalFilename());
+
+            // 파일 업로드 실행
+            String logoUrl = fileService.uploadFile(companyLogo);
+            System.out.println("DEBUG: 업로드된 로고 URL = " + logoUrl);
+
+            company.setCompanyLogo(logoUrl);
+        } else {
+            System.out.println("DEBUG: companyLogo가 null 또는 비어 있음");
+        }
+
+        Map<String, Object> response = authService.registerCompany(company);
+
+        if ("success".equals(response.get("status"))) {
+            return ResponseEntity.ok(response);
+        } else if ("fail".equals(response.get("status"))) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
