@@ -222,7 +222,7 @@ const EducationModal = ({ educationData, majorData, onSave, onCancel }) => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <label htmlFor="eduDegree" className="block text-sm font-medium text-gray-700">
-                                    학위
+                                    학위 <span className="text-red-500">*</span>
                                 </label>
                                 <select
                                     id="eduDegree"
@@ -240,7 +240,7 @@ const EducationModal = ({ educationData, majorData, onSave, onCancel }) => {
 
                             <div className="space-y-2">
                                 <label htmlFor="eduMajor" className="block text-sm font-medium text-gray-700">
-                                    전공
+                                    전공 <span className="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -271,7 +271,7 @@ const EducationModal = ({ educationData, majorData, onSave, onCancel }) => {
 
                         <div className="space-y-2">
                             <label htmlFor="eduStatus" className="block text-sm font-medium text-gray-700">
-                                재학상태
+                                재학상태 <span className="text-red-500">*</span>
                             </label>
                             <div className="flex flex-wrap gap-3">
                                 {statusTypes.map((type, index) => (
