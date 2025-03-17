@@ -37,7 +37,7 @@ export default function Find() {
                             </svg>
                         </div>
                         <div>
-                            <h3 className="font-medium text-lg">비밀번호 찾기</h3>
+                            <h3 className="font-medium text-lg">비밀번호 재설정</h3>
                             <p className="text-sm text-gray-600">본인 확인 후 비밀번호를 재설정할 수 있습니다.</p>
                         </div>
                     </div>
