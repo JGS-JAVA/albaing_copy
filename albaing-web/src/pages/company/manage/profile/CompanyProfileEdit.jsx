@@ -46,43 +46,34 @@ const CompanyProfileEdit = () => {
     const editInfo = (e) => {
         e.preventDefault();
 
-        let updatedFormData = { ...formData };
+        const formDataToSend = new FormData();
+
+        formDataToSend.append('company', new Blob([JSON.stringify({
+            companyName: formData.companyName,
+            companyOwnerName: formData.companyOwnerName,
+            companyOpenDate: formData.companyOpenDate,
+            companyPhone: formData.companyPhone,
+            companyEmail: formData.companyEmail,
+            companyRegistrationNumber: formData.companyRegistrationNumber,
+            companyLocalAddress: formData.companyLocalAddress,
+            companyDescription: formData.companyDescription
+        })], {type: 'application/json'}));
 
         if (logo) {
-            const formDataToSend = new FormData();
-            formDataToSend.append("companyLogo", logo);
-
-            axios.post(`/api/companies/${companyId}/logo`, formDataToSend, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            })
-                .then((logoResponse) => {
-                    updatedFormData = { ...formData, companyLogo: logoResponse.data.logoUrl };
-
-                    return axios.put(`/api/companies/${companyId}`, updatedFormData, {
-                        headers: { 'Content-Type': 'application/json' }
-                    });
-                })
-                .then((res) => {
-                    alert('회사 정보가 성공적으로 수정되었습니다!');
-                    setFormData(res.data);
-                    navigate(-1);
-                })
-                .catch(() => {
-                    alert("로고 업로드 또는 회사 정보 수정에 실패했습니다.");
-                });
-        } else {
-            axios.put(`/api/companies/${companyId}`, updatedFormData, {
-                headers: { 'Content-Type': 'application/json' }
-            })
-                .then((res) => {
-                    alert('회사 정보가 성공적으로 수정되었습니다!');
-                    setFormData(res.data);
-                    navigate(-1);
-                })
-                .catch(() => {
-                    alert("회사의 정보를 수정하는 데 실패했습니다.");
-                });
+            formDataToSend.append('companyLogo', logo);
         }
+
+        axios.put(`/api/companies/${companyId}`, formDataToSend, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        })
+            .then((res) => {
+                alert('회사 정보가 성공적으로 수정되었습니다!');
+                setFormData(res.data);
+                navigate(-1);
+            })
+            .catch((error) => {
+                alert(error.response?.data || "회사의 정보를 수정하는 데 실패했습니다.");
+            });
     };
 
     const handleLogoChange = (e) => {
