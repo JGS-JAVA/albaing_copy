@@ -1,6 +1,8 @@
 package com.jobjob.albaing.service;
 
 import com.jobjob.albaing.dto.Company;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 
 public interface CompanyService {

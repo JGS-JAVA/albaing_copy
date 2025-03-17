@@ -97,6 +97,7 @@
             company_phone = #{companyPhone},
             company_local_address = #{companyLocalAddress},
             company_description = #{companyDescription},
+            company_logo = #{companyLogo},
             company_updated_at = NOW()
         WHERE company_id = #{companyId}
     </update>

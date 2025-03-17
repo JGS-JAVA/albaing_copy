@@ -1,6 +1,7 @@
 package com.jobjob.albaing.service;
 
 import com.jobjob.albaing.dto.JobPost;
+import com.jobjob.albaing.dto.ViewJobPost;
 
 import java.util.List;
 
@@ -12,4 +13,9 @@ public interface JobPostService {
     void updateJobPostStatus(long jobPostId, boolean status);
     int getTotalCount(String jobCategory, String jobType, String keyword, boolean onlyActive);
     List<JobPost> getJobPostsByCompanyId(long companyId);
+    List<JobPost> mainPageJobPostsAlignByDueDateASC();
+    List<JobPost> mainPageJobPostsAlignByDueDateDESC();
+    List<JobPost> mainPageJobPostsAlignByUserResume(String resumeLocation, String resumeJobDuration);
+    List<JobPost> mainPageJobPostsRandom();
+    List<ViewJobPost> searchJobPosts(String regionSelect, String jobCategorySelect, String searchKeyword);
 }
