@@ -3,10 +3,7 @@ package com.jobjob.albaing.controller;
 import com.jobjob.albaing.dto.Company;
 import com.jobjob.albaing.dto.User;
 import com.jobjob.albaing.model.vo.VerificationRequest;
-import com.jobjob.albaing.service.AuthServiceImpl;
-import com.jobjob.albaing.service.FileServiceImpl;
-import com.jobjob.albaing.service.ResumeServiceImpl;
-import com.jobjob.albaing.service.VerificationServiceImpl;
+import com.jobjob.albaing.service.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,32 +26,26 @@ public class AuthController {
     @Autowired
     private ResumeServiceImpl resumeService;
     @Autowired
-    private FileServiceImpl fileService;
+    private FileService fileService;
 
-    // Multipart form Data
     @PostMapping(value = "/register/person", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String, Object>> registerUser(
             @RequestPart("user") User user,
             @RequestPart(value = "userProfileImage", required = false) MultipartFile userProfileImage) {
 
-        // Check if we received a file upload
         if (userProfileImage != null && !userProfileImage.isEmpty()) {
             System.out.println("DEBUG: 파일 업로드 시작 - " + userProfileImage.getOriginalFilename());
 
-            // Process file upload
             String imageUrl = fileService.uploadFile(userProfileImage);
             System.out.println("DEBUG: 업로드된 이미지 URL = " + imageUrl);
 
             user.setUserProfileImage(imageUrl);
         } else {
             System.out.println("DEBUG: userProfileImage 파일이 제공되지 않음, 이미 설정된 URL을 유지: " + user.getUserProfileImage());
-            // Don't overwrite existing URL in user object if no file is provided
         }
 
-        // Continue with user registration
         Map<String, Object> response = authService.registerUser(user);
 
-        // Rest of your code remains the same
         if ("success".equals(response.get("status"))) {
             resumeService.createResumeForUser(user);
             return ResponseEntity.ok(response);
@@ -97,7 +88,6 @@ public class AuthController {
             System.out.println("DEBUG: companyLogo가 null 또는 비어 있음");
         }
 
-        // 회원가입 로직 실행
         Map<String, Object> response = authService.registerCompany(company);
 
         if ("success".equals(response.get("status"))) {
