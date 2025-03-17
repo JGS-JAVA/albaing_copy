@@ -326,6 +326,21 @@ public class AuthServiceImpl implements AuthService {
             throw new IllegalArgumentException("사업장 주소는 필수 입력 사항입니다.");
         }
 
+        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+        if (!company.getCompanyEmail().matches(emailRegex)) {
+            throw new IllegalArgumentException("유효하지 않은 이메일 형식입니다.");
+        }
+
+        String passwordRegex = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{8,}$";
+        if (!company.getCompanyPassword().matches(passwordRegex)) {
+            throw new IllegalArgumentException("비밀번호는 최소 8자 이상이며, 숫자와 특수문자를 포함해야 합니다.");
+        }
+
+        String phoneRegex = "^(?:0(2|[3-6][1-5]|70))-?\\d{3,4}-?\\d{4}$";
+        if (!company.getCompanyPhone().matches(phoneRegex)) {
+            throw new IllegalArgumentException("유효하지 않은 전화번호 형식입니다.");
+        }
+
         String registrationNumberRegex = "^\\d{3}-\\d{2}-\\d{5}$";
         if (!company.getCompanyRegistrationNumber().matches(registrationNumberRegex)) {
             throw new IllegalArgumentException("유효하지 않은 사업자 등록번호 형식입니다. (예: 123-45-67890)");
