@@ -167,14 +167,14 @@ public class AuthServiceImpl implements AuthService {
         Map<String, Object> response = new HashMap<>();
 
         // ✅ 이메일 중복 체크
-        if (companyMapper.isCompanyExist(company.getCompanyEmail())) {
+        if (isCompanyExist(company.getCompanyEmail())) {
             response.put("status", "fail");
             response.put("message", "이미 가입한 이메일입니다.");
             return response;
         }
 
         // ✅ 전화번호 중복 체크
-        if (companyMapper.isCompanyPhoneExist(company.getCompanyPhone())) {
+        if (isCompanyPhoneExist(company.getCompanyPhone())) {
             response.put("status", "fail");
             response.put("message", "이미 가입한 전화번호입니다.");
             return response;
@@ -264,7 +264,8 @@ public class AuthServiceImpl implements AuthService {
         return userMapper.getUserByEmail(email);
     }
 
-    private void validateUserInput(User user) {
+    @Override
+    public void validateUserInput(User user) {
         if (user.getUserEmail() == null || user.getUserEmail().trim().isEmpty()) {
             throw new IllegalArgumentException("이메일은 필수 입력 사항입니다.");
         }
@@ -301,7 +302,8 @@ public class AuthServiceImpl implements AuthService {
     }
 
     // ✅ 기업 입력값 검증
-    private void validateCompanyInput(Company company) {
+    @Override
+    public void validateCompanyInput(Company company) {
         if (company.getCompanyRegistrationNumber() == null || company.getCompanyRegistrationNumber().trim().isEmpty()) {
             throw new IllegalArgumentException("사업자 등록번호는 필수 입력 사항입니다.");
         }

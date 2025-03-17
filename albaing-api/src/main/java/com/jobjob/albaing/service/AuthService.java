@@ -31,4 +31,9 @@ public interface AuthService {
     boolean isCompanyPhoneExist(String companyPhone);
 
     User getUserByEmail(String email);
+
+    void validateUserInput(User user);
+
+    // ✅ 기업 입력값 검증
+    void validateCompanyInput(Company company);
 }
