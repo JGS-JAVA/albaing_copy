@@ -42,7 +42,7 @@ export default function FindPassword() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
                 </Link>
-                <h2 className="text-2xl font-bold text-gray-800">비밀번호 찾기</h2>
+                <h2 className="text-2xl font-bold text-gray-800">비밀번호 재설정</h2>
             </div>
 
             <div className="mb-6">
