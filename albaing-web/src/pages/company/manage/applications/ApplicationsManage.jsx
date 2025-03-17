@@ -12,6 +12,7 @@ const ApplicationsManage = ({ applications, updateApplicantStatus }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all'); // 'all', 'pending', 'approved', 'denied'
     const [selectedApplication, setSelectedApplication] = useState(null);
+    const [user,setUser] = useState(null);
 
     // 지원자 필터링
     const filteredApplications = applications.filter(app => {
@@ -204,7 +205,7 @@ const ApplicationsManage = ({ applications, updateApplicantStatus }) => {
                             <div className="pt-4 border-t border-gray-200">
                                 <button
                                     className="w-full py-2 px-4 rounded-md bg-blue-600 text-white hover:bg-blue-700"
-                                    onClick={() => window.location.href = `/resumes/${selectedApplication.resumeId}/user/${userId}`}
+                                    onClick={() => window.location.href = `/resumes/${selectedApplication.resumeId}/user/${selectedApplication.resumeId}`}
                                 >
                                     이력서 상세 보기
                                 </button>
