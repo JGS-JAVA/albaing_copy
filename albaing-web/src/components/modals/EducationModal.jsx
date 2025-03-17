@@ -108,16 +108,21 @@ const EducationModal = ({ educationData, majorData, onSave, onCancel }) => {
     const yearOptions = Array.from({ length: 100 }, (_, i) => (currentYear - i).toString());
 
     useEffect(() => {
-        setFormData(prev => ({
-            eduDegree: educationData?.eduDegree || prev.eduDegree || '',
-            eduStatus: educationData?.eduStatus || prev.eduStatus || '',
-            eduSchool: educationData?.eduSchool || prev.eduSchool || '',
-            eduAdmissionYear: educationData?.eduAdmissionYear || prev.eduAdmissionYear || '',
-            eduGraduationYear: educationData?.eduGraduationYear || prev.eduGraduationYear || '',
-            eduMajor: majorData?.eduMajor || prev.eduMajor || '',
-        }));
-    }, [educationData, majorData]);
-
+        if (educationData) {
+            setFormData({
+                eduDegree: educationData.eduDegree || '',
+                eduStatus: educationData.eduStatus || '',
+                eduSchool: educationData.eduSchool || '',
+                eduAdmissionYear: educationData.eduAdmissionYear || '',
+                eduGraduationYear: educationData.eduGraduationYear || ''
+            });
+        }
+        if(majorData){
+            setFormData({
+                eduMajor: majorData.eduMajor || ''
+            })
+        }
+    }, [educationData,majorData]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
