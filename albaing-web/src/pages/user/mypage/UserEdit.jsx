@@ -169,7 +169,6 @@ const EditUserPage = () => {
                     >
                         <option value="MALE">남성</option>
                         <option value="FEMALE">여성</option>
-                        <option value="OTHER">기타</option>
                     </select>
                 </div>
 
