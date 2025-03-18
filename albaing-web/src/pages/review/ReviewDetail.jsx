@@ -1,21 +1,21 @@
-import { useNavigate, useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
+import {useNavigate, useParams} from "react-router-dom";
+import {useState, useEffect} from "react";
 import axios from "axios";
 import {ConfirmModal, ErrorMessage, LoadingSpinner} from "../../components";
-import {useModal,AlertModal} from "../../components";
+import {useModal, AlertModal} from "../../components";
 import {useAuth} from "../../contexts/AuthContext";
 
 const ReviewDetail = () => {
-    const { companyId, reviewId } = useParams();
+    const {companyId, reviewId} = useParams();
     const [review, setReview] = useState(null);
     const [comments, setComments] = useState([]);
     const [commentInput, setCommentInput] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const { user } = useAuth(); // 현재 로그인한 사용자 정보 가져오기
+    const {user} = useAuth(); // 현재 로그인한 사용자 정보 가져오기
     const currentUserId = user?.type === 'personal' ? user?.data?.userId : null;  // 로그인한 사용자의 userId
-  
+
     const [editReviewId, setEditReviewId] = useState(null);
     const [editReviewContent, setEditReviewContent] = useState("");
     const [editCommentId, setEditCommentId] = useState(null);
@@ -156,7 +156,7 @@ const ReviewDetail = () => {
             cancelText: '취소',
             onConfirm: () => {
                 setLoading(true);
-                axios.delete(`/api/reviews/${reviewId}`, { withCredentials: true })
+                axios.delete(`/api/reviews/${reviewId}`, {withCredentials: true})
                     .then(() => {
                         alertModal.openModal({
                             title: '삭제 완료',
@@ -193,7 +193,7 @@ const ReviewDetail = () => {
         setLoading(true);
         axios.put(`/api/reviews/${reviewId}/comments/${commentId}`, {
             commentContent: editCommentContent
-        }, { withCredentials: true })
+        }, {withCredentials: true})
             .then(() => {
                 return axios.get(`/api/companies/${companyId}/reviews/${reviewId}`);
             })
@@ -229,7 +229,7 @@ const ReviewDetail = () => {
             onConfirm: () => {
                 setLoading(true);
                 axios.delete(`/api/reviews/${reviewId}/comments/${commentId}`,
-                    { withCredentials: true })
+                    {withCredentials: true})
                     .then(() => {
                         setComments(comments.filter(comment => comment.commentId !== commentId));
                         alertModal.openModal({
@@ -252,8 +252,8 @@ const ReviewDetail = () => {
         });
     };
 
-    if (loading) return <LoadingSpinner message="로딩 중..." />;
-    if (error) return <ErrorMessage message={error} />;
+    if (loading) return <LoadingSpinner message="로딩 중..."/>;
+    if (error) return <ErrorMessage message={error}/>;
     if (!review) return <div className="text-center py-10">리뷰를 찾을 수 없습니다.</div>;
 
     return (
@@ -261,23 +261,41 @@ const ReviewDetail = () => {
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 {/* 리뷰 헤더 */}
                 <div className="p-6 border-b border-gray-200">
-                    <div className="flex justify-between items-start">
-                        <h1 className="text-2xl font-bold text-gray-800">{review.reviewTitle}</h1>
-                        <p className="text-gray-500 text-sm mt-1">
-                            작성일: {new Date(review.reviewCreatedAt).toLocaleString()}
-                        </p>
-                    </div>
-                    {currentUserId && review.userId === currentUserId && (
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                         <div>
-                            <button onClick={() => {
-                                setEditReviewId(review.reviewId);
-                                setEditReviewContent(review.reviewContent);
-                            }}>
-                                수정
-                            </button>
-                            <button onClick={handleReviewDelete}>리뷰 삭제</button>
+                            <h1 className="text-2xl font-bold text-gray-800">{review.reviewTitle}</h1>
+                            <p className="text-gray-500 text-sm mt-1">
+                                작성일: {new Date(review.reviewCreatedAt).toLocaleString()}
+                            </p>
                         </div>
-                    )}
+
+                        {currentUserId && review.userId === currentUserId && (
+                            <div className="flex space-x-2 self-end sm:self-center">
+                                <button
+                                    onClick={() => {
+                                        setEditReviewId(review.reviewId);
+                                        setEditReviewContent(review.reviewContent);
+                                    }}
+                                    className="flex items-center px-2 py-1 text-xs bg-blue-50 hover:bg-blue-100 text-blue-600 hover:text-blue-700 rounded-md transition-colors border border-blue-200"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                    <span className="font-medium">수정</span>
+                                </button>
+
+                                <button
+                                    onClick={handleReviewDelete}
+                                    className="flex items-center px-2 py-1 text-xs bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 rounded-md transition-colors border border-red-200"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    <span className="font-medium">삭제</span>
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* 리뷰 내용 */}
@@ -318,47 +336,75 @@ const ReviewDetail = () => {
                     {comments.length > 0 ? (
                         <ul className="space-y-4 mb-6">
                             {comments.map((comment) => (
-                                <li key={comment.commentId} className="bg-gray-50 p-4 rounded">
-                                    <div className="flex justify-between">
-                                        <p className="text-sm text-gray-500">
-                                            {new Date(comment.commentCreatedAt).toLocaleString()}
-                                        </p>
-                                        <div className="flex space-x-2">
-                                            <button
-                                                onClick={() => {
-                                                    setEditCommentId(comment.commentId);
-                                                    setEditCommentContent(comment.commentContent);
-                                                }}
-                                                className="text-xs text-blue-600 hover:text-blue-800"
-                                            >
-                                                수정
-                                            </button>
-                                            <button
-                                                onClick={() => handleCommentDelete(comment.commentId)}
-                                                className="text-xs text-red-600 hover:text-red-800"
-                                            >
-                                                삭제
-                                            </button>
+                                <li key={comment.commentId}
+                                    className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            {/* 댓글 작성자 표시 - 회사/어드민/일반 유저 구분 */}
+                                            {comment.userId === review.companyId ? (
+                                                <span
+                                                    className="text-sm font-medium text-blue-600 bg-blue-100 px-2 py-1 rounded mr-2">
+                                                        관리자
+                                                </span>
+                                            ) : (
+                                                comment.userId === 1 ? ( // 어드민 ID를 1로 가정, 실제 어드민 ID로 변경 필요
+                                                    <span
+                                                        className="text-sm font-medium text-green-600 bg-green-100 px-2 py-1 rounded mr-2">
+                                                            알바잉
+                                                    </span>
+                                                ) : (
+                                                    <span
+                                                        className="text-sm font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded mr-2">
+                                                            사용자
+                                                    </span>
+                                                )
+                                            )}
+                                            <span className="text-sm text-gray-500">
+                                                {new Date(comment.commentCreatedAt).toLocaleString()}
+                                            </span>
                                         </div>
+
+                                        {/* 내 댓글인 경우만 수정/삭제 버튼 표시 */}
+                                        {currentUserId && comment.userId === currentUserId && (
+                                            <div className="flex space-x-2">
+                                                <button
+                                                    onClick={() => {
+                                                        setEditCommentId(comment.commentId);
+                                                        setEditCommentContent(comment.commentContent);
+                                                    }}
+                                                    className="text-xs text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded transition-colors"
+                                                >
+                                                    수정
+                                                </button>
+                                                <button
+                                                    onClick={() => handleCommentDelete(comment.commentId)}
+                                                    className="text-xs text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 px-2 py-1 rounded transition-colors"
+                                                >
+                                                    삭제
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
+
+                                    {/* 댓글 내용 - 수정 중 또는 일반 표시 */}
                                     {editCommentId === comment.commentId ? (
-                                        <div className="mt-2 space-y-2">
+                                        <div className="mt-3 space-y-2">
                                             <textarea
-                                                value={editCommentContent}
-                                                onChange={(e) => setEditCommentContent(e.target.value)}
-                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                rows="3"
+                                            value={editCommentContent}
+                                            onChange={(e) => setEditCommentContent(e.target.value)}
+                                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            rows="3"
                                             ></textarea>
                                             <div className="flex justify-end space-x-2">
                                                 <button
                                                     onClick={() => handleCommentEdit(comment.commentId)}
-                                                    className="px-3 py-1 bg-blue-500 text-white text-xs rounded-md hover:bg-blue-600"
+                                                    className="px-3 py-1 bg-blue-500 text-white text-xs rounded-md hover:bg-blue-600 transition-colors"
                                                 >
                                                     저장
                                                 </button>
                                                 <button
                                                     onClick={() => setEditCommentId(null)}
-                                                    className="px-3 py-1 bg-gray-200 text-gray-700 text-xs rounded-md hover:bg-gray-300"
+                                                    className="px-3 py-1 bg-gray-200 text-gray-700 text-xs rounded-md hover:bg-gray-300 transition-colors"
                                                 >
                                                     취소
                                                 </button>
@@ -366,15 +412,6 @@ const ReviewDetail = () => {
                                         </div>
                                     ) : (
                                         <p className="mt-2 text-gray-700">{comment.commentContent}</p>
-                                    )}
-                                    {comment.userId === currentUserId && (
-                                        <div>
-                                            <button onClick={() => {
-                                                setEditCommentId(comment.commentId);
-                                                setEditCommentContent(comment.commentContent);
-                                            }}>수정</button>
-                                            <button onClick={() => handleCommentDelete(comment.commentId)}>삭제</button>
-                                        </div>
                                     )}
                                 </li>
                             ))}
