@@ -17,14 +17,14 @@ const EducationModal = ({ educationData, majorData, onSave, onCancel }) => {
     const [schoolList, setSchoolList] = useState([]);
     const [filteredSchools, setFilteredSchools] = useState([]);
     const [selectedSchool, setSelectedSchool] = useState(null);
-    const [isManualSchoolInput, setIsManualSchoolInput] = useState(false);
+    const [schoolInput, setSchoolInput] = useState(false);
 
     //전공
     const [majorSearchTerm, setMajorSearchTerm] = useState("");
     const [majorList, setMajorList] = useState([]);
     const [filteredMajors, setFilteredMajors] = useState([]);
     const [selectedMajor, setSelectedMajor] = useState(null);
-    const [isManualMajorInput, setIsManualMajorInput] = useState(false);
+    const [majorInput, setMajorInput] = useState(false);
 
     //학교 정보 가져오기
     useEffect(() => {
@@ -98,28 +98,28 @@ const EducationModal = ({ educationData, majorData, onSave, onCancel }) => {
         setSelectedSchool(school);
         setSearchTerm(school.name); // 선택한 학교 이름을 입력창에 표시
         setFilteredSchools([]); // 리스트 닫기
-        setIsManualSchoolInput(false); // 수동 입력 모드 비활성화
+        setSchoolInput(false); // 수동 입력 모드 비활성화
     };
 
     const handleMajorSelect = (major) => {
         setSelectedMajor(major);
         setMajorSearchTerm(major.name); // 선택한 전공 이름을 입력창에 표시
         setFilteredMajors([]); // 리스트 닫기
-        setIsManualMajorInput(false); // 수동 입력 모드 비활성화
+        setMajorInput(false); // 수동 입력 모드 비활성화
     };
 
     // 수동 입력 모드 토글 함수
     const toggleManualSchoolInput = () => {
-        setIsManualSchoolInput(!isManualSchoolInput);
-        if (!isManualSchoolInput) {
+        setSchoolInput(!schoolInput);
+        if (!schoolInput) {
             setSelectedSchool(null);
             setSearchTerm("");
         }
     };
 
     const toggleManualMajorInput = () => {
-        setIsManualMajorInput(!isManualMajorInput);
-        if (!isManualMajorInput) {
+        setMajorInput(!majorInput);
+        if (!majorInput) {
             setSelectedMajor(null);
             setMajorSearchTerm("");
         }
@@ -171,13 +171,13 @@ const EducationModal = ({ educationData, majorData, onSave, onCancel }) => {
         e.preventDefault();
 
         // 학교명 체크 - 수동 입력 모드인 경우에는 검색어를 사용
-        if (!isManualSchoolInput && !selectedSchool && !searchTerm) {
+        if (!schoolInput && !selectedSchool && !searchTerm) {
             alert('학교명을 입력해주세요.');
             return;
         }
 
         // 전공 체크 - 수동 입력 모드인 경우에는 검색어를 사용
-        if (!isManualMajorInput && !selectedMajor && !majorSearchTerm) {
+        if (!majorInput && !selectedMajor && !majorSearchTerm) {
             alert('전공을 입력해주세요.');
             return;
         }
@@ -215,8 +215,8 @@ const EducationModal = ({ educationData, majorData, onSave, onCancel }) => {
         // 저장할 때 formData에 학교명과 전공명 업데이트
         const updatedFormData = {
             ...formData,
-            eduSchool: isManualSchoolInput ? searchTerm : (selectedSchool ? selectedSchool.name : searchTerm),
-            eduMajor: isManualMajorInput ? majorSearchTerm : (selectedMajor ? selectedMajor.name : majorSearchTerm)
+            eduSchool: schoolInput ? searchTerm : (selectedSchool ? selectedSchool.name : searchTerm),
+            eduMajor: majorInput ? majorSearchTerm : (selectedMajor ? selectedMajor.name : majorSearchTerm)
         };
 
         if (formData.eduStatus === '재학중' || formData.eduStatus === '휴학중') {
@@ -294,7 +294,7 @@ const EducationModal = ({ educationData, majorData, onSave, onCancel }) => {
                                     onClick={toggleManualSchoolInput}
                                     className="text-xs text-blue-600 hover:text-blue-800"
                                 >
-                                    {isManualSchoolInput ? '목록에서 선택하기' : '직접 입력하기'}
+                                    {schoolInput ? '목록에서 선택하기' : '직접 입력하기'}
                                 </button>
                             </div>
                             <input
@@ -304,10 +304,10 @@ const EducationModal = ({ educationData, majorData, onSave, onCancel }) => {
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm"
-                                placeholder={isManualSchoolInput ? "학교명을 직접 입력해주세요" : "학교 검색"}
+                                placeholder={schoolInput ? "학교명을 직접 입력해주세요" : "학교 검색"}
                                 required
                             />
-                            {!isManualSchoolInput && filteredSchools.length > 0 && (
+                            {!schoolInput && filteredSchools.length > 0 && (
                                 <ul className="mt-2 border border-gray-200 rounded-lg shadow-sm bg-white" style={{maxHeight: "150px", overflowY: "auto", padding: 0}}>
                                     {filteredSchools.map((school, index) => (
                                         <li
@@ -336,7 +336,7 @@ const EducationModal = ({ educationData, majorData, onSave, onCancel }) => {
                                     onClick={toggleManualMajorInput}
                                     className="text-xs text-blue-600 hover:text-blue-800"
                                 >
-                                    {isManualMajorInput ? '목록에서 선택하기' : '직접 입력하기'}
+                                    {majorInput ? '목록에서 선택하기' : '직접 입력하기'}
                                 </button>
                             </div>
                             <input
@@ -346,10 +346,10 @@ const EducationModal = ({ educationData, majorData, onSave, onCancel }) => {
                                 value={majorSearchTerm}
                                 onChange={(e) => setMajorSearchTerm(e.target.value)}
                                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm"
-                                placeholder={isManualMajorInput ? "전공을 직접 입력해주세요" : "전공 검색"}
+                                placeholder={majorInput ? "전공을 직접 입력해주세요" : "전공 검색"}
                                 required
                             />
-                            {!isManualMajorInput && filteredMajors.length > 0 && (
+                            {!majorInput && filteredMajors.length > 0 && (
                                 <ul className="mt-2 border border-gray-200 rounded-lg shadow-sm bg-white" style={{maxHeight: "150px", overflowY: "auto", padding: 0}}>
                                     {filteredMajors.map((major, index) => (
                                         <li
