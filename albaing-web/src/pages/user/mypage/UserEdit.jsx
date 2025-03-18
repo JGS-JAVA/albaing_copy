@@ -167,8 +167,8 @@ const EditUserPage = () => {
                         onChange={handleInputChange}
                         className="w-full p-2 border border-gray-300 rounded bg-[#F2F8FF] text-black"
                     >
-                        <option value="MALE">남성</option>
-                        <option value="FEMALE">여성</option>
+                        <option value="female">여성</option>
+                        <option value="male">남성</option>
                     </select>
                 </div>
 
