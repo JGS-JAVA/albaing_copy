@@ -1,10 +1,11 @@
-import {useState, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
 import {useAuth} from '../../../contexts/AuthContext';
 import EducationModal from '../../../components/modals/EducationModal';
 import CareerModal from '../../../components/modals/CareerModal';
 import apiResumeService from "../../../service/apiResumeService";
 import {ErrorMessage, LoadingSpinner, SuccessMessage} from "../../../components";
+import {AddressModal} from "../../../components/modals/AddressModal";
 
 const ResumeEdit = () => {
     const [resumeData, setResumeData] = useState({
@@ -24,6 +25,8 @@ const ResumeEdit = () => {
     });
 
     const [showEducationModal, setShowEducationModal] = useState(false);
+    const [showAddressModal, setShowAddressModal] = useState(false);
+    const [preferredLocation, setPreferredLocation] = useState("");
     const [showCareerModal, setShowCareerModal] = useState(false);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -50,7 +53,18 @@ const ResumeEdit = () => {
     const workSchedules = ['무관', '평일', '주말'];
     const shiftHours = ['무관', '오전(06:00~12:00)', '오후(12:00~18:00)', '저녁(18:00~24:00)', '새벽(00:00~06:00)'];
 
+
+    const handleAddressComplete = (addressData) => {
+        setPreferredLocation(addressData.cityDistrict);
+        setResumeData(prev => ({
+            ...prev,
+            resumeLocation: addressData.cityDistrict
+        }));
+        setShowAddressModal(false);
+    };
+
     useEffect(() => {
+
         const fetchResume = () => {
             setLoading(true);
             setError(null);
@@ -60,7 +74,10 @@ const ResumeEdit = () => {
                 apiResumeService.getResume(resumeId)
                     .then(data => {
                         console.log("이력서 ID로 데이터 로드 성공:", data);
-                        setResumeData(data || resumeData);
+                        setResumeData(
+                            data || resumeData
+                        );
+                        setPreferredLocation(data.resumeLocation || "");
                         setLoading(false);
                     })
                     .catch(error => {
@@ -321,11 +338,21 @@ const ResumeEdit = () => {
                                     type="text"
                                     id="resumeLocation"
                                     name="resumeLocation"
-                                    value={resumeData.resumeLocation || ''}
+                                    value={preferredLocation}
+                                    readOnly
+                                    placeholder="희망 근무지역을 검색하세요"
                                     onChange={handleChange}
                                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm"
-                                    placeholder="예: 서울시 강남구"
+                                    onClick={() => setShowAddressModal(true)}
                                 />
+
+
+                                {showAddressModal && (
+                                    <AddressModal
+                                        onComplete={handleAddressComplete}
+                                        onClose={() => setShowAddressModal(false)}
+                                    />
+                                )}
                             </div>
 
                             <div>
