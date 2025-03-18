@@ -47,7 +47,8 @@
     <select id="selectJobPostById" resultType="JobPost">
         SELECT
             j.*,
-            c.company_name AS companyName
+            c.company_name AS companyName,
+            c.company_logo AS companyLogo
         FROM
             job_posts j
                 LEFT JOIN companies c ON j.company_id = c.company_id
@@ -55,16 +56,15 @@
             j.job_post_id = #{jobPostId}
     </select>
 
-
     <!-- 기업별 채용공고 목록 조회 -->
     <select id="getJobPostsByCompanyId" resultType="JobPost">
         SELECT
             j.*,
-            c.company_name AS companyName
+            c.company_name AS companyName,
+            c.company_logo AS companyLogo
         FROM
             job_posts j
-                LEFT JOIN
-            companies c ON j.company_id = c.company_id
+                LEFT JOIN companies c ON j.company_id = c.company_id
         WHERE
             j.company_id = #{companyId}
         ORDER BY
@@ -75,11 +75,11 @@
     <select id="selectJobPostList" resultType="JobPost">
         SELECT
         j.*,
-        c.company_name AS companyName
+        c.company_name AS companyName,
+        c.company_logo AS companyLogo
         FROM
         job_posts j
-        LEFT JOIN
-        companies c ON j.company_id = c.company_id
+        LEFT JOIN companies c ON j.company_id = c.company_id
         <include refid="searchCriteria" />
         ORDER BY
         j.job_post_created_at DESC
@@ -145,11 +145,6 @@
         LEFT JOIN companies c ON j.company_id = c.company_id
         <include refid="searchCriteria" />
     </select>
-
-
-
-
-
 
     <!-- 채용공고 조회 (잔여시간 기준 조회  - 곧마감) -->
     <select id="mainPageJobPostsAlignByDueDateASC">
