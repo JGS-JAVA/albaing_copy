@@ -33,9 +33,12 @@ const apiMyPageService = {
     // 사용자 정보 수정
     updateUser: function (userId,setUsers) {
         return axios
-            .put(`${API_MYPAGE_URL}/user/update/${userId}`, setUsers)
+            .put(`${API_MYPAGE_URL}/user/update/${userId}`, setUsers, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+        })
             .then((res) => {
                 setUsers(res.data);
+                console.log("setuser: ",setUsers);
                 console.log("사용자 정보 수정 성공 : ",res.data);
 
             })

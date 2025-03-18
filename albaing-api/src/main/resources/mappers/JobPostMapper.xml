@@ -145,4 +145,64 @@
         LEFT JOIN companies c ON j.company_id = c.company_id
         <include refid="searchCriteria" />
     </select>
+
+    <!-- 채용공고 조회 (잔여시간 기준 조회  - 곧마감) -->
+    <select id="mainPageJobPostsAlignByDueDateASC">
+        SELECT *
+        FROM JOB_POSTS
+        WHERE job_post_due_date >= NOW()
+        ORDER BY job_post_due_date ASC
+        LIMIT 3
+    </select>
+
+    <!-- 채용공고 조회 (잔여시간 기준 조회  - 신규) -->
+    <select id="mainPageJobPostsAlignByDueDateDESC">
+        SELECT *
+        FROM JOB_POSTS
+        WHERE job_post_due_date >= NOW()
+        ORDER BY job_post_due_date DESC
+        LIMIT 6
+    </select>
+
+    <!-- 채용공고 조회 (맞춤형 조회) -->
+    <select id="mainPageJobPostsAlignByUserResume">
+        SELECT *
+        FROM JOB_POSTS
+        WHERE  job_post_work_place = #{resumeLocation} OR job_post_working_period = #{resumeJobDuration}
+        ORDER BY RAND()
+        LIMIT 6
+    </select>
+
+    <!-- 채용공고 조회 (무작위 조회) -->
+    <select id="mainPageJobPostsRandom">
+        SELECT *
+        FROM JOB_POSTS
+        WHERE job_post_due_date >= NOW()
+        ORDER BY RAND()
+        LIMIT 6
+    </select>
+
+    <!-- 검색 결과 표시 -->
+    <select id="searchJobPosts">
+        SELECT *
+        FROM JOB_POSTS
+        JOIN COMPANIES on JOB_POSTS.company_id = COMPANIES.company_id
+        <where>
+            <trim prefixOverrides="AND">
+                <if test="regionSelect != null and regionSelect != ''">
+                    AND JOB_POSTS.job_post_work_place LIKE CONCAT('%', #{regionSelect}, '%')
+                </if>
+                <if test="jobCategorySelect != null and jobCategorySelect != ''">
+                    AND JOB_POSTS.job_post_job_category LIKE CONCAT('%', #{jobCategorySelect}, '%')
+                </if>
+                <if test="searchKeyword != null and searchKeyword != ''">
+                    AND (
+                    JOB_POSTS.job_post_title LIKE CONCAT('%', #{searchKeyword}, '%')
+                    OR JOB_POSTS.job_post_contact_number LIKE CONCAT('%', #{searchKeyword}, '%')
+                    OR COMPANIES.company_name LIKE CONCAT('%', #{searchKeyword}, '%')
+                    )
+                </if>
+            </trim>
+        </where>
+    </select>
 </mapper>

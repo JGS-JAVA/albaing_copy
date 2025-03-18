@@ -10,7 +10,7 @@ public interface UserService {
 
 
     // 사용자 정보 조회
-    User getUserById(int userId);
+    User getUserById(Long userId);
 
     // 사용자 정보 조회
     User getUserByEmail(String userEmail);

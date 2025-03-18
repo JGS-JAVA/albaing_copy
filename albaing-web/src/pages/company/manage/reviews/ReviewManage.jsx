@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import {
     ChatBubbleLeftIcon,
@@ -9,7 +9,7 @@ import {
     ArrowPathIcon
 } from '@heroicons/react/24/outline';
 
-const ReviewManage = ({ companyId, reviews, refreshReviews }) => {
+const ReviewManage = ({companyId, reviews, refreshReviews}) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedReview, setSelectedReview] = useState(null);
     const [commentInput, setCommentInput] = useState('');
@@ -30,7 +30,7 @@ const ReviewManage = ({ companyId, reviews, refreshReviews }) => {
         setLoading(true);
         setError(null);
 
-        axios.get(`/api/companies/${companyId}/reviews/${reviewId}`, { withCredentials: true })
+        axios.get(`/api/companies/${companyId}/reviews/${reviewId}`, {withCredentials: true})
             .then(response => {
                 setSelectedReview(response.data);
                 setComments(response.data.comments || []);
@@ -63,7 +63,7 @@ const ReviewManage = ({ companyId, reviews, refreshReviews }) => {
         axios.post(`/api/companies/${companyId}/reviews/${selectedReview.reviewId}/comments`, {
             reviewId: selectedReview.reviewId,
             commentContent: commentInput
-        }, { withCredentials: true })
+        }, {withCredentials: true})
             .then(() => {
                 fetchReviewDetails(selectedReview.reviewId);
                 setCommentInput('');
@@ -79,7 +79,7 @@ const ReviewManage = ({ companyId, reviews, refreshReviews }) => {
     const handleDeleteReview = (reviewId) => {
         setLoading(true);
 
-        axios.delete(`/api/companies/${companyId}/reviews/${reviewId}`, { withCredentials: true })
+        axios.delete(`/api/companies/${companyId}/reviews/${reviewId}`, {withCredentials: true})
             .then(() => {
                 if (selectedReview && selectedReview.reviewId === reviewId) {
                     setSelectedReview(null);
@@ -133,7 +133,7 @@ const ReviewManage = ({ companyId, reviews, refreshReviews }) => {
                     onClick={refreshReviews}
                     className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                 >
-                    <ArrowPathIcon className="h-4 w-4 mr-1" />
+                    <ArrowPathIcon className="h-4 w-4 mr-1"/>
                     새로고침
                 </button>
             </div>
@@ -163,7 +163,7 @@ const ReviewManage = ({ companyId, reviews, refreshReviews }) => {
                     <div className="bg-white rounded-lg shadow-md overflow-hidden">
                         <div className="px-6 py-4 border-b border-gray-200">
                             <h2 className="text-lg font-semibold flex items-center">
-                                <ChatBubbleLeftIcon className="h-5 w-5 mr-2 text-blue-500" />
+                                <ChatBubbleLeftIcon className="h-5 w-5 mr-2 text-blue-500"/>
                                 리뷰 목록
                                 <span className="ml-2 text-sm text-gray-500">
                                     총 {filteredReviews.length}개
@@ -192,7 +192,7 @@ const ReviewManage = ({ companyId, reviews, refreshReviews }) => {
                                                 }}
                                                 className="text-red-500 hover:text-red-700"
                                             >
-                                                <TrashIcon className="h-4 w-4" />
+                                                <TrashIcon className="h-4 w-4"/>
                                             </button>
                                         </div>
                                         <p className="text-sm text-gray-500 line-clamp-2">{review.reviewContent}</p>
@@ -222,7 +222,7 @@ const ReviewManage = ({ companyId, reviews, refreshReviews }) => {
                                         onClick={() => setConfirmDelete(selectedReview)}
                                         className="text-red-500 hover:text-red-700"
                                     >
-                                        <TrashIcon className="h-5 w-5" />
+                                        <TrashIcon className="h-5 w-5"/>
                                     </button>
                                 </div>
                                 <p className="text-gray-500 text-sm mb-4">
@@ -236,7 +236,7 @@ const ReviewManage = ({ companyId, reviews, refreshReviews }) => {
                             {/* 댓글 섹션 */}
                             <div className="p-6">
                                 <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
-                                    <ChatBubbleLeftRightIcon className="h-5 w-5 mr-2 text-blue-500" />
+                                    <ChatBubbleLeftRightIcon className="h-5 w-5 mr-2 text-blue-500"/>
                                     댓글 {comments.length}개
                                 </h3>
 
@@ -246,14 +246,19 @@ const ReviewManage = ({ companyId, reviews, refreshReviews }) => {
                                         {comments.map((comment) => (
                                             <div key={comment.commentId} className="bg-gray-50 p-4 rounded-lg">
                                                 <div className="flex justify-between items-start">
-                                                    <p className="text-sm text-gray-500">
-                                                        {formatDate(comment.commentCreatedAt)}
-                                                    </p>
+                                                    <div>
+                                                        <span className="text-sm font-medium text-blue-600 bg-blue-100 px-2 py-1 rounded mr-2">
+                                                        {comment.userId === parseInt(companyId) ? '관리자' : '알바잉'}
+                                                        </span>
+                                                        <p className="text-sm text-gray-500 inline-block">
+                                                            {formatDate(comment.commentCreatedAt)}
+                                                        </p>
+                                                    </div>
                                                     <button
                                                         onClick={() => setConfirmDeleteComment(comment)}
                                                         className="text-gray-400 hover:text-red-500"
                                                     >
-                                                        <XMarkIcon className="h-4 w-4" />
+                                                        <XMarkIcon className="h-4 w-4"/>
                                                     </button>
                                                 </div>
                                                 <p className="mt-2 text-gray-700">{comment.commentContent}</p>
@@ -280,7 +285,7 @@ const ReviewManage = ({ companyId, reviews, refreshReviews }) => {
                                             className="px-4 py-2 bg-blue-600 text-white rounded-r-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
                                             disabled={!commentInput.trim() || loading}
                                         >
-                                            <PaperAirplaneIcon className="h-5 w-5" />
+                                            <PaperAirplaneIcon className="h-5 w-5"/>
                                         </button>
                                     </div>
                                     <p className="text-xs text-gray-500">
@@ -291,7 +296,7 @@ const ReviewManage = ({ companyId, reviews, refreshReviews }) => {
                         </div>
                     ) : (
                         <div className="bg-white rounded-lg shadow-md p-8 text-center">
-                            <ChatBubbleLeftIcon className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                            <ChatBubbleLeftIcon className="h-12 w-12 text-gray-300 mx-auto mb-4"/>
                             <p className="text-gray-500">왼쪽 목록에서 리뷰를 선택하여 상세 내용을 확인하세요.</p>
                         </div>
                     )}

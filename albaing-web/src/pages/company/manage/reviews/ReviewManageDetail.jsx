@@ -176,9 +176,14 @@ const CompanyReviewManagementDetail = () => {
                             {comments.map((comment) => (
                                 <li key={comment.commentId} className="bg-gray-50 p-4 rounded">
                                     <div className="flex justify-between">
-                                        <p className="text-sm text-gray-500">
-                                            {new Date(comment.commentCreatedAt).toLocaleString()}
-                                        </p>
+                                        <div>
+                                            <span className="text-sm font-medium text-blue-600 bg-blue-100 px-2 py-1 rounded mr-2">
+                                            {comment.userId === parseInt(companyId) ? '관리자' : '알바잉'}
+                                            </span>
+                                            <p className="text-sm text-gray-500 inline-block">
+                                                {new Date(comment.commentCreatedAt).toLocaleString()}
+                                            </p>
+                                        </div>
                                         <button
                                             onClick={() => handleDeleteComment(comment.commentId)}
                                             className="text-red-600 hover:text-red-800 text-sm"

@@ -77,6 +77,7 @@
         WHERE user_id = #{userId}
     </select>
 
+    <!--    이메일로 사용자 조회 -->
     <select id="getUserByEmail">
     SELECT *
     FROM USERS
@@ -87,14 +88,13 @@
     <update id="updateUser">
         UPDATE USERS
         SET
-
-            user_email= #{userEmail},
-            user_password = #{userPassword},
             user_name=#{userName},
-            user_birthdate = #{userBirthdate},
-            user_gender = #{userGender},
+            user_email= #{userEmail},
             user_phone = #{userPhone},
+            user_gender = #{userGender},
+            user_birthdate = #{userBirthdate},
             user_address = #{userAddress},
+            user_password = #{userPassword},
             user_profile_image = #{userProfileImage}
         WHERE user_id = #{userId}
     </update>
