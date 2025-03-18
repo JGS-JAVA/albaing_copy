@@ -93,7 +93,7 @@ export default function JobpostList() {
                         if (response.data) {
                             newCompanyInfo[companyId] = {
                                 companyName: response.data.companyName || "회사명 미지정",
-                                companyImage: response.data.companyImage || null
+                                companyLogo: response.data.companyLogo || null
                             };
                         }
                         return companyId;
@@ -102,7 +102,7 @@ export default function JobpostList() {
                         // 회사 정보 조회 실패 시 처리하지 않음
                         newCompanyInfo[companyId] = {
                             companyName: "회사명 미지정",
-                            companyImage: null
+                            companyLogo: null
                         };
                         return companyId;
                     });
@@ -119,7 +119,7 @@ export default function JobpostList() {
         if (job.companyName) {
             return {
                 companyName: job.companyName,
-                companyImage: job.companyImage || null
+                companyLogo: job.companyLogo || null
             };
         }
 
@@ -131,7 +131,7 @@ export default function JobpostList() {
         // 기본 정보
         return {
             companyName: "회사명 미지정",
-            companyImage: null
+            companyLogo: null
         };
     };
 

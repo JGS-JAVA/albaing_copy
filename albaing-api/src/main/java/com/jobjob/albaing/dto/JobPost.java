@@ -30,4 +30,5 @@ public class JobPost {
     private LocalDateTime jobPostUpdatedAt;  // 공고 최종 수정일
 
     private String companyName;
+    private String companyLogo;
 }
