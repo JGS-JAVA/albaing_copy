@@ -33,7 +33,7 @@ public interface UserMapper {
 
 
     // 마이페이지- 사용자 정보 조회
-    User getUserById(int userId);
+    User getUserById(Long userId);
 
     User getUserByEmail(String email);
 

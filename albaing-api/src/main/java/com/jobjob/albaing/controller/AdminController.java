@@ -35,12 +35,9 @@ public class AdminController {
                                                @RequestParam(required = false) String resumeTitle,
                                                @RequestParam(required = false) String resumeCategory,
                                                @RequestParam(required = false) String resumeJobType,
-                                               @RequestParam(required = false) String sortOrderBy,
+                                               @RequestParam(defaultValue = "이름") String sortOrderBy,
                                                @RequestParam(required = false) Boolean isDESC) {
 
-        if (Objects.equals(sortOrderBy, "") || sortOrderBy == null) {
-            sortOrderBy = "이름";
-        }
         return adminService.adminSearchResumes(userName, resumeTitle, resumeCategory, resumeJobType, sortOrderBy, isDESC);
     }
 
@@ -49,12 +46,9 @@ public class AdminController {
     public List<ViewJobApplication> adminSearchJobApplications(@RequestParam(required = false) String userName,
                                                                @RequestParam(required = false) String companyName,
                                                                @RequestParam(required = false) String jobPostTitle,
-                                                               @RequestParam(required = false) String sortOrderBy,
+                                                               @RequestParam(defaultValue = "지원자명") String sortOrderBy,
                                                                @RequestParam(required = false) Boolean isDESC) {
 
-        if (Objects.equals(sortOrderBy, "") || sortOrderBy == null) {
-            sortOrderBy = "지원자명";
-        }
         return adminService.adminSearchJobApplications(userName, companyName, jobPostTitle, sortOrderBy, isDESC);
     }
 
@@ -64,12 +58,9 @@ public class AdminController {
                                               @RequestParam(required = false) String companyOwnerName,
                                               @RequestParam(required = false) String companyPhone,
                                               @RequestParam(required = false) String companyRegistrationNumber,
-                                              @RequestParam(required = false) String sortOrderBy,
+                                              @RequestParam(defaultValue = "법인명") String sortOrderBy,
                                               @RequestParam(required = false) Boolean isDESC) {
 
-        if (Objects.equals(sortOrderBy, "") || sortOrderBy == null) {
-            sortOrderBy = "법인명";
-        }
         return adminService.adminSearchCompanies(companyName, companyOwnerName, companyPhone, companyRegistrationNumber, sortOrderBy, isDESC);
     }
 
@@ -78,12 +69,9 @@ public class AdminController {
     public List<ViewJobPost> adminSearchJobPosts(@RequestParam(required = false) String companyName,
                                                  @RequestParam(required = false) String jobPostTitle,
                                                  @RequestParam(required = false) String jobPostStatus,
-                                                 @RequestParam(required = false) String sortOrderBy,
+                                                 @RequestParam(defaultValue = "공고 제목") String sortOrderBy,
                                                  @RequestParam(required = false) Boolean isDESC) {
 
-        if (Objects.equals(sortOrderBy, "") || sortOrderBy == null) {
-            sortOrderBy = "공고 제목";
-        }
         return adminService.adminSearchJobPosts(companyName, jobPostTitle, jobPostStatus, sortOrderBy, isDESC);
     }
 

@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService {
 
     // 사용자 정보 조회
     @Override
-    public User getUserById(int userId) {
+    public User getUserById(Long userId) {
         return userMapper.getUserById(userId);
     }
 
