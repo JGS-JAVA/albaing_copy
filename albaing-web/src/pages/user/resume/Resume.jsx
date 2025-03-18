@@ -148,9 +148,9 @@ const Resume = () => {
                 <div className="p-6 border-b border-gray-200 flex flex-col md:flex-row items-center md:items-start">
                     <div className="mb-4 md:mb-0 md:mr-6">
                         <div className="w-24 h-24 bg-gray-200 rounded-full overflow-hidden">
-                            {userData?.profileImage ? (
+                            {userData?.userProfileImage ? (
                                 <img
-                                    src={userData.profileImage}
+                                    src={userData.userProfileImage}
                                     alt="프로필 사진"
                                     className="w-full h-full object-cover"
                                 />
