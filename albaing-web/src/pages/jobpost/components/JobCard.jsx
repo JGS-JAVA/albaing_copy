@@ -13,7 +13,6 @@ const JobCard = ({
 
     const isActive = new Date(job.jobPostDueDate) > new Date() && (job.jobPostStatus !== false);
 
-
     return (
         <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 border border-gray-100 relative h-full">
             {/* 스크랩 버튼 */}
@@ -59,9 +58,9 @@ const JobCard = ({
             <Link to={`/jobs/${job.jobPostId}`} className="block h-full">
                 {/* 회사 이미지 영역 - 큰 이미지 */}
                 <div className="relative w-full h-48">
-                    {company.companyImage ? (
+                    {company.companyLogo ? (
                         <img
-                            src={company.companyImage}
+                            src={company.companyLogo}
                             alt={company.companyName}
                             className="w-full h-full object-cover"
                             onError={(e) => {

@@ -12,7 +12,6 @@ const Resume = () => {
     useEffect(() => {
         const fetchResume = () => {
             if (!userData?.userId) {
-                console.log("userData 또는 userId가 없음");
                 setLoading(false);
                 setError('사용자 정보를 찾을 수 없습니다.');
                 return;
@@ -25,21 +24,17 @@ const Resume = () => {
             if (userData.resumeId) {
                 apiResumeService.getResume(userData.resumeId)
                     .then(resumeData => {
-                        console.log("이력서 ID로 조회 성공:", resumeData);
                         setResume(resumeData);
                         setLoading(false);
                     })
                     .catch(error => {
-                        console.error("이력서 ID로 조회 실패:", error);
                         // 실패할 경우 사용자 ID로 조회 시도
                         apiResumeService.getResumeByUserId(userData.userId)
                             .then(resumeData => {
-                                console.log("사용자 ID로 이력서 조회 성공:", resumeData);
                                 setResume(resumeData);
                                 setLoading(false);
                             })
                             .catch(error => {
-                                console.error("이력서 조회 오류:", error);
                                 setError('이력서를 불러오는 중 오류가 발생했습니다.');
                                 setLoading(false);
                             });
@@ -48,12 +43,10 @@ const Resume = () => {
                 // 사용자 ID로 조회 시도
                 apiResumeService.getResumeByUserId(userData.userId)
                     .then(resumeData => {
-                        console.log("사용자 ID로 이력서 조회 성공:", resumeData);
                         setResume(resumeData);
                         setLoading(false);
                     })
                     .catch(error => {
-                        console.error("이력서 조회 오류:", error);
                         setError('이력서를 불러오는 중 오류가 발생했습니다.');
                         setLoading(false);
                     });

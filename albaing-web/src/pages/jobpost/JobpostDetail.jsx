@@ -19,7 +19,7 @@ export default function JobPostDetail() {
     const [alreadyApplied, setAlreadyApplied] = useState(false);
     const [applicationResult, setApplicationResult] = useState(null);
     const [companyName, setCompanyName] = useState("");
-    const [companyImage, setCompanyImage] = useState(null);
+    const [companyLogo, setCompanyLogo] = useState("");
 
     const alertModal = useModal();
     const confirmModal = useModal();
@@ -54,7 +54,7 @@ export default function JobPostDetail() {
                             .then((companyResponse) => {
                                 if (companyResponse.data) {
                                     setCompanyName(companyResponse.data.companyName || "회사명 미지정");
-                                    setCompanyImage(companyResponse.data.companyImage || null);
+                                    setCompanyLogo(companyResponse.data.companyLogo || "");
                                 }
                             })
                             .catch(() => {
@@ -340,34 +340,33 @@ export default function JobPostDetail() {
                     </div>
                 )}
 
-                {/* 회사 이미지 표시 - 크게 */}
                 <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8">
-                    {companyImage && (
-                        <div className="w-full h-64 bg-gray-100">
-                            <img
-                                src={companyImage}
-                                alt={companyName}
-                                className="w-full h-full object-cover"
-                                onError={(e) => {
-                                    e.target.onerror = null;
-                                    e.target.style.display = "none";
-                                }}
-                            />
-                        </div>
-                    )}
                     <div className="flex items-center p-6 border-b border-gray-200">
-                        <div className="flex-shrink-0 h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-2xl font-bold">
-                            {companyName ? companyName.charAt(0) : 'C'}
+                        <div className="flex-shrink-0 h-16 w-16 rounded-full overflow-hidden">
+                            {companyLogo ? (
+                                <img
+                                    src={companyLogo}
+                                    alt={`${companyName} logo`}
+                                    className="h-full w-full object-cover"
+                                />
+                            ) : (
+                                <div
+                                    className="flex items-center justify-center h-full w-full bg-blue-100 text-blue-600 text-2xl font-bold">
+                                    {companyName.charAt(0)}
+                                </div>
+                            )}
                         </div>
                         <div className="ml-6 flex-1">
                             <Link to={`/companies/${jobPost.companyId}`}>
-                            <h1 className="text-2xl font-bold text-gray-900">{companyName || "회사명 미지정"}</h1>
+                                <h1 className="text-2xl font-bold text-gray-900">{companyName || "회사명 미지정"}</h1>
                             </Link>
                             <div className="flex flex-wrap gap-2 mt-2">
-                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                <span
+                                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                     {jobPost.jobPostJobCategory || "미분류"}
                                 </span>
-                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                <span
+                                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                     {jobPost.jobPostWorkPlace ? jobPost.jobPostWorkPlace.split(' ')[0] : "지역 미지정"}
                                 </span>
                             </div>

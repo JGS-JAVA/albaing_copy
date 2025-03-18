@@ -35,9 +35,6 @@ const RegisterPerson = () => {
         const birthdayParam = params.get("birthday"); // MMDD 형식
         const profileImageParam = params.get("profileImage");
 
-        console.log("birthyearParam:", birthyearParam);
-        console.log("birthdayParam:", birthdayParam);
-
         setUserName(nicknameParam || "");
         setUserEmail(email || "");
         setUserProfileImage(profileImageParam || "");

@@ -73,7 +73,6 @@ const ResumeEdit = () => {
             if (resumeId && resumeId !== 'undefined') {
                 apiResumeService.getResume(resumeId)
                     .then(data => {
-                        console.log("이력서 ID로 데이터 로드 성공:", data);
                         setResumeData(
                             data || resumeData
                         );
@@ -81,16 +80,13 @@ const ResumeEdit = () => {
                         setLoading(false);
                     })
                     .catch(error => {
-                        console.error('이력서 ID로 조회 실패:', error);
                         if (userData?.userId) {
                             apiResumeService.getResumeByUserId(userData.userId)
                                 .then(data => {
-                                    console.log("사용자 ID로 데이터 로드 성공:", data);
                                     setResumeData(data || resumeData);
                                     setLoading(false);
                                 })
                                 .catch(error => {
-                                    console.error('이력서 조회 오류:', error);
                                     setError(`이력서 정보를 불러오는 중 오류가 발생했습니다: ${error.message}`);
                                     setLoading(false);
                                 });
@@ -102,12 +98,10 @@ const ResumeEdit = () => {
             } else if (userData?.userId) {
                 apiResumeService.getResumeByUserId(userData.userId)
                     .then(data => {
-                        console.log("사용자 ID로 데이터 로드 성공:", data);
                         setResumeData(data || resumeData);
                         setLoading(false);
                     })
                     .catch(error => {
-                        console.error('이력서 조회 오류:', error);
                         setError(`이력서 정보를 불러오는 중 오류가 발생했습니다: ${error.message}`);
                         setLoading(false);
                     });
@@ -153,7 +147,6 @@ const ResumeEdit = () => {
     };
 
     const handleEducationUpdate = (educationData) => {
-        console.log("학력 정보 업데이트 받음:", educationData);
 
         setResumeData(prev => {
             const updated = {
@@ -163,7 +156,6 @@ const ResumeEdit = () => {
                     resumeId: prev.resumeId
                 }
             };
-            console.log("학력 정보 업데이트 후 이력서 데이터:", updated);
             return updated;
         });
 
@@ -172,7 +164,6 @@ const ResumeEdit = () => {
 
 
     const handleCareerUpdate = (careerData) => {
-        console.log("경력 정보 업데이트 받음:", careerData);
         setResumeData(prev => {
             const updated = {
                 ...prev,
@@ -181,7 +172,6 @@ const ResumeEdit = () => {
                     resumeId: prev.resumeId
                 }
             };
-            console.log("경력 정보 업데이트 후 이력서 데이터:", updated);
             return updated;
         });
         setShowCareerModal(false);
@@ -215,7 +205,6 @@ const ResumeEdit = () => {
             careerHistory: resumeData.careerHistory || null
         };
 
-        console.log("이력서 저장 요청 데이터:", requestData);
 
         apiResumeService.updateResume(resumeData.resumeId, requestData)
             .then(() => {
@@ -225,7 +214,6 @@ const ResumeEdit = () => {
                 }, 2000);
             })
             .catch(error => {
-                console.error('이력서 저장 오류:', error);
                 setError('이력서를 저장하는 중 오류가 발생했습니다: ' + (error.response?.data?.message || error.message));
                 window.scrollTo(0, 0);
             })
