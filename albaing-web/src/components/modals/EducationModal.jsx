@@ -71,7 +71,6 @@ const EducationModal = ({ educationData, majorData, onSave, onCancel }) => {
         } else if (['전문학사', '학사', '석사', '박사'].includes(formData.eduDegree)) {
             filtered = filtered.filter(school => school.type === '대학교' || school.type === '대학원');
         }
-
         setFilteredSchools(filtered);
     }, [searchTerm, schoolList, formData.eduDegree]);
 
