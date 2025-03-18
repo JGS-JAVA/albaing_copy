@@ -54,7 +54,7 @@ const EducationModal = ({ educationData, majorData, onSave, onCancel }) => {
         fetchMajors();
     }, []);
 
-    // 학교 검색어 입력 시 필터링 - 대학교/고등학교 필터링 추가
+    // 학교 검색어 입력 시 필터링 - 대학교/고등학교 필터링
     useEffect(() => {
         if (searchTerm === "") {
             setFilteredSchools([]);
@@ -108,7 +108,7 @@ const EducationModal = ({ educationData, majorData, onSave, onCancel }) => {
         setIsManualMajorInput(false); // 수동 입력 모드 비활성화
     };
 
-    // 수동 입력 모드 토글 함수들
+    // 수동 입력 모드 토글 함수
     const toggleManualSchoolInput = () => {
         setIsManualSchoolInput(!isManualSchoolInput);
         if (!isManualSchoolInput) {
