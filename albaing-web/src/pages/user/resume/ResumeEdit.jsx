@@ -56,10 +56,15 @@ const ResumeEdit = () => {
 
     const handleAddressComplete = (addressData) => {
         setPreferredLocation(addressData.cityDistrict);
+        setResumeData(prev => ({
+            ...prev,
+            resumeLocation: addressData.cityDistrict
+        }));
         setShowAddressModal(false);
     };
 
     useEffect(() => {
+
         const fetchResume = () => {
             setLoading(true);
             setError(null);
@@ -69,7 +74,10 @@ const ResumeEdit = () => {
                 apiResumeService.getResume(resumeId)
                     .then(data => {
                         console.log("이력서 ID로 데이터 로드 성공:", data);
-                        setResumeData(data || resumeData);
+                        setResumeData(
+                            data || resumeData
+                        );
+                        setPreferredLocation(data.resumeLocation || "");
                         setLoading(false);
                     })
                     .catch(error => {
