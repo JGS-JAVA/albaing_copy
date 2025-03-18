@@ -39,8 +39,6 @@ const ReviewModal = ({ companyId, onClose, onSubmit }) => {
                 withCredentials: true
             });
 
-            console.log("리뷰 작성 응답:", response.data);
-
             if (typeof onSubmit === 'function') {
                 await onSubmit({
                     companyId: parseInt(companyId),

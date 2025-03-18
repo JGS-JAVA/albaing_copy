@@ -23,7 +23,6 @@ export default function FindId() {
         axios
             .get(endpoint)
             .then(response => {
-                console.log("🔹 API 응답 데이터:", response.data);
 
                 const email = userType === "user" ? response.data.userEmail : response.data.companyEmail;
 

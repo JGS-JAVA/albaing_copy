@@ -9,7 +9,6 @@ const apiMyApplicationService = {
             .get(`${API_APPLICATION_URL}/resume/${resumeId}`)
             .then((res) => {
                 setApplications(res.data);
-                console.log("지원 목록 가져오기 성공", res.data);
             })
             .catch((err) => {
                 console.error("지원 목록 불러오기 에러 발생:", err);
@@ -22,7 +21,6 @@ const apiMyApplicationService = {
             .get(`${API_APPLICATION_URL}/status/${resumeId}`)
             .then((res) => {
                 setApplicationStats(res.data);
-                console.log("지원 현황 가져오기 성공", res.data);
             })
             .catch((err) => {
                 console.error("지원 현황 불러오기 에러 발생:", err);

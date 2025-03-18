@@ -18,21 +18,16 @@ export const AddressModal = ({onComplete,onClose}) => {
         // 입력한 지역명(예를 들어 강남구)에 해당하는 모든 주소 검색
         const searchAddress = (keyword) => {
             if (!window.kakao || !window.kakao.maps) {
-                console.error("카카오 API가 로드되지 않음");
                 return;
             }
 
             const places = new window.kakao.maps.services.Places();
             places.keywordSearch(keyword, (result, status) => {
-                console.log("검색어:", keyword);
-                console.log("API 응답 상태:", status);
-                console.log("검색 결과:", result);
 
                 if (status === window.kakao.maps.services.Status.OK) {
                     setResults(result);
                 } else {
                     setResults([]);
-                    console.warn("검색 결과 없음");
                 }
             });
         };

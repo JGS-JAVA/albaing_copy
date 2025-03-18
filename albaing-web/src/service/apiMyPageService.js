@@ -11,7 +11,6 @@ const apiMyPageService = {
             .then(
                 (res) => {
                     setUser(res.data);
-                    console.log("사용자 정보 조회 성공", res.data);
                 })
             .catch((err) => {
                 console.error("사용자 정보 조회 실패", err);
@@ -24,7 +23,6 @@ const apiMyPageService = {
             .get(`http://localhost:8080/api/resume/user/${userId}`)
             .then((res) => {
                 setResume(res.data);
-                console.log("사용자 이력서 조회 성공", res.data);
             })
             .catch((err) => {
                 console.error("사용자 이력서 조회 실패", err);
@@ -38,8 +36,6 @@ const apiMyPageService = {
         })
             .then((res) => {
                 setUsers(res.data);
-                console.log("setuser: ",setUsers);
-                console.log("사용자 정보 수정 성공 : ",res.data);
 
             })
             .catch((err) => {
