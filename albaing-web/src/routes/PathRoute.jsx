@@ -34,6 +34,11 @@ import Find from "../pages/auth/find/Find";
 import MyScrap from "../pages/user/mypage/MyScrap";
 import CompanyProfileEdit from "../pages/company/manage/profile/CompanyProfileEdit";
 import MyReviews from "../pages/user/mypage/MyReviews";
+import About from "../pages/home/About";
+import FAQ from "../pages/home/FAQ";
+import Contact from "../pages/home/Contact";
+import Terms from "../pages/home/Terms";
+import Privacy from "../pages/home/Privacy";
 
 // 메인 레이아웃 컴포넌트
 const MainLayout = ({children}) => (
@@ -54,6 +59,12 @@ function PathRoute() {
             <Routes>
                 {/* 모든 사용자 접근 가능 */}
                 <Route path="/" element={<MainLayout><Home /></MainLayout>} /> {/* 메인 홈페이지 */}
+                <Route path="/about" element={<MainLayout><About /></MainLayout>} /> {/* 회사 소개 페이지 */}
+                <Route path="/customer/faq" element={<MainLayout><FAQ /></MainLayout>} /> {/* 자주 하는 문의 페이지 */}
+                <Route path="/customer/contact" element={<MainLayout><Contact /></MainLayout>} /> {/* 문의 페이지 */}
+                {/*<Route path="/customer/notice" element={<MainLayout><Notice /></MainLayout>} /> /!* 공지사항 페이지 *!/*/}
+                <Route path="/terms" element={<MainLayout><Terms /></MainLayout>} /> {/* 이용약관 페이지 */}
+                <Route path="/privacy" element={<MainLayout><Privacy /></MainLayout>} /> {/* 개인정보처리방침 페이지 */}
                 <Route path="/login" element={<MainLayout><Login /></MainLayout>} /> {/* 로그인 페이지 */}
                 <Route path="/register" element={<MainLayout><RegisterPage /></MainLayout>} /> {/* 회원가입 선택 페이지 */}
                 <Route path="/register/person" element={<MainLayout><RegisterPerson /></MainLayout>} /> {/* 개인 회원가입 페이지 */}
@@ -92,7 +103,6 @@ function PathRoute() {
                     <Route path="/jobs/new" element={<MainLayout><JobpostAdd/></MainLayout>}/> {/* 채용공고 등록 페이지 */}
                     <Route path="/jobs/edit/:jobPostId" element={<MainLayout><JobpostEdit/></MainLayout>}/> {/* 채용공고 수정 페이지 */}
                     <Route path="/resumes/:resumeId/user/:userId" element={<MainLayout><ResumeView /></MainLayout>}/> {/* 지원자 이력서 상세 보기 */}
-                    {/*<Route path="/jobs/:id/applications" element={<MainLayout><JobApplicationManager /></MainLayout>} /> /!* 채용공고 지원자 관리 페이지 *!/*/}
                 </Route>
 
 

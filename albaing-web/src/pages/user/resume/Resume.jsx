@@ -12,7 +12,6 @@ const Resume = () => {
     useEffect(() => {
         const fetchResume = () => {
             if (!userData?.userId) {
-                console.log("userData 또는 userId가 없음");
                 setLoading(false);
                 setError('사용자 정보를 찾을 수 없습니다.');
                 return;
@@ -25,21 +24,17 @@ const Resume = () => {
             if (userData.resumeId) {
                 apiResumeService.getResume(userData.resumeId)
                     .then(resumeData => {
-                        console.log("이력서 ID로 조회 성공:", resumeData);
                         setResume(resumeData);
                         setLoading(false);
                     })
                     .catch(error => {
-                        console.error("이력서 ID로 조회 실패:", error);
                         // 실패할 경우 사용자 ID로 조회 시도
                         apiResumeService.getResumeByUserId(userData.userId)
                             .then(resumeData => {
-                                console.log("사용자 ID로 이력서 조회 성공:", resumeData);
                                 setResume(resumeData);
                                 setLoading(false);
                             })
                             .catch(error => {
-                                console.error("이력서 조회 오류:", error);
                                 setError('이력서를 불러오는 중 오류가 발생했습니다.');
                                 setLoading(false);
                             });
@@ -48,12 +43,10 @@ const Resume = () => {
                 // 사용자 ID로 조회 시도
                 apiResumeService.getResumeByUserId(userData.userId)
                     .then(resumeData => {
-                        console.log("사용자 ID로 이력서 조회 성공:", resumeData);
                         setResume(resumeData);
                         setLoading(false);
                     })
                     .catch(error => {
-                        console.error("이력서 조회 오류:", error);
                         setError('이력서를 불러오는 중 오류가 발생했습니다.');
                         setLoading(false);
                     });
@@ -148,9 +141,9 @@ const Resume = () => {
                 <div className="p-6 border-b border-gray-200 flex flex-col md:flex-row items-center md:items-start">
                     <div className="mb-4 md:mb-0 md:mr-6">
                         <div className="w-24 h-24 bg-gray-200 rounded-full overflow-hidden">
-                            {userData?.profileImage ? (
+                            {userData?.userProfileImage ? (
                                 <img
-                                    src={userData.profileImage}
+                                    src={userData.userProfileImage}
                                     alt="프로필 사진"
                                     className="w-full h-full object-cover"
                                 />
