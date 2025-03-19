@@ -3,7 +3,7 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const ProtectedRoute = ({ userTypeRequired }) => {
-    const { isLoggedIn, userType, loading } = useAuth();
+    const { isLoggedIn, userType, userData, loading } = useAuth();
 
     if (loading) {
         return (
@@ -13,13 +13,19 @@ const ProtectedRoute = ({ userTypeRequired }) => {
         );
     }
 
+    // 로그인 확인
     if (!isLoggedIn) {
-        console.error('로그인이 필요한 페이지 접근 시도');
         return <Navigate to="/login" replace />;
     }
 
-    if (userTypeRequired && userType !== userTypeRequired) {
-        console.error(`인증된 사용자 타입(${userType})이 요구되는 타입(${userTypeRequired})과 일치하지 않음`);
+    // 어드민 권한 확인
+    if (userTypeRequired === "admin") {
+        if (!userData || !userData.userIsAdmin) {
+            return <Navigate to="/" replace />;
+        }
+    }
+    // 일반 사용자 타입 확인 (personal/company)
+    else if (userTypeRequired && userType !== userTypeRequired) {
         return <Navigate to="/" replace />;
     }
 

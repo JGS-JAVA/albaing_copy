@@ -38,6 +38,17 @@ import FAQ from "../pages/home/FAQ";
 import Contact from "../pages/home/Contact";
 import Terms from "../pages/home/Terms";
 import Privacy from "../pages/home/Privacy";
+import AdminMain from "../pages/admin/AdminMain";
+import AdminDashboard from "../pages/admin/AdminDashboard";
+import AdminUsersManage from "../pages/admin/manage/users/AdminUsersManage";
+import AdminCompaniesManage from "../pages/admin/manage/companies/AdminCompaniesManage";
+import AdminCompanyDetail from "../pages/admin/manage/companies/AdminCompanyDetail";
+import AdminJobPostsManage from "../pages/admin/manage/jobposts/AdminJobPostManage";
+import AdminNoticeEdit from "../pages/admin/manage/notices/AdminNoticeEdit";
+import AdminReviewManage from "../pages/admin/manage/reviews/AdminReviewManage";
+import AdminNoticeManage from "../pages/admin/manage/notices/AdminNoticeManage";
+import NoticeList from "../pages/notice/NoticeList";
+import NoticeDetail from "../pages/notice/NoticeDetail";
 
 // 메인 레이아웃 컴포넌트
 const MainLayout = ({children}) => (
@@ -56,6 +67,10 @@ function MyReviews() {
     return null;
 }
 
+function AdminApplicationsManager() {
+    return null;
+}
+
 function PathRoute() {
     return (
         <BrowserRouter>
@@ -65,7 +80,8 @@ function PathRoute() {
                 <Route path="/about" element={<MainLayout><About /></MainLayout>} /> {/* 회사 소개 페이지 */}
                 <Route path="/customer/faq" element={<MainLayout><FAQ /></MainLayout>} /> {/* 자주 하는 문의 페이지 */}
                 <Route path="/customer/contact" element={<MainLayout><Contact /></MainLayout>} /> {/* 문의 페이지 */}
-                {/*<Route path="/customer/notice" element={<MainLayout><Notice /></MainLayout>} /> /!* 공지사항 페이지 *!/*/}
+                <Route path="/notices" element={<MainLayout><NoticeList /></MainLayout>} />
+                <Route path="/notices/:noticeId" element={<MainLayout><NoticeDetail /></MainLayout>} />
                 <Route path="/terms" element={<MainLayout><Terms /></MainLayout>} /> {/* 이용약관 페이지 */}
                 <Route path="/privacy" element={<MainLayout><Privacy /></MainLayout>} /> {/* 개인정보처리방침 페이지 */}
                 <Route path="/login" element={<MainLayout><Login /></MainLayout>} /> {/* 로그인 페이지 */}
@@ -111,7 +127,21 @@ function PathRoute() {
 
                 {/* 관리자만 접근 가능 */}
                 <Route element={<ProtectedRoute userTypeRequired="admin"/>}>
-                    {/*<Route path="/admin" element={<MainLayout><AdminMain /></MainLayout>} /> /!* 관리자 대시보드 페이지 *!/*/}
+                    <Route path="/admin" element={<AdminMain/>}>
+                        <Route index element={<AdminDashboard />} />
+                        <Route path="users" element={<AdminUsersManage />} />
+                        {/*<Route path="users/:userId" element={<AdminUserDetail />} />*/}
+                        <Route path="companies" element={<AdminCompaniesManage />} />
+                        <Route path="companies/:companyId" element={<AdminCompanyDetail />} />
+                        <Route path="job-posts" element={<AdminJobPostsManage />} />
+                        {/*<Route path="job-posts/:jobPostId" element={<AdminJobPostDetail />} />*/}
+                        <Route path="applications" element={<AdminApplicationsManager />} />
+                        <Route path="reviews" element={<AdminReviewManage />} />
+                        {/*<Route path="reviews/:reviewId/edit" element={<AdminReviewEdit />} />*/}
+                        <Route path="notices" element={<AdminNoticeManage />} />
+                        <Route path="notices/new" element={<AdminNoticeEdit />} />
+                        <Route path="notices/:noticeId/edit" element={<AdminNoticeEdit />} />
+                    </Route>
                 </Route>
 
                 {/* 모든 정의되지 않은 경로 */}
