@@ -57,9 +57,9 @@ export default function Footer() {
                         <div className="w-1/2 md:w-auto">
                             <h3 className="font-semibold mb-4 text-gray-900">회사 정보</h3>
                             <ul className="space-y-2 text-gray-600">
-                                <li><Link to="/company/about" className="hover:text-blue-600">회사 소개</Link></li>
-                                <li><Link to="/company/terms" className="hover:text-blue-600">이용약관</Link></li>
-                                <li><Link to="/company/privacy" className="hover:text-blue-600">개인정보처리방침</Link></li>
+                                <li><Link to="/about" className="hover:text-blue-600">회사 소개</Link></li>
+                                <li><Link to="/terms" className="hover:text-blue-600">이용약관</Link></li>
+                                <li><Link to="/privacy" className="hover:text-blue-600">개인정보처리방침</Link></li>
                             </ul>
                         </div>
                     </div>
