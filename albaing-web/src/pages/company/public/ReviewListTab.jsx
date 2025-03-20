@@ -28,20 +28,25 @@ const ReviewListTab = ({ reviews, companyId, onReviewAdded }) => {
         setShowReviewModal(true);
     };
 
+    const handleReviewAdded = (newReview) => {
+        // 새로 추가된 리뷰를 기존 리뷰 목록 앞에 추가
+        onReviewAdded(newReview); // 부모 컴포넌트의 `onReviewAdded` 호출
+    };
+
     // 리뷰 작성 완료 후 처리
     const handleReviewSubmit = (reviewData) => {
-        if (typeof onReviewAdded === 'function') {
-            onReviewAdded(reviewData)
-                .then(() => {
-                    setShowReviewModal(false);
-                })
-                .catch(error => {
-                    console.error('리뷰 제출 오류:', error);
-                });
-        } else {
-            setShowReviewModal(false);
-        }
+        // 리뷰 작성 후 리뷰 목록 갱신
+        handleReviewAdded(reviewData);
     };
+
+    // 리뷰 목록이 비어있지 않으면 렌더링
+    if (!reviews || reviews.length === 0) {
+        return (
+            <div className="text-center py-12 bg-gray-50 rounded-lg">
+                <p className="text-gray-500">아직 등록된 리뷰가 없습니다. 첫 리뷰를 작성해보세요!</p>
+            </div>
+        );
+    }
 
     return (
         <div className="p-6 bg-white rounded-lg shadow-md">
@@ -55,37 +60,31 @@ const ReviewListTab = ({ reviews, companyId, onReviewAdded }) => {
                 </button>
             </div>
 
-            {reviews.length > 0 ? (
-                <div className="space-y-6">
-                    {currentReviews.map((review) => (
-                        <div
-                            key={review.reviewId}
-                            onClick={() => navigateToReviewDetail(review.reviewId)}
-                            className="border-b border-gray-200 pb-6 last:border-b-0 cursor-pointer hover:bg-gray-50 p-4 rounded-md transition-colors"
-                        >
-                            <div className="flex justify-between items-start mb-2">
-                                <h3 className="text-lg font-medium text-gray-900">{review.reviewTitle}</h3>
-                                <span className="text-sm text-gray-500">
-                                    {formatDate(review.reviewCreatedAt)}
-                                </span>
-                            </div>
-                            <p className="text-gray-700 line-clamp-3">{review.reviewContent}</p>
-                            <p className="text-sm text-blue-600 mt-2">자세히 보기 &rarr;</p>
+            <div className="space-y-6">
+                {currentReviews.map((review, index) => (
+                    <div
+                        key={review.reviewId || index}
+                        onClick={() => navigateToReviewDetail(review.reviewId)}
+                        className="border-b border-gray-200 pb-6 last:border-b-0 cursor-pointer hover:bg-gray-50 p-4 rounded-md transition-colors"
+                    >
+                        <div className="flex justify-between items-start mb-2">
+                            <h3 className="text-lg font-medium text-gray-900">{review.reviewTitle}</h3>
+                            <span className="text-sm text-gray-500">
+                                {formatDate(review.reviewCreatedAt)}
+                            </span>
                         </div>
-                    ))}
+                        <p className="text-gray-700 line-clamp-3">{review.reviewContent}</p>
+                        <p className="text-sm text-blue-600 mt-2">자세히 보기 &rarr;</p>
+                    </div>
+                ))}
 
-                    <Pagination
-                        totalItems={reviews.length}
-                        itemsPerPage={itemsPerPage}
-                        currentPage={currentPage}
-                        setCurrentPage={setCurrentPage}
-                    />
-                </div>
-            ) : (
-                <div className="text-center py-12 bg-gray-50 rounded-lg">
-                    <p className="text-gray-500">아직 등록된 리뷰가 없습니다. 첫 리뷰를 작성해보세요!</p>
-                </div>
-            )}
+                <Pagination
+                    totalItems={reviews.length}
+                    itemsPerPage={itemsPerPage}
+                    currentPage={currentPage}
+                    setCurrentPage={setCurrentPage}
+                />
+            </div>
 
             {showReviewModal && (
                 <ReviewModal

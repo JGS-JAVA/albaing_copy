@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import apiReviewService from "../../../service/apiReviewService";
-import {Link, useParams} from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Pagination from '../../../components/common/Pagination';
 
 const MyReviews = () => {
-    const { userId} = useParams();
+    const { userId } = useParams();
     const [reviews, setReviews] = useState([]);
     const [comments, setComments] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -16,20 +16,37 @@ const MyReviews = () => {
         }
         apiReviewService.getReviewsByUser(userId, (data) => {
             setReviews(data);
-        apiReviewService.getCommentsByUser(userId, (data) => {
-             setComments(data);
+            apiReviewService.getCommentsByUser(userId, (data) => {
+                setComments(data);
             });
         });
     }, [userId]);
 
     const handleDeleteReview = (reviewId) => {
+        // 리뷰 삭제 시, 해당 리뷰를 상태에서 제거
         const updatedReviews = reviews.filter(review => review.reviewId !== reviewId);
         setReviews(updatedReviews);
 
+        // 해당 리뷰에 달린 댓글도 상태에서 제거
+        const updatedComments = comments.filter(comment => comment.reviewId !== reviewId);
+        setComments(updatedComments);
+
+        // 서버에서 해당 리뷰 삭제
         apiReviewService.removeReview(reviewId, userId)
             .catch(error => {
                 console.error("리뷰 삭제 실패", error);
-                setReviews(reviews);
+                setReviews(reviews);  // 오류 발생 시, 리뷰 상태 되돌리기
+            });
+
+        // 해당 리뷰에 달린 댓글들도 서버에서 삭제
+        comments
+            .filter(comment => comment.reviewId === reviewId)
+            .forEach((comment) => {
+                apiReviewService.removeComment(comment.commentId, userId)
+                    .catch(error => {
+                        console.error("댓글 삭제 실패", error);
+                        setComments(comments);  // 오류 발생 시, 댓글 상태 되돌리기
+                    });
             });
     };
 
@@ -54,6 +71,11 @@ const MyReviews = () => {
     const getCompanyIdByReviewId = (reviewId) => {
         const review = reviews.find(r => r.reviewId === reviewId);
         return review ? review.companyId : null;
+    };
+
+    // 댓글 수를 계산하는 함수
+    const getCommentCountByReviewId = (reviewId) => {
+        return comments.filter(comment => comment.reviewId === reviewId).length;
     };
 
     // 날짜 포맷팅 함수
@@ -81,6 +103,7 @@ const MyReviews = () => {
                                 <Link to={`/companies/${review.companyId}/reviews/${review.reviewId}`}>
                                     {review.reviewTitle}
                                 </Link>
+                                <span> ({getCommentCountByReviewId(review.reviewId)}개 댓글)</span> {/* 댓글 수 표시 */}
                             </h3>
                             <p>작성일: {formatDate(review.reviewCreatedAt)}</p>
                             <button onClick={() => handleDeleteReview(review.reviewId)}>삭제</button>
