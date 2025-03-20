@@ -107,13 +107,10 @@ const ScrapPage = () => {
     };
 
     const handleRemoveScrap = (jobPostId) => {
-        alertModal.openModal({
-            title: '스크랩 삭제',
-            message: '정말로 이 공고를 스크랩에서 제거하시겠습니까?',
-            type: 'warning',
-            onConfirm: () => {
+
                 apiScrapService.removeScrap(userId, jobPostId)
                     .then(() => {
+                        console.log("삭제 진행중 ");
                         // 성공 시 즉시 목록 업데이트
                         const updatedScraps = scrapedPosts.filter(job => job.jobPostId !== jobPostId);
                         setScrapedPosts(updatedScraps);
@@ -129,14 +126,14 @@ const ScrapPage = () => {
                         });
                     })
                     .catch((err) => {
+                        console.error("스크랩 삭제 오류", error);
                         alertModal.openModal({
                             title: '오류',
                             message: '스크랩 삭제 중 오류가 발생했습니다.',
                             type: 'error'
                         });
                     });
-            }
-        });
+
     };
 
     // 날짜 포맷팅 함수
