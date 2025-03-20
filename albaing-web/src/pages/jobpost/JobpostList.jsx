@@ -5,7 +5,7 @@ import Pagination from '../../components/common/Pagination';
 import {useAuth} from '../../contexts/AuthContext';
 import JobCard from "./components/JobCard";
 import apiScrapService from "../../service/apiScrapService";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 
 // 카테고리 분류 데이터
 const categories = [
@@ -34,6 +34,11 @@ const locations = [
 export default function JobpostList() {
     const {isLoggedIn, userType, userData} = useAuth();
     const {userId, jobPostId} = useParams();
+    const navigate = useNavigate();
+
+    const [searchKeyword, setSearchKeyword] = useState("");
+    const [regionSelect, setRegionSelect] = useState("");
+    const [jobCategorySelect, setJobCategorySelect] = useState("");
 
     // 상태 관리
     const [jobListings, setJobListings] = useState([]);
@@ -195,6 +200,11 @@ export default function JobpostList() {
 
     // 검색하기 버튼 클릭 시
     const handleSearch = () => {
+        const params = new URLSearchParams();
+        params.append("regionSelect", regionSelect);
+        params.append("jobCategorySelect", jobCategorySelect);
+        params.append("searchKeyword", searchKeyword);
+        navigate(`/search?${params.toString()}`);
         setCurrentPage(1); // 검색 시 첫 페이지로 이동
     };
 

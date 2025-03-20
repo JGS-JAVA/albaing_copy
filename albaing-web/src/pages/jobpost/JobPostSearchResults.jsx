@@ -1,5 +1,6 @@
 import Banner from "../../components/layout/Banner";
-import {useState} from "react";
+import React, {useState, useEffect} from 'react';
+import axios from 'axios';
 
 const JobPostSearchResults = () => {
     const searchKeyword = new URLSearchParams(window.location.searchKeyword);
@@ -10,7 +11,13 @@ const JobPostSearchResults = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        axios.get("/api/admin/jobs/mainPage/searchPosts", {params: {searchKeyword, regionSelect, jobCategorySelect}})
+        axios.get("/api/admin/jobs/mainPage/searchPosts", {
+            params: {
+                searchKeyword: searchKeyword,
+                regionSelect: regionSelect,
+                jobCategorySelect: jobCategorySelect
+            }
+        })
             .then(response => {
                 setSearchResults(response.data);
                 setLoading(false);

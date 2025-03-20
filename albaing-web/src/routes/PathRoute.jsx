@@ -50,6 +50,7 @@ import AdminReviewManage from "../pages/admin/manage/reviews/AdminReviewManage";
 import AdminNoticeManage from "../pages/admin/manage/notices/AdminNoticeManage";
 import NoticeList from "../pages/notice/NoticeList";
 import NoticeDetail from "../pages/notice/NoticeDetail";
+import JobPostSearchResults from "../pages/jobpost/JobPostSearchResults";
 
 // 메인 레이아웃 컴포넌트
 const MainLayout = ({children}) => (
@@ -63,6 +64,7 @@ const MainLayout = ({children}) => (
         <Footer/>
     </div>
 );
+
 function PathRoute() {
     return (
         <BrowserRouter>
@@ -85,7 +87,7 @@ function PathRoute() {
                 <Route path="/find/id" element={<MainLayout><FindId /></MainLayout>} /> {/* 아이디 찾기 페이지 */}
                 <Route path="/find/password" element={<MainLayout><FindPassword /></MainLayout>} /> {/* 비밀번호 변경 페이지 */}
                 <Route path="/change/password" element={<MainLayout><ChangePassword /></MainLayout>} /> {/* 비밀번호 변경 페이지 */}
-
+                <Route path="/search/:regionSelect/:jobCategorySelect/:searchKeyword" element={<MainLayout><JobPostSearchResults /></MainLayout>} /> {/* 검색 결과 페이지 */}
                 {/* 로그인한 모든 사용자 접근 가능 */}
                 <Route element={<ProtectedRoute/>}>
                     <Route path="/resumes" element={<MainLayout><Resume/></MainLayout>}/> {/* 이력서 조회 페이지 */}
@@ -127,7 +129,7 @@ function PathRoute() {
                         <Route path="companies/:companyId" element={<AdminCompanyDetail />} />
                         <Route path="job-posts" element={<AdminJobPostsManage />} />
                         {/*<Route path="job-posts/:jobPostId" element={<AdminJobPostDetail />} />*/}
-                        <Route path="applications" element={<AdminApplicationsManager />} />
+                        {/*<Route path="applications" element={<AdminApplicationsManager />} />*/}
                         <Route path="reviews" element={<AdminReviewManage />} />
                         {/*<Route path="reviews/:reviewId/edit" element={<AdminReviewEdit />} />*/}
                         <Route path="notices" element={<AdminNoticeManage />} />
