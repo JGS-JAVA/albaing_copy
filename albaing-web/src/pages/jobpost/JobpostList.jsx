@@ -204,6 +204,7 @@ export default function JobpostList() {
         params.append("regionSelect", regionSelect);
         params.append("jobCategorySelect", jobCategorySelect);
         params.append("searchKeyword", searchKeyword);
+        console.log(params.toString());
         navigate(`/search?${params.toString()}`);
         setCurrentPage(1); // 검색 시 첫 페이지로 이동
     };

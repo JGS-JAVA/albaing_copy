@@ -11,11 +11,11 @@ const JobPostSearchResults = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        axios.get("/api/admin/jobs/mainPage/searchPosts", {
+        axios.get("/api/jobs/mainPage/searchPosts", {
             params: {
-                searchKeyword: searchKeyword,
                 regionSelect: regionSelect,
-                jobCategorySelect: jobCategorySelect
+                jobCategorySelect: jobCategorySelect,
+                searchKeyword: searchKeyword
             }
         })
             .then(response => {
