@@ -1,0 +1,513 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { format } from 'date-fns';
+import { LoadingSpinner, ErrorMessage, ConfirmModal, useModal } from '../../../../components';
+import AdminLayout from '../../AdminLayout';
+import Pagination from '../../../../components/common/Pagination';
+
+// 회원 상세 모달
+const UserDetailModal = ({ isOpen, onClose, user }) => {
+    if (!isOpen || !user) return null;
+
+    // 날짜 포맷 변환
+    const formatDate = (dateString) => {
+        if (!dateString) return '-';
+        return format(new Date(dateString), 'yyyy-MM-dd');
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4">
+                <div className="px-6 py-4 border-b flex justify-between items-center">
+                    <h3 className="text-xl font-semibold text-gray-800">회원 상세 정보</h3>
+                    <button
+                        onClick={onClose}
+                        className="text-gray-500 hover:text-gray-700"
+                    >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div className="p-6">
+                    <div className="flex flex-col md:flex-row items-start">
+                        <div className="md:w-1/3 mb-4 md:mb-0 flex justify-center">
+                            <div className="relative">
+                                <img
+                                    src={user.userProfileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.userName)}&background=0D8ABC&color=fff&size=150`}
+                                    alt={user.userName}
+                                    className="w-36 h-36 rounded-full object-cover shadow-md"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="md:w-2/3 md:pl-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <h4 className="text-sm font-medium text-gray-500">이름</h4>
+                                    <p className="text-lg font-medium">{user.userName}</p>
+                                </div>
+                                <div>
+                                    <h4 className="text-sm font-medium text-gray-500">이메일</h4>
+                                    <p className="text-lg">{user.userEmail}</p>
+                                </div>
+                                <div>
+                                    <h4 className="text-sm font-medium text-gray-500">전화번호</h4>
+                                    <p className="text-lg">{user.userPhone || '-'}</p>
+                                </div>
+                                <div>
+                                    <h4 className="text-sm font-medium text-gray-500">생년월일</h4>
+                                    <p className="text-lg">{user.userBirthdate ? formatDate(user.userBirthdate) : '-'}</p>
+                                </div>
+                                <div>
+                                    <h4 className="text-sm font-medium text-gray-500">성별</h4>
+                                    <p className="text-lg">{user.userGender === 'male' ? '남성' : '여성'}</p>
+                                </div>
+                                <div>
+                                    <h4 className="text-sm font-medium text-gray-500">주소</h4>
+                                    <p className="text-lg">{user.userAddress || '-'}</p>
+                                </div>
+                                <div>
+                                    <h4 className="text-sm font-medium text-gray-500">가입일</h4>
+                                    <p className="text-lg">{formatDate(user.userCreatedAt)}</p>
+                                </div>
+                                <div>
+                                    <h4 className="text-sm font-medium text-gray-500">최근 수정일</h4>
+                                    <p className="text-lg">{formatDate(user.userUpdatedAt)}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mt-8 flex justify-end">
+                        <button
+                            onClick={onClose}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                        >
+                            닫기
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const AdminUsers = () => {
+    const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalItems, setTotalItems] = useState(0);
+    const [itemsPerPage] = useState(10);
+    const [selectedUser, setSelectedUser] = useState(null);
+    const [filters, setFilters] = useState({
+        name: '',
+        email: '',
+        phone: ''
+    });
+    const [sortField, setSortField] = useState('name');
+    const [sortDirection, setSortDirection] = useState('asc');
+
+    // 모달 관리
+    const detailModal = useModal();
+    const deleteModal = useModal();
+
+    // 회원 목록 가져오기
+    const fetchUsers = () => {
+        setLoading(true);
+        setError(null);
+
+        // 실제 API 호출시 주석 해제
+        /*
+        axios.get('/api/admin/users', {
+            params: {
+                userName: filters.name,
+                userEmail: filters.email,
+                userPhone: filters.phone,
+                sortOrderBy: sortField,
+                isDESC: sortDirection === 'desc'
+            }
+        })
+            .then(response => {
+                setUsers(response.data);
+                setTotalItems(response.data.length);
+                setLoading(false);
+            })
+            .catch(error => {
+                console.error('회원 목록 로딩 실패:', error);
+                setError('회원 목록을 불러오는데 실패했습니다.');
+                setLoading(false);
+            });
+        */
+
+        // 개발용 더미 데이터
+        setTimeout(() => {
+            const dummyUsers = Array.from({ length: 45 }, (_, i) => ({
+                userId: i + 1,
+                userName: `사용자${i + 1}`,
+                userEmail: `user${i + 1}@example.com`,
+                userPhone: `010-${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(1000 + Math.random() * 9000)}`,
+                userBirthdate: new Date(1980 + Math.floor(Math.random() * 25), Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1),
+                userGender: Math.random() > 0.5 ? 'male' : 'female',
+                userAddress: `서울특별시 강남구 테헤란로 ${Math.floor(Math.random() * 100) + 1}길 ${Math.floor(Math.random() * 100) + 1}`,
+                userCreatedAt: new Date(2023, 0, 1 + i).toISOString(),
+                userUpdatedAt: Math.random() > 0.7 ? new Date(2023, 6, 1 + i).toISOString() : null,
+                userProfileImage: null
+            }));
+
+            // 필터링
+            let filteredUsers = dummyUsers;
+            if (filters.name) {
+                filteredUsers = filteredUsers.filter(user =>
+                    user.userName.toLowerCase().includes(filters.name.toLowerCase())
+                );
+            }
+            if (filters.email) {
+                filteredUsers = filteredUsers.filter(user =>
+                    user.userEmail.toLowerCase().includes(filters.email.toLowerCase())
+                );
+            }
+            if (filters.phone) {
+                filteredUsers = filteredUsers.filter(user =>
+                    user.userPhone.includes(filters.phone)
+                );
+            }
+
+            // 정렬
+            filteredUsers.sort((a, b) => {
+                let fieldA, fieldB;
+                switch (sortField) {
+                    case 'name':
+                        fieldA = a.userName.toLowerCase();
+                        fieldB = b.userName.toLowerCase();
+                        break;
+                    case 'email':
+                        fieldA = a.userEmail.toLowerCase();
+                        fieldB = b.userEmail.toLowerCase();
+                        break;
+                    case 'createdAt':
+                        fieldA = new Date(a.userCreatedAt).getTime();
+                        fieldB = new Date(b.userCreatedAt).getTime();
+                        break;
+                    default:
+                        fieldA = a.userName.toLowerCase();
+                        fieldB = b.userName.toLowerCase();
+                }
+
+                if (sortDirection === 'asc') {
+                    return fieldA > fieldB ? 1 : -1;
+                } else {
+                    return fieldA < fieldB ? 1 : -1;
+                }
+            });
+
+            setUsers(filteredUsers);
+            setTotalItems(filteredUsers.length);
+            setLoading(false);
+        }, 500);
+    };
+
+    useEffect(() => {
+        fetchUsers();
+    }, [sortField, sortDirection]);
+
+    // 회원 삭제
+    const handleDeleteUser = () => {
+        if (!selectedUser) return;
+
+        setLoading(true);
+
+        // 실제 API 호출시 주석 해제
+        /*
+        axios.delete(`/api/admin/users/${selectedUser.userId}`)
+            .then(() => {
+                fetchUsers();
+                deleteModal.closeModal();
+                setSelectedUser(null);
+            })
+            .catch(error => {
+                console.error('회원 삭제 실패:', error);
+                setError('회원 삭제에 실패했습니다.');
+                setLoading(false);
+            });
+        */
+
+        // 개발용 더미 처리
+        setTimeout(() => {
+            const updatedUsers = users.filter(user => user.userId !== selectedUser.userId);
+            setUsers(updatedUsers);
+            setTotalItems(updatedUsers.length);
+            setLoading(false);
+            deleteModal.closeModal();
+            setSelectedUser(null);
+        }, 500);
+    };
+
+    // 회원 상세 보기
+    const handleViewUser = (user) => {
+        setSelectedUser(user);
+        detailModal.openModal();
+    };
+
+    // 회원 삭제 모달 열기
+    const handleOpenDeleteModal = (user) => {
+        setSelectedUser(user);
+        deleteModal.openModal();
+    };
+
+    // 검색 필터 적용
+    const handleSearch = (e) => {
+        e.preventDefault();
+        fetchUsers();
+    };
+
+    // 필터 변경 핸들러
+    const handleFilterChange = (e) => {
+        const { name, value } = e.target;
+        setFilters(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    // 정렬 변경 핸들러
+    const handleSort = (field) => {
+        if (sortField === field) {
+            setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortField(field);
+            setSortDirection('asc');
+        }
+    };
+
+    // 현재 페이지의 회원 목록
+    const getCurrentUsers = () => {
+        const indexOfLastItem = currentPage * itemsPerPage;
+        const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+        return users.slice(indexOfFirstItem, indexOfLastItem);
+    };
+
+    // 정렬 아이콘 표시
+    const renderSortIcon = (field) => {
+        if (sortField !== field) {
+            return (
+                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                </svg>
+            );
+        }
+
+        return sortDirection === 'asc' ? (
+            <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7 7" />
+            </svg>
+        ) : (
+            <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+            </svg>
+        );
+    };
+
+    return (
+        <AdminLayout>
+            <div className="mb-6">
+                <h1 className="text-2xl font-bold text-gray-800">회원 관리</h1>
+                <p className="text-gray-600 mt-1">개인 회원 정보를 관리할 수 있습니다.</p>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+                <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">이름</label>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            value={filters.name}
+                            onChange={handleFilterChange}
+                            placeholder="이름 검색"
+                            className="w-full p-2 border border-gray-300 rounded-lg"
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">이메일</label>
+                        <input
+                            type="text"
+                            id="email"
+                            name="email"
+                            value={filters.email}
+                            onChange={handleFilterChange}
+                            placeholder="이메일 검색"
+                            className="w-full p-2 border border-gray-300 rounded-lg"
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">전화번호</label>
+                        <input
+                            type="text"
+                            id="phone"
+                            name="phone"
+                            value={filters.phone}
+                            onChange={handleFilterChange}
+                            placeholder="전화번호 검색"
+                            className="w-full p-2 border border-gray-300 rounded-lg"
+                        />
+                    </div>
+                    <div className="md:col-span-3 flex justify-end">
+                        <button
+                            type="submit"
+                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                        >
+                            검색
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            {error && <ErrorMessage message={error} className="mb-6" />}
+
+            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+                {loading ? (
+                    <LoadingSpinner message="회원 정보를 불러오는 중..." fullScreen={false} className="py-12" />
+                ) : (
+                    <>
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full divide-y divide-gray-200">
+                                <thead className="bg-gray-50">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <button
+                                            onClick={() => handleSort('userId')}
+                                            className="flex items-center hover:text-gray-700"
+                                        >
+                                            번호 {sortField === 'userId' && renderSortIcon('userId')}
+                                        </button>
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <button
+                                            onClick={() => handleSort('name')}
+                                            className="flex items-center hover:text-gray-700"
+                                        >
+                                            이름 {renderSortIcon('name')}
+                                        </button>
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <button
+                                            onClick={() => handleSort('email')}
+                                            className="flex items-center hover:text-gray-700"
+                                        >
+                                            이메일 {renderSortIcon('email')}
+                                        </button>
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        전화번호
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <button
+                                            onClick={() => handleSort('createdAt')}
+                                            className="flex items-center hover:text-gray-700"
+                                        >
+                                            가입일 {renderSortIcon('createdAt')}
+                                        </button>
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        관리
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                {getCurrentUsers().length > 0 ? (
+                                    getCurrentUsers().map((user) => (
+                                        <tr key={user.userId} className="hover:bg-gray-50">
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                {user.userId}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="flex items-center">
+                                                    <div className="flex-shrink-0 h-10 w-10">
+                                                        <img
+                                                            className="h-10 w-10 rounded-full object-cover"
+                                                            src={user.userProfileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.userName)}&background=0D8ABC&color=fff`}
+                                                            alt={user.userName}
+                                                        />
+                                                    </div>
+                                                    <div className="ml-4">
+                                                        <div className="text-sm font-medium text-gray-900">
+                                                            {user.userName}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                {user.userEmail}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                {user.userPhone}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                {format(new Date(user.userCreatedAt), 'yyyy-MM-dd')}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                                <div className="flex space-x-2">
+                                                    <button
+                                                        onClick={() => handleViewUser(user)}
+                                                        className="text-blue-600 hover:text-blue-900"
+                                                    >
+                                                        상세
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleOpenDeleteModal(user)}
+                                                        className="text-red-600 hover:text-red-900"
+                                                    >
+                                                        삭제
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
+                                            검색 결과가 없습니다.
+                                        </td>
+                                    </tr>
+                                )}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <Pagination
+                            totalItems={totalItems}
+                            itemsPerPage={itemsPerPage}
+                            currentPage={currentPage}
+                            setCurrentPage={setCurrentPage}
+                        />
+                    </>
+                )}
+            </div>
+
+            {/* 회원 상세 모달 */}
+            <UserDetailModal
+                isOpen={detailModal.isOpen}
+                onClose={detailModal.closeModal}
+                user={selectedUser}
+            />
+
+            {/* 삭제 확인 모달 */}
+            <ConfirmModal
+                isOpen={deleteModal.isOpen}
+                onClose={deleteModal.closeModal}
+                onConfirm={handleDeleteUser}
+                title="회원 삭제"
+                message={`'${selectedUser?.userName}' 회원을 삭제하시겠습니까? 삭제된 회원 정보는 복구할 수 없습니다.`}
+                confirmText="삭제"
+                cancelText="취소"
+                type="danger"
+            />
+        </AdminLayout>
+    );
+};
+
+export default AdminUsers;

@@ -120,4 +120,35 @@ public class AdminController {
         adminService.adminJobPostDelete(jobPostId);
     }
 
+    // 모든 공지사항 조회
+    @GetMapping("/notices")
+    public List<Notice> getAllNotices() {
+        return adminService.getAllNotices();
+    }
+
+    // 공지사항 상세 조회
+    @GetMapping("/notices/{noticeId}")
+    public Notice getNoticeById(@PathVariable Long noticeId) {
+        return adminService.getNoticeById(noticeId);
+    }
+
+    // 공지사항 추가
+    @PostMapping("/notices")
+    public void addNotice(@RequestBody Notice notice) {
+        adminService.addNotice(notice);
+    }
+
+    // 공지사항 수정
+    @PutMapping("/notices/{noticeId}")
+    public void updateNotice(@PathVariable Long noticeId, @RequestBody Notice notice) {
+        notice.setNoticeId(noticeId);
+        adminService.updateNotice(notice);
+    }
+
+    // 공지사항 삭제
+    @DeleteMapping("/notices/{noticeId}")
+    public void deleteNotice(@PathVariable Long noticeId) {
+        adminService.deleteNotice(noticeId);
+    }
+
 }

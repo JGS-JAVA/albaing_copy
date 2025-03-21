@@ -33,4 +33,19 @@ public interface AdminService {
     void adminJobPostDelete(String jobPostId);
 
     void adminJobPostStatusChange(String CompanyId);
+
+    // 모든 공지사항 조회
+    List<Notice> getAllNotices();
+
+    // 공지사항 상세 조회
+    Notice getNoticeById(Long noticeId);
+
+    // 공지사항 추가
+    void addNotice(Notice notice);
+
+    // 공지사항 수정
+    void updateNotice(Notice notice);
+
+    // 공지사항 삭제
+    void deleteNotice(Long noticeId);
 }

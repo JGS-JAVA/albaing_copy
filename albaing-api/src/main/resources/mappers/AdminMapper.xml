@@ -282,6 +282,61 @@
         where company_id = #{companyId}
     </update>
 
+    <!-- 모든 공지사항 조회 -->
+    <select id="getAllNotices" resultType="Notice">
+        SELECT
+            notice_id AS noticeId,
+            notice_title AS noticeTitle,
+            notice_content AS noticeContent,
+            notice_created_at AS noticeCreatedAt,
+            notice_updated_at AS noticeUpdatedAt
+        FROM NOTICES
+        ORDER BY notice_created_at DESC
+    </select>
+
+    <!-- 공지사항 상세 조회 -->
+    <select id="getNoticeById" resultType="Notice">
+        SELECT
+            notice_id AS noticeId,
+            notice_title AS noticeTitle,
+            notice_content AS noticeContent,
+            notice_created_at AS noticeCreatedAt,
+            notice_updated_at AS noticeUpdatedAt
+        FROM NOTICES
+        WHERE notice_id = #{noticeId}
+    </select>
+
+    <!-- 공지사항 추가 -->
+    <insert id="addNotice" parameterType="Notice">
+        INSERT INTO NOTICES (
+            notice_title,
+            notice_content,
+            notice_created_at,
+            notice_updated_at
+        ) VALUES (
+                     #{noticeTitle},
+                     #{noticeContent},
+                     CURRENT_TIMESTAMP,
+                     CURRENT_TIMESTAMP
+                 )
+    </insert>
+
+    <!-- 공지사항 수정 -->
+    <update id="updateNotice" parameterType="Notice">
+        UPDATE NOTICES
+        SET
+            notice_title = #{noticeTitle},
+            notice_content = #{noticeContent},
+            notice_updated_at = CURRENT_TIMESTAMP
+        WHERE notice_id = #{noticeId}
+    </update>
+
+    <!-- 공지사항 삭제 -->
+    <delete id="deleteNotice">
+        DELETE FROM NOTICES
+        WHERE notice_id = #{noticeId}
+    </delete>
+
 
 
 </mapper>

@@ -82,4 +82,29 @@ public class AdminServiceImpl implements AdminService {
     public void adminJobPostStatusChange(String CompanyId) {
         adminMapper.adminJobPostStatusChange(CompanyId);
     }
+
+    @Override
+    public List<Notice> getAllNotices() {
+        return adminMapper.getAllNotices();
+    }
+
+    @Override
+    public Notice getNoticeById(Long noticeId) {
+        return adminMapper.getNoticeById(noticeId);
+    }
+
+    @Override
+    public void addNotice(Notice notice) {
+        adminMapper.addNotice(notice);
+    }
+
+    @Override
+    public void updateNotice(Notice notice) {
+        adminMapper.updateNotice(notice);
+    }
+
+    @Override
+    public void deleteNotice(Long noticeId) {
+        adminMapper.deleteNotice(noticeId);
+    }
 }

@@ -39,6 +39,13 @@ import FAQ from "../pages/home/FAQ";
 import Contact from "../pages/home/Contact";
 import Terms from "../pages/home/Terms";
 import Privacy from "../pages/home/Privacy";
+import AdminMain from "../pages/admin/AdminMain";
+import AdminUsers from "../pages/admin/manage/users/AdminUsers";
+import AdminCompanies from "../pages/admin/manage/companies/AdminCompanies";
+import AdminJobPosts from "../pages/admin/manage/jobPosts/AdminJobPosts";
+import AdminReviews from "../pages/admin/manage/reviews/AdminReviews";
+import AdminNotices from "../pages/admin/manage/notices/AdminNotices";
+import Notice from "../pages/notice/Notice";
 
 // 메인 레이아웃 컴포넌트
 const MainLayout = ({children}) => (
@@ -61,7 +68,7 @@ function PathRoute() {
                 <Route path="/about" element={<MainLayout><About /></MainLayout>} /> {/* 회사 소개 페이지 */}
                 <Route path="/customer/faq" element={<MainLayout><FAQ /></MainLayout>} /> {/* 자주 하는 문의 페이지 */}
                 <Route path="/customer/contact" element={<MainLayout><Contact /></MainLayout>} /> {/* 문의 페이지 */}
-                {/*<Route path="/customer/notice" element={<MainLayout><Notice /></MainLayout>} /> /!* 공지사항 페이지 *!/*/}
+                <Route path="/notice" element={<MainLayout><Notice /></MainLayout>} /> {/* 공지사항 페이지 */}
                 <Route path="/terms" element={<MainLayout><Terms /></MainLayout>} /> {/* 이용약관 페이지 */}
                 <Route path="/privacy" element={<MainLayout><Privacy /></MainLayout>} /> {/* 개인정보처리방침 페이지 */}
                 <Route path="/login" element={<MainLayout><Login /></MainLayout>} /> {/* 로그인 페이지 */}
@@ -107,7 +114,12 @@ function PathRoute() {
 
                 {/* 관리자만 접근 가능 */}
                 <Route element={<ProtectedRoute userTypeRequired="admin"/>}>
-                    {/*<Route path="/admin" element={<MainLayout><AdminMain /></MainLayout>} /> /!* 관리자 대시보드 페이지 *!/*/}
+                    <Route path="/admin" element={<MainLayout><AdminMain /></MainLayout>} /> {/* 관리자 대시보드 */}
+                    <Route path="/admin/users" element={<MainLayout><AdminUsers /></MainLayout>} /> {/* 회원 관리 */}
+                    <Route path="/admin/companies" element={<MainLayout><AdminCompanies /></MainLayout>} /> {/* 기업 관리 */}
+                    <Route path="/admin/jobposts" element={<MainLayout><AdminJobPosts /></MainLayout>} /> {/* 공고 관리 */}
+                    <Route path="/admin/reviews" element={<MainLayout><AdminReviews /></MainLayout>} /> {/* 리뷰 관리 */}
+                    <Route path="/admin/notices" element={<MainLayout><AdminNotices /></MainLayout>} /> {/* 공지사항 관리 */}
                 </Route>
 
                 {/* 모든 정의되지 않은 경로 */}
