@@ -5,7 +5,9 @@ import com.jobjob.albaing.mapper.AdminMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -106,5 +108,26 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void deleteNotice(Long noticeId) {
         adminMapper.deleteNotice(noticeId);
+    }
+
+    @Override
+    public Map<String, Object> getDashboardStats() {
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("totalUsers", adminMapper.countTotalUsers());
+        stats.put("totalCompanies", adminMapper.countTotalCompanies());
+        stats.put("pendingCompanies", adminMapper.countPendingCompanies());
+        stats.put("activeJobPosts", adminMapper.countActiveJobPosts());
+        stats.put("totalReviews", adminMapper.countTotalReviews());
+        return stats;
+    }
+
+    @Override
+    public List<Map<String, Object>> getRecentUsers() {
+        return adminMapper.getRecentUsers();
+    }
+
+    @Override
+    public List<Map<String, Object>> getRecentJobPosts() {
+        return adminMapper.getRecentJobPosts();
     }
 }

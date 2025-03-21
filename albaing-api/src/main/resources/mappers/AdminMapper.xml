@@ -337,6 +337,47 @@
         WHERE notice_id = #{noticeId}
     </delete>
 
+    <select id="countTotalUsers" resultType="int">
+        SELECT COUNT(*) FROM USERS
+    </select>
 
+    <select id="countTotalCompanies" resultType="int">
+        SELECT COUNT(*) FROM COMPANIES
+    </select>
+
+    <select id="countPendingCompanies" resultType="int">
+        SELECT COUNT(*) FROM COMPANIES WHERE company_approval_status = 'approving'
+    </select>
+
+    <select id="countActiveJobPosts" resultType="int">
+        SELECT COUNT(*) FROM JOB_POSTS WHERE job_post_status = true AND job_post_due_date >= CURRENT_DATE
+    </select>
+
+    <select id="countTotalReviews" resultType="int">
+        SELECT COUNT(*) FROM REVIEWS
+    </select>
+
+    <select id="getRecentUsers" resultType="map">
+        SELECT
+            user_id AS userId,
+            user_name AS userName,
+            user_email AS userEmail,
+            user_created_at AS userCreatedAt
+        FROM USERS
+        ORDER BY user_created_at DESC
+            LIMIT 5
+    </select>
+
+    <select id="getRecentJobPosts" resultType="map">
+        SELECT
+            jp.job_post_id AS jobPostId,
+            jp.job_post_title AS jobPostTitle,
+            c.company_name AS companyName,
+            jp.job_post_due_date AS jobPostDueDate
+        FROM JOB_POSTS jp
+                 JOIN COMPANIES c ON jp.company_id = c.company_id
+        ORDER BY jp.job_post_created_at DESC
+            LIMIT 5
+    </select>
 
 </mapper>

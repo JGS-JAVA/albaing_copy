@@ -3,6 +3,7 @@ package com.jobjob.albaing.service;
 import com.jobjob.albaing.dto.*;
 
 import java.util.List;
+import java.util.Map;
 
 public interface AdminService {
 
@@ -48,4 +49,10 @@ public interface AdminService {
 
     // 공지사항 삭제
     void deleteNotice(Long noticeId);
+
+    List<Map<String, Object>> getRecentUsers();
+
+    List<Map<String, Object>> getRecentJobPosts();
+
+    Map<String, Object> getDashboardStats();
 }

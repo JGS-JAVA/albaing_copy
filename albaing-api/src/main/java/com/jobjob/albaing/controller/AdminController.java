@@ -1,11 +1,14 @@
 package com.jobjob.albaing.controller;
 
 import com.jobjob.albaing.dto.*;
+import com.jobjob.albaing.mapper.AdminMapper;
 import com.jobjob.albaing.service.AdminServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @RestController
@@ -149,6 +152,24 @@ public class AdminController {
     @DeleteMapping("/notices/{noticeId}")
     public void deleteNotice(@PathVariable Long noticeId) {
         adminService.deleteNotice(noticeId);
+    }
+
+    @GetMapping("/dashboard/stats")
+    public ResponseEntity<Map<String, Object>> getDashboardStats() {
+        Map<String, Object> stats = adminService.getDashboardStats();
+        return ResponseEntity.ok(stats);
+    }
+
+    @GetMapping("/recent/users")
+    public ResponseEntity<List<Map<String, Object>>> getRecentUsers() {
+        List<Map<String, Object>> users = adminService.getRecentUsers();
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/recent/jobposts")
+    public ResponseEntity<List<Map<String, Object>>> getRecentJobPosts() {
+        List<Map<String, Object>> jobPosts = adminService.getRecentJobPosts();
+        return ResponseEntity.ok(jobPosts);
     }
 
 }

@@ -4,9 +4,15 @@ import com.jobjob.albaing.dto.*;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface AdminMapper {
+    int countTotalUsers();
+    int countTotalCompanies();
+    int countPendingCompanies();
+    int countActiveJobPosts();
+    int countTotalReviews();
 
     List<AdminUser> adminSearchUsers(String userName, String userEmail, String userPhone, String sortOrderBy, Boolean isDESC);
 
@@ -50,4 +56,9 @@ public interface AdminMapper {
 
     // 공지사항 삭제
     void deleteNotice(Long noticeId);
+
+    List<Map<String, Object>> getRecentUsers();
+
+    List<Map<String, Object>> getRecentJobPosts();
+
 }
