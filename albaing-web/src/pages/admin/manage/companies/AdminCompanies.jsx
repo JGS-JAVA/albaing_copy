@@ -247,8 +247,6 @@ const AdminCompanies = () => {
         setLoading(true);
         setError(null);
 
-        // 실제 API 호출시 주석 해제
-        /*
         axios.get('/api/admin/companies', {
             params: {
                 companyName: filters.companyName,
@@ -269,91 +267,6 @@ const AdminCompanies = () => {
                 setError('기업 목록을 불러오는데 실패했습니다.');
                 setLoading(false);
             });
-        */
-
-        // 개발용 더미 데이터
-        setTimeout(() => {
-            const dummyCompanies = Array.from({ length: 35 }, (_, i) => ({
-                companyId: i + 1,
-                companyName: `기업${i + 1}`,
-                companyRegistrationNumber: `123-45-${String(10000 + i).slice(1)}`,
-                companyOwnerName: `대표자${i + 1}`,
-                companyOpenDate: new Date(2000 + Math.floor(Math.random() * 20), Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1),
-                companyEmail: `company${i + 1}@example.com`,
-                companyPhone: `02-${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(1000 + Math.random() * 9000)}`,
-                companyLocalAddress: `서울특별시 강남구 테헤란로 ${Math.floor(Math.random() * 100) + 1}길 ${Math.floor(Math.random() * 100) + 1}`,
-                companyApprovalStatus: i % 5 === 0 ? 'approving' : (i % 7 === 0 ? 'hidden' : 'approved'),
-                companyCreatedAt: new Date(2023, 0, 1 + i).toISOString(),
-                companyUpdatedAt: Math.random() > 0.7 ? new Date(2023, 6, 1 + i).toISOString() : null,
-                companyLogo: null,
-                companyDescription: i % 2 === 0 ? `${i + 1}번째 기업입니다. 우리는 좋은 서비스를 제공합니다.` : null
-            }));
-
-            // 필터링
-            let filteredCompanies = dummyCompanies;
-
-            if (filters.companyName) {
-                filteredCompanies = filteredCompanies.filter(company =>
-                    company.companyName.toLowerCase().includes(filters.companyName.toLowerCase())
-                );
-            }
-            if (filters.companyOwnerName) {
-                filteredCompanies = filteredCompanies.filter(company =>
-                    company.companyOwnerName.toLowerCase().includes(filters.companyOwnerName.toLowerCase())
-                );
-            }
-            if (filters.companyPhone) {
-                filteredCompanies = filteredCompanies.filter(company =>
-                    company.companyPhone.includes(filters.companyPhone)
-                );
-            }
-            if (filters.companyRegistrationNumber) {
-                filteredCompanies = filteredCompanies.filter(company =>
-                    company.companyRegistrationNumber.includes(filters.companyRegistrationNumber)
-                );
-            }
-            if (filters.status && filters.status !== 'all') {
-                filteredCompanies = filteredCompanies.filter(company =>
-                    company.companyApprovalStatus === filters.status
-                );
-            }
-
-            // 정렬
-            filteredCompanies.sort((a, b) => {
-                let fieldA, fieldB;
-                switch (sortField) {
-                    case 'companyName':
-                        fieldA = a.companyName.toLowerCase();
-                        fieldB = b.companyName.toLowerCase();
-                        break;
-                    case 'companyOwnerName':
-                        fieldA = a.companyOwnerName.toLowerCase();
-                        fieldB = b.companyOwnerName.toLowerCase();
-                        break;
-                    case 'companyRegistrationNumber':
-                        fieldA = a.companyRegistrationNumber;
-                        fieldB = b.companyRegistrationNumber;
-                        break;
-                    case 'createdAt':
-                        fieldA = new Date(a.companyCreatedAt).getTime();
-                        fieldB = new Date(b.companyCreatedAt).getTime();
-                        break;
-                    default:
-                        fieldA = a.companyName.toLowerCase();
-                        fieldB = b.companyName.toLowerCase();
-                }
-
-                if (sortDirection === 'asc') {
-                    return fieldA > fieldB ? 1 : -1;
-                } else {
-                    return fieldA < fieldB ? 1 : -1;
-                }
-            });
-
-            setCompanies(filteredCompanies);
-            setTotalItems(filteredCompanies.length);
-            setLoading(false);
-        }, 500);
     };
 
     useEffect(() => {
@@ -366,8 +279,6 @@ const AdminCompanies = () => {
 
         setLoading(true);
 
-        // 실제 API 호출시 주석 해제
-        /*
         axios.delete(`/api/admin/companies/${selectedCompany.companyId}`)
             .then(() => {
                 fetchCompanies();
@@ -379,25 +290,12 @@ const AdminCompanies = () => {
                 setError('기업 삭제에 실패했습니다.');
                 setLoading(false);
             });
-        */
-
-        // 개발용 더미 처리
-        setTimeout(() => {
-            const updatedCompanies = companies.filter(company => company.companyId !== selectedCompany.companyId);
-            setCompanies(updatedCompanies);
-            setTotalItems(updatedCompanies.length);
-            setLoading(false);
-            deleteModal.closeModal();
-            setSelectedCompany(null);
-        }, 500);
     };
 
     // 승인 상태 업데이트
     const handleUpdateApprovalStatus = (companyId, status) => {
         setLoading(true);
 
-        // 실제 API 호출시 주석 해제
-        /*
         axios.patch(`/api/admin/companies/${companyId}/approval`, { status })
             .then(() => {
                 fetchCompanies();
@@ -409,21 +307,6 @@ const AdminCompanies = () => {
                 setError('승인 상태 변경에 실패했습니다.');
                 setLoading(false);
             });
-        */
-
-        // 개발용 더미 처리
-        setTimeout(() => {
-            const updatedCompanies = companies.map(company => {
-                if (company.companyId === companyId) {
-                    return { ...company, companyApprovalStatus: status };
-                }
-                return company;
-            });
-            setCompanies(updatedCompanies);
-            setLoading(false);
-            approveModal.closeModal();
-            setSelectedCompany(null);
-        }, 500);
     };
 
     // 기업 상세 보기

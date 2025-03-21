@@ -20,8 +20,6 @@ const ReviewDetailModal = ({ isOpen, onClose, review, onEdit, onDelete }) => {
     const fetchComments = () => {
         setLoadingComments(true);
 
-        // 실제 API 호출시 주석 해제
-        /*
         axios.get(`/api/admin/reviews/${review.reviewId}/comments`)
             .then(response => {
                 setComments(response.data);
@@ -31,30 +29,12 @@ const ReviewDetailModal = ({ isOpen, onClose, review, onEdit, onDelete }) => {
                 console.error('댓글 로딩 실패:', error);
                 setLoadingComments(false);
             });
-        */
-
-        // 개발용 더미 데이터
-        setTimeout(() => {
-            const dummyComments = Array.from({ length: Math.floor(Math.random() * 5) }, (_, i) => ({
-                commentId: i + 1,
-                reviewId: review.reviewId,
-                userId: Math.floor(Math.random() * 10) + 1,
-                userName: `사용자${Math.floor(Math.random() * 10) + 1}`,
-                commentContent: `이것은 리뷰에 대한 ${i + 1}번째 댓글입니다. 리뷰 내용에 대한 의견을 담고 있습니다.`,
-                commentCreatedAt: new Date(2025, 2, 15 + i).toISOString(),
-                commentUpdatedAt: Math.random() > 0.7 ? new Date(2025, 2, 20 + i).toISOString() : null
-            }));
-
-            setComments(dummyComments);
-            setLoadingComments(false);
-        }, 300);
     };
 
     // 댓글 삭제 함수
     const handleDeleteComment = (commentId) => {
         if (window.confirm('이 댓글을 삭제하시겠습니까?')) {
-            // 실제 API 호출시 주석 해제
-            /*
+
             axios.delete(`/api/admin/comments/${commentId}`)
                 .then(() => {
                     fetchComments();
@@ -62,11 +42,6 @@ const ReviewDetailModal = ({ isOpen, onClose, review, onEdit, onDelete }) => {
                 .catch(error => {
                     console.error('댓글 삭제 실패:', error);
                 });
-            */
-
-            // 개발용 더미 처리
-            const updatedComments = comments.filter(comment => comment.commentId !== commentId);
-            setComments(updatedComments);
         }
     };
 
@@ -332,8 +307,6 @@ const AdminReviews = () => {
         setLoading(true);
         setError(null);
 
-        // 실제 API 호출시 주석 해제
-        /*
         axios.get('/api/admin/reviews', {
             params: {
                 userName: filters.userName,
@@ -353,77 +326,6 @@ const AdminReviews = () => {
                 setError('리뷰 목록을 불러오는데 실패했습니다.');
                 setLoading(false);
             });
-        */
-
-        // 개발용 더미 데이터
-        setTimeout(() => {
-            const dummyReviews = Array.from({ length: 40 }, (_, i) => ({
-                reviewId: i + 1,
-                userId: Math.floor(Math.random() * 20) + 1,
-                userName: `사용자${Math.floor(Math.random() * 20) + 1}`,
-                companyId: Math.floor(Math.random() * 20) + 1,
-                companyName: `기업${Math.floor(Math.random() * 20) + 1}`,
-                reviewTitle: `리뷰 제목 ${i + 1} - ${Math.random() > 0.5 ? '직원 복지가 좋아요' : '근무 환경이 좋습니다'}`,
-                reviewContent: `이 회사에 대한 ${i + 1}번째 리뷰입니다. ${Math.random() > 0.5 ? '좋은 점은 업무 환경과 동료들입니다.' : '좋은 복지와 자유로운 분위기가 장점입니다.'} ${Math.random() > 0.7 ? '다만 업무량이 많은 편입니다.' : ''}`,
-                reviewCreatedAt: new Date(2025, 0, 1 + i).toISOString(),
-                reviewUpdatedAt: Math.random() > 0.7 ? new Date(2025, 1, 1 + i).toISOString() : null
-            }));
-
-            // 필터링
-            let filteredReviews = dummyReviews;
-
-            if (filters.userName) {
-                filteredReviews = filteredReviews.filter(review =>
-                    review.userName.toLowerCase().includes(filters.userName.toLowerCase())
-                );
-            }
-            if (filters.companyName) {
-                filteredReviews = filteredReviews.filter(review =>
-                    review.companyName.toLowerCase().includes(filters.companyName.toLowerCase())
-                );
-            }
-            if (filters.reviewTitle) {
-                filteredReviews = filteredReviews.filter(review =>
-                    review.reviewTitle.toLowerCase().includes(filters.reviewTitle.toLowerCase())
-                );
-            }
-
-            // 정렬
-            filteredReviews.sort((a, b) => {
-                let fieldA, fieldB;
-                switch (sortField) {
-                    case 'reviewTitle':
-                        fieldA = a.reviewTitle.toLowerCase();
-                        fieldB = b.reviewTitle.toLowerCase();
-                        break;
-                    case 'userName':
-                        fieldA = a.userName.toLowerCase();
-                        fieldB = b.userName.toLowerCase();
-                        break;
-                    case 'companyName':
-                        fieldA = a.companyName.toLowerCase();
-                        fieldB = b.companyName.toLowerCase();
-                        break;
-                    case 'reviewCreatedAt':
-                        fieldA = new Date(a.reviewCreatedAt).getTime();
-                        fieldB = new Date(b.reviewCreatedAt).getTime();
-                        break;
-                    default:
-                        fieldA = new Date(a.reviewCreatedAt).getTime();
-                        fieldB = new Date(b.reviewCreatedAt).getTime();
-                }
-
-                if (sortDirection === 'asc') {
-                    return fieldA > fieldB ? 1 : -1;
-                } else {
-                    return fieldA < fieldB ? 1 : -1;
-                }
-            });
-
-            setReviews(filteredReviews);
-            setTotalItems(filteredReviews.length);
-            setLoading(false);
-        }, 500);
     };
 
     useEffect(() => {
@@ -436,8 +338,6 @@ const AdminReviews = () => {
 
         setLoading(true);
 
-        // 실제 API 호출시 주석 해제
-        /*
         axios.delete(`/api/admin/reviews/${selectedReview.reviewId}`)
             .then(() => {
                 fetchReviews();
@@ -449,26 +349,12 @@ const AdminReviews = () => {
                 setError('리뷰 삭제에 실패했습니다.');
                 setLoading(false);
             });
-        */
-
-        // 개발용 더미 처리
-        setTimeout(() => {
-            const updatedReviews = reviews.filter(review => review.reviewId !== selectedReview.reviewId);
-            setReviews(updatedReviews);
-            setTotalItems(updatedReviews.length);
-            setLoading(false);
-            deleteModal.closeModal();
-            detailModal.closeModal();
-            setSelectedReview(null);
-        }, 500);
     };
 
     // 리뷰 수정
     const handleUpdateReview = (updatedReview) => {
         setLoading(true);
 
-        // 실제 API 호출시 주석 해제
-        /*
         axios.put(`/api/admin/reviews/${updatedReview.reviewId}`, {
             reviewTitle: updatedReview.reviewTitle,
             reviewContent: updatedReview.reviewContent
@@ -484,28 +370,6 @@ const AdminReviews = () => {
                 setError('리뷰 수정에 실패했습니다.');
                 setLoading(false);
             });
-        */
-
-        // 개발용 더미 처리
-        setTimeout(() => {
-            const updatedReviews = reviews.map(review => {
-                if (review.reviewId === updatedReview.reviewId) {
-                    return {
-                        ...review,
-                        reviewTitle: updatedReview.reviewTitle,
-                        reviewContent: updatedReview.reviewContent,
-                        reviewUpdatedAt: new Date().toISOString()
-                    };
-                }
-                return review;
-            });
-
-            setReviews(updatedReviews);
-            setLoading(false);
-            editModal.closeModal();
-            detailModal.closeModal();
-            setSelectedReview(null);
-        }, 500);
     };
 
     // 리뷰 상세 보기
@@ -579,7 +443,6 @@ const AdminReviews = () => {
         );
     };
 
-    // 리뷰 내용 요약 (첫 50자만 표시)
     const summarizeContent = (content, maxLength = 50) => {
         if (!content) return '';
         if (content.length <= maxLength) return content;

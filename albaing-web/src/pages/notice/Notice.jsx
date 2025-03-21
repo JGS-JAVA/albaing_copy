@@ -95,8 +95,6 @@ const Notices = () => {
         const fetchNotices = () => {
             setLoading(true);
 
-            // 실제 API 호출시 주석 해제
-            /*
             axios.get('/api/notices')
                 .then(response => {
                     setNotices(response.data);
@@ -107,27 +105,8 @@ const Notices = () => {
                     console.error('공지사항 목록 불러오기 실패:', error);
                     setLoading(false);
                 });
-            */
-
-            // 개발용 더미 데이터
-            setTimeout(() => {
-                const dummyNotices = Array.from({ length: 20 }, (_, i) => ({
-                    noticeId: i + 1,
-                    noticeTitle: `공지사항 제목 ${i + 1}`,
-                    noticeContent: `공지사항 내용 ${i + 1}입니다. 이 내용은 테스트를 위한 더미 데이터입니다.\n\n다양한 정보를 담고 있는 공지사항으로, 사용자에게 중요한 업데이트나 정보를 제공합니다.\n\n알바잉 서비스를 이용해 주셔서 감사합니다.`,
-                    noticeCreatedAt: new Date(2025, 2, 21 - i).toISOString(),
-                    noticeUpdatedAt: i % 3 === 0 ? new Date(2025, 2, 20 - i).toISOString() : null
-                }));
-
-                setNotices(dummyNotices);
-                setTotalItems(dummyNotices.length);
-                setLoading(false);
-            }, 500);
-        };
-
-        fetchNotices();
+        }
     }, []);
-
     // 현재 페이지에 표시할 공지사항
     const getCurrentNotices = () => {
         const indexOfLastItem = currentPage * itemsPerPage;

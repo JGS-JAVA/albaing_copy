@@ -5,7 +5,6 @@ import AdminLayout from '../../AdminLayout';
 import Pagination from '../../../../components/common/Pagination';
 import { format } from 'date-fns';
 
-// 공지사항 추가/수정 모달
 const NoticeFormModal = ({ isOpen, onClose, notice, onSubmit }) => {
     const [formData, setFormData] = useState({
         noticeTitle: '',
@@ -238,8 +237,6 @@ const AdminNotices = () => {
         setLoading(true);
         setError(null);
 
-        // 실제 환경에서는 아래 주석 해제
-        /*
         axios.get('/api/admin/notices')
             .then(response => {
                 setNotices(response.data);
@@ -251,22 +248,6 @@ const AdminNotices = () => {
                 setError('공지사항 목록을 불러오는데 실패했습니다.');
                 setLoading(false);
             });
-        */
-
-        // 개발 목적의 더미 데이터
-        setTimeout(() => {
-            const dummyNotices = Array.from({ length: 22 }, (_, i) => ({
-                noticeId: i + 1,
-                noticeTitle: `공지사항 제목 ${i + 1}`,
-                noticeContent: `공지사항 내용 ${i + 1}입니다. 이 내용은 테스트를 위한 더미 데이터입니다.`,
-                noticeCreatedAt: new Date(2025, 2, 21 - i).toISOString(),
-                noticeUpdatedAt: i % 3 === 0 ? new Date(2025, 2, 20 - i).toISOString() : null
-            }));
-
-            setNotices(dummyNotices);
-            setTotalItems(dummyNotices.length);
-            setLoading(false);
-        }, 500);
     };
 
     useEffect(() => {
@@ -277,8 +258,6 @@ const AdminNotices = () => {
     const handleAddNotice = (formData) => {
         setLoading(true);
 
-        // 실제 환경에서는 아래 주석 해제
-        /*
         axios.post('/api/admin/notices', formData)
             .then(() => {
                 fetchNotices();
@@ -289,22 +268,6 @@ const AdminNotices = () => {
                 setError('공지사항 추가에 실패했습니다.');
                 setLoading(false);
             });
-        */
-
-        // 개발 목적의 더미 데이터 처리
-        setTimeout(() => {
-            const newNotice = {
-                noticeId: notices.length + 1,
-                ...formData,
-                noticeCreatedAt: new Date().toISOString(),
-                noticeUpdatedAt: null
-            };
-
-            setNotices([newNotice, ...notices]);
-            setTotalItems(totalItems + 1);
-            setLoading(false);
-            formModal.closeModal();
-        }, 500);
     };
 
     // 공지사항 수정
@@ -313,8 +276,6 @@ const AdminNotices = () => {
 
         setLoading(true);
 
-        // 실제 환경에서는 아래 주석 해제
-        /*
         axios.put(`/api/admin/notices/${selectedNotice.noticeId}`, formData)
             .then(() => {
                 fetchNotices();
@@ -326,25 +287,6 @@ const AdminNotices = () => {
                 setError('공지사항 수정에 실패했습니다.');
                 setLoading(false);
             });
-        */
-
-        // 개발 목적의 더미 데이터 처리
-        setTimeout(() => {
-            const updatedNotices = notices.map(notice =>
-                notice.noticeId === selectedNotice.noticeId
-                    ? {
-                        ...notice,
-                        ...formData,
-                        noticeUpdatedAt: new Date().toISOString()
-                    }
-                    : notice
-            );
-
-            setNotices(updatedNotices);
-            setLoading(false);
-            formModal.closeModal();
-            setSelectedNotice(null);
-        }, 500);
     };
 
     // 공지사항 삭제
@@ -353,8 +295,6 @@ const AdminNotices = () => {
 
         setLoading(true);
 
-        // 실제 환경에서는 아래 주석 해제
-        /*
         axios.delete(`/api/admin/notices/${selectedNotice.noticeId}`)
             .then(() => {
                 fetchNotices();
@@ -366,20 +306,6 @@ const AdminNotices = () => {
                 setError('공지사항 삭제에 실패했습니다.');
                 setLoading(false);
             });
-        */
-
-        // 개발 목적의 더미 데이터 처리
-        setTimeout(() => {
-            const filteredNotices = notices.filter(
-                notice => notice.noticeId !== selectedNotice.noticeId
-            );
-
-            setNotices(filteredNotices);
-            setTotalItems(totalItems - 1);
-            setLoading(false);
-            deleteModal.closeModal();
-            setSelectedNotice(null);
-        }, 500);
     };
 
     // 공지사항 상세 보기

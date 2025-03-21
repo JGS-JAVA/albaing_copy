@@ -273,8 +273,6 @@ const AdminJobPosts = () => {
         setLoading(true);
         setError(null);
 
-        // 실제 API 호출시 주석 해제
-        /*
         axios.get('/api/admin/job-posts', {
             params: {
                 companyName: filters.companyName,
@@ -294,88 +292,6 @@ const AdminJobPosts = () => {
                 setError('공고 목록을 불러오는데 실패했습니다.');
                 setLoading(false);
             });
-        */
-
-        // 개발용 더미 데이터
-        setTimeout(() => {
-            const dummyJobPosts = Array.from({ length: 30 }, (_, i) => ({
-                jobPostId: i + 1,
-                companyId: Math.floor(Math.random() * 20) + 1,
-                companyName: `기업${Math.floor(Math.random() * 20) + 1}`,
-                companyLogo: null,
-                jobPostTitle: `채용공고 제목 ${i + 1}`,
-                jobPostOptionalImage: i % 5 === 0 ? 'https://via.placeholder.com/500x300?text=JobPost+Image' : null,
-                jobPostContactNumber: `02-${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(1000 + Math.random() * 9000)}`,
-                jobPostRequiredEducations: ['무관', '고졸 이상', '초대졸 이상', '대졸 이상'][Math.floor(Math.random() * 4)],
-                jobPostJobCategory: ['서비스업', '사무직', 'IT/개발', '판매/영업', '교육'][Math.floor(Math.random() * 5)],
-                jobPostJobType: ['정규직', '계약직', '파트타임', '인턴'][Math.floor(Math.random() * 4)],
-                jobPostWorkingPeriod: ['1개월', '3개월', '6개월', '1년 이상', '2년 이상'][Math.floor(Math.random() * 5)],
-                jobWorkSchedule: ['주 5일', '주 3일', '주말', '탄력근무'][Math.floor(Math.random() * 4)],
-                jobPostShiftHours: ['09:00~18:00', '14:00~22:00', '22:00~06:00', '시간협의'][Math.floor(Math.random() * 4)],
-                jobPostSalary: [`시급 ${Math.floor(90 + Math.random() * 100) * 100}원`, `월급 ${Math.floor(180 + Math.random() * 120) * 10000}원`][Math.floor(Math.random() * 2)],
-                jobPostWorkPlace: ['서울 강남구', '서울 마포구', '경기 성남시', '인천 부평구'][Math.floor(Math.random() * 4)],
-                jobPostStatus: Math.random() > 0.2, // 80% 확률로 true (공개)
-                jobPostDueDate: new Date(2025, 3, Math.floor(Math.random() * 30) + 1),
-                jobPostCreatedAt: new Date(2025, 2, 1 + i),
-                jobPostUpdatedAt: Math.random() > 0.7 ? new Date(2025, 2, 15 + Math.floor(Math.random() * 5)) : null
-            }));
-
-            // 필터링
-            let filteredJobPosts = dummyJobPosts;
-
-            if (filters.companyName) {
-                filteredJobPosts = filteredJobPosts.filter(jobPost =>
-                    jobPost.companyName.toLowerCase().includes(filters.companyName.toLowerCase())
-                );
-            }
-            if (filters.jobPostTitle) {
-                filteredJobPosts = filteredJobPosts.filter(jobPost =>
-                    jobPost.jobPostTitle.toLowerCase().includes(filters.jobPostTitle.toLowerCase())
-                );
-            }
-            if (filters.jobPostStatus !== '') {
-                const statusValue = filters.jobPostStatus === 'true';
-                filteredJobPosts = filteredJobPosts.filter(jobPost =>
-                    jobPost.jobPostStatus === statusValue
-                );
-            }
-
-            // 정렬
-            filteredJobPosts.sort((a, b) => {
-                let fieldA, fieldB;
-                switch (sortField) {
-                    case 'jobPostTitle':
-                        fieldA = a.jobPostTitle.toLowerCase();
-                        fieldB = b.jobPostTitle.toLowerCase();
-                        break;
-                    case 'companyName':
-                        fieldA = a.companyName.toLowerCase();
-                        fieldB = b.companyName.toLowerCase();
-                        break;
-                    case 'jobPostDueDate':
-                        fieldA = new Date(a.jobPostDueDate).getTime();
-                        fieldB = new Date(b.jobPostDueDate).getTime();
-                        break;
-                    case 'jobPostCreatedAt':
-                        fieldA = new Date(a.jobPostCreatedAt).getTime();
-                        fieldB = new Date(b.jobPostCreatedAt).getTime();
-                        break;
-                    default:
-                        fieldA = new Date(a.jobPostCreatedAt).getTime();
-                        fieldB = new Date(b.jobPostCreatedAt).getTime();
-                }
-
-                if (sortDirection === 'asc') {
-                    return fieldA > fieldB ? 1 : -1;
-                } else {
-                    return fieldA < fieldB ? 1 : -1;
-                }
-            });
-
-            setJobPosts(filteredJobPosts);
-            setTotalItems(filteredJobPosts.length);
-            setLoading(false);
-        }, 500);
     };
 
     useEffect(() => {
@@ -388,8 +304,6 @@ const AdminJobPosts = () => {
 
         setLoading(true);
 
-        // 실제 API 호출시 주석 해제
-        /*
         axios.delete(`/api/admin/job-posts/${selectedJobPost.jobPostId}`)
             .then(() => {
                 fetchJobPosts();
@@ -401,25 +315,12 @@ const AdminJobPosts = () => {
                 setError('공고 삭제에 실패했습니다.');
                 setLoading(false);
             });
-        */
-
-        // 개발용 더미 처리
-        setTimeout(() => {
-            const updatedJobPosts = jobPosts.filter(jobPost => jobPost.jobPostId !== selectedJobPost.jobPostId);
-            setJobPosts(updatedJobPosts);
-            setTotalItems(updatedJobPosts.length);
-            setLoading(false);
-            deleteModal.closeModal();
-            setSelectedJobPost(null);
-        }, 500);
     };
 
     // 공고 상태 변경
     const handleUpdateJobPostStatus = (jobPostId, status) => {
         setLoading(true);
 
-        // 실제 API 호출시 주석 해제
-        /*
         axios.patch(`/api/admin/job-posts/${jobPostId}/status`, { status })
             .then(() => {
                 fetchJobPosts();
@@ -431,21 +332,6 @@ const AdminJobPosts = () => {
                 setError('공고 상태 변경에 실패했습니다.');
                 setLoading(false);
             });
-        */
-
-        // 개발용 더미 처리
-        setTimeout(() => {
-            const updatedJobPosts = jobPosts.map(jobPost => {
-                if (jobPost.jobPostId === jobPostId) {
-                    return { ...jobPost, jobPostStatus: status, jobPostUpdatedAt: new Date() };
-                }
-                return jobPost;
-            });
-            setJobPosts(updatedJobPosts);
-            setLoading(false);
-            statusModal.closeModal();
-            setSelectedJobPost(null);
-        }, 500);
     };
 
     // 공고 상세 보기

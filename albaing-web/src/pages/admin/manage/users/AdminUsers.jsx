@@ -119,8 +119,6 @@ const AdminUsers = () => {
         setLoading(true);
         setError(null);
 
-        // 실제 API 호출시 주석 해제
-        /*
         axios.get('/api/admin/users', {
             params: {
                 userName: filters.name,
@@ -140,73 +138,6 @@ const AdminUsers = () => {
                 setError('회원 목록을 불러오는데 실패했습니다.');
                 setLoading(false);
             });
-        */
-
-        // 개발용 더미 데이터
-        setTimeout(() => {
-            const dummyUsers = Array.from({ length: 45 }, (_, i) => ({
-                userId: i + 1,
-                userName: `사용자${i + 1}`,
-                userEmail: `user${i + 1}@example.com`,
-                userPhone: `010-${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(1000 + Math.random() * 9000)}`,
-                userBirthdate: new Date(1980 + Math.floor(Math.random() * 25), Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1),
-                userGender: Math.random() > 0.5 ? 'male' : 'female',
-                userAddress: `서울특별시 강남구 테헤란로 ${Math.floor(Math.random() * 100) + 1}길 ${Math.floor(Math.random() * 100) + 1}`,
-                userCreatedAt: new Date(2023, 0, 1 + i).toISOString(),
-                userUpdatedAt: Math.random() > 0.7 ? new Date(2023, 6, 1 + i).toISOString() : null,
-                userProfileImage: null
-            }));
-
-            // 필터링
-            let filteredUsers = dummyUsers;
-            if (filters.name) {
-                filteredUsers = filteredUsers.filter(user =>
-                    user.userName.toLowerCase().includes(filters.name.toLowerCase())
-                );
-            }
-            if (filters.email) {
-                filteredUsers = filteredUsers.filter(user =>
-                    user.userEmail.toLowerCase().includes(filters.email.toLowerCase())
-                );
-            }
-            if (filters.phone) {
-                filteredUsers = filteredUsers.filter(user =>
-                    user.userPhone.includes(filters.phone)
-                );
-            }
-
-            // 정렬
-            filteredUsers.sort((a, b) => {
-                let fieldA, fieldB;
-                switch (sortField) {
-                    case 'name':
-                        fieldA = a.userName.toLowerCase();
-                        fieldB = b.userName.toLowerCase();
-                        break;
-                    case 'email':
-                        fieldA = a.userEmail.toLowerCase();
-                        fieldB = b.userEmail.toLowerCase();
-                        break;
-                    case 'createdAt':
-                        fieldA = new Date(a.userCreatedAt).getTime();
-                        fieldB = new Date(b.userCreatedAt).getTime();
-                        break;
-                    default:
-                        fieldA = a.userName.toLowerCase();
-                        fieldB = b.userName.toLowerCase();
-                }
-
-                if (sortDirection === 'asc') {
-                    return fieldA > fieldB ? 1 : -1;
-                } else {
-                    return fieldA < fieldB ? 1 : -1;
-                }
-            });
-
-            setUsers(filteredUsers);
-            setTotalItems(filteredUsers.length);
-            setLoading(false);
-        }, 500);
     };
 
     useEffect(() => {
@@ -219,8 +150,6 @@ const AdminUsers = () => {
 
         setLoading(true);
 
-        // 실제 API 호출시 주석 해제
-        /*
         axios.delete(`/api/admin/users/${selectedUser.userId}`)
             .then(() => {
                 fetchUsers();
@@ -232,18 +161,7 @@ const AdminUsers = () => {
                 setError('회원 삭제에 실패했습니다.');
                 setLoading(false);
             });
-        */
-
-        // 개발용 더미 처리
-        setTimeout(() => {
-            const updatedUsers = users.filter(user => user.userId !== selectedUser.userId);
-            setUsers(updatedUsers);
-            setTotalItems(updatedUsers.length);
-            setLoading(false);
-            deleteModal.closeModal();
-            setSelectedUser(null);
-        }, 500);
-    };
+        }
 
     // 회원 상세 보기
     const handleViewUser = (user) => {

@@ -68,7 +68,7 @@ function PathRoute() {
                 <Route path="/about" element={<MainLayout><About /></MainLayout>} /> {/* 회사 소개 페이지 */}
                 <Route path="/customer/faq" element={<MainLayout><FAQ /></MainLayout>} /> {/* 자주 하는 문의 페이지 */}
                 <Route path="/customer/contact" element={<MainLayout><Contact /></MainLayout>} /> {/* 문의 페이지 */}
-                <Route path="/notice" element={<MainLayout><Notice /></MainLayout>} /> {/* 공지사항 페이지 */}
+                <Route path="/notices" element={<MainLayout><Notice /></MainLayout>} /> {/* 공지사항 페이지 */}
                 <Route path="/terms" element={<MainLayout><Terms /></MainLayout>} /> {/* 이용약관 페이지 */}
                 <Route path="/privacy" element={<MainLayout><Privacy /></MainLayout>} /> {/* 개인정보처리방침 페이지 */}
                 <Route path="/login" element={<MainLayout><Login /></MainLayout>} /> {/* 로그인 페이지 */}

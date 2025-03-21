@@ -41,24 +41,9 @@ const AdminMain = () => {
     });
 
     useEffect(() => {
-        // 대시보드 통계를 불러오는 API
-        // 실제 구현 시에는 실제 API 호출로 변경해야 함
         const fetchStats = () => {
             setLoading(true);
 
-            // 실제 API 대신 더미 데이터로 대체
-            setTimeout(() => {
-                setStats({
-                    totalUsers: 450,
-                    totalCompanies: 120,
-                    pendingCompanies: 15,
-                    activeJobPosts: 385,
-                    totalReviews: 240
-                });
-                setLoading(false);
-            }, 1000);
-
-            /* 실제 API 호출 코드 (구현 시 활성화)
             axios.get('/api/admin/dashboard/stats')
                 .then(response => {
                     setStats(response.data);
@@ -69,7 +54,6 @@ const AdminMain = () => {
                 .finally(() => {
                     setLoading(false);
                 });
-            */
         };
 
         fetchStats();
