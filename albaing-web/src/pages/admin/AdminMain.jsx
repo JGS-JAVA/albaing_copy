@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { format } from 'date-fns';
 import { LoadingSpinner } from '../../components';
 import AdminLayout from './AdminLayout';
+import DashboardCharts from './DashboardCharts';
 
+// 통계 카드 컴포넌트
 const StatCard = ({ title, value, icon, color, link }) => {
     return (
         <div className={`bg-white rounded-lg shadow-md p-6 border-l-4 ${color}`}>
@@ -39,28 +42,76 @@ const AdminMain = () => {
         activeJobPosts: 0,
         totalReviews: 0
     });
+    const [recentUsers, setRecentUsers] = useState([]);
+    const [recentJobPosts, setRecentJobPosts] = useState([]);
 
     useEffect(() => {
-        const fetchStats = () => {
+        const fetchDashboardData = async () => {
             setLoading(true);
+            try {
+                // 병렬로 여러 요청 처리
+                const [statsRes, usersRes, jobPostsRes] = await Promise.all([
+                    axios.get('/api/admin/dashboard/stats'),
+                    axios.get('/api/admin/recent/users'),
+                    axios.get('/api/admin/recent/jobposts')
+                ]);
 
-            axios.get('/api/admin/dashboard/stats')
-                .then(response => {
-                    setStats(response.data);
-                })
-                .catch(error => {
-                    console.error('대시보드 통계 로딩 실패:', error);
-                })
-                .finally(() => {
-                    setLoading(false);
-                });
+                setStats(statsRes.data);
+                setRecentUsers(usersRes.data);
+                setRecentJobPosts(jobPostsRes.data);
+            } catch (error) {
+                console.error('대시보드 데이터 로딩 실패:', error);
+            } finally {
+                setLoading(false);
+            }
         };
 
-        fetchStats();
+        fetchDashboardData();
     }, []);
 
+// CSV 다운로드 함수
+    const downloadCSV = (url, filename) => {
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            })
+            .catch(e => {
+                console.error('CSV 다운로드 실패:', e);
+                alert('CSV 파일 다운로드에 실패했습니다.');
+            });
+    };
+
+// 최근 회원 CSV 다운로드
+    const handleDownloadUsers = () => {
+        downloadCSV('/api/admin/users/csv', `알바잉_회원목록_${format(new Date(), 'yyyyMMdd')}.csv`);
+    };
+
+// 채용공고 CSV 다운로드
+    const handleDownloadJobPosts = () => {
+        downloadCSV('/api/admin/job-posts/csv', `알바잉_채용공고목록_${format(new Date(), 'yyyyMMdd')}.csv`);
+    };
+
     if (loading) {
-        return <LoadingSpinner message="관리자 정보를 불러오는 중..." />;
+        return (
+            <AdminLayout>
+                <LoadingSpinner message="관리자 정보를 불러오는 중..." />
+            </AdminLayout>
+        );
     }
 
     return (
@@ -70,6 +121,7 @@ const AdminMain = () => {
                 <p className="text-gray-600 mt-1">알바잉 서비스 현황을 확인하세요.</p>
             </div>
 
+            {/* 통계 카드 */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 <StatCard
                     title="총 회원 수"
@@ -108,9 +160,38 @@ const AdminMain = () => {
                 />
             </div>
 
+            {/* CSV 다운로드 버튼 */}
+            <div className="mb-8 flex flex-wrap gap-4">
+                <button
+                    onClick={handleDownloadUsers}
+                    className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 shadow"
+                >
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    회원 목록 CSV 다운로드
+                </button>
+                <button
+                    onClick={handleDownloadJobPosts}
+                    className="flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 shadow"
+                >
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    채용공고 CSV 다운로드
+                </button>
+            </div>
+
+            {/* 최근 데이터 표시 */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* 최근 가입한 회원 */}
                 <div className="bg-white p-6 rounded-lg shadow-md">
-                    <h2 className="text-xl font-semibold mb-4">최근 가입한 회원</h2>
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-xl font-semibold">최근 가입한 회원</h2>
+                        <Link to="/admin/users" className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                            모든 회원 보기
+                        </Link>
+                    </div>
                     <div className="overflow-x-auto">
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-50">
@@ -121,34 +202,36 @@ const AdminMain = () => {
                             </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
-                            {/* 더미 데이터 */}
-                            <tr>
-                                <td className="px-6 py-4 whitespace-nowrap">홍길동</td>
-                                <td className="px-6 py-4 whitespace-nowrap">hong@example.com</td>
-                                <td className="px-6 py-4 whitespace-nowrap">2025-03-19</td>
-                            </tr>
-                            <tr>
-                                <td className="px-6 py-4 whitespace-nowrap">김철수</td>
-                                <td className="px-6 py-4 whitespace-nowrap">kim@example.com</td>
-                                <td className="px-6 py-4 whitespace-nowrap">2025-03-18</td>
-                            </tr>
-                            <tr>
-                                <td className="px-6 py-4 whitespace-nowrap">이영희</td>
-                                <td className="px-6 py-4 whitespace-nowrap">lee@example.com</td>
-                                <td className="px-6 py-4 whitespace-nowrap">2025-03-17</td>
-                            </tr>
+                            {recentUsers.length > 0 ? (
+                                recentUsers.map((user, index) => (
+                                    <tr key={index}>
+                                        <td className="px-6 py-4 whitespace-nowrap">{user.userName}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap">{user.userEmail}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            {format(new Date(user.userCreatedAt), 'yyyy-MM-dd')}
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="3" className="px-6 py-4 text-center text-gray-500">
+                                        최근 가입한 회원이 없습니다.
+                                    </td>
+                                </tr>
+                            )}
                             </tbody>
                         </table>
                     </div>
-                    <div className="mt-4 text-right">
-                        <Link to="/admin/users" className="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                            모든 회원 보기
-                        </Link>
-                    </div>
                 </div>
 
+                {/* 최근 등록된 공고 */}
                 <div className="bg-white p-6 rounded-lg shadow-md">
-                    <h2 className="text-xl font-semibold mb-4">최근 등록된 공고</h2>
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-xl font-semibold">최근 등록된 공고</h2>
+                        <Link to="/admin/jobposts" className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                            모든 공고 보기
+                        </Link>
+                    </div>
                     <div className="overflow-x-auto">
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-50">
@@ -159,32 +242,31 @@ const AdminMain = () => {
                             </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
-                            {/* 더미 데이터 */}
-                            <tr>
-                                <td className="px-6 py-4 whitespace-nowrap">주니어 개발자 모집</td>
-                                <td className="px-6 py-4 whitespace-nowrap">ABC 테크</td>
-                                <td className="px-6 py-4 whitespace-nowrap">2025-04-15</td>
-                            </tr>
-                            <tr>
-                                <td className="px-6 py-4 whitespace-nowrap">고객 서비스 담당자</td>
-                                <td className="px-6 py-4 whitespace-nowrap">XYZ 기업</td>
-                                <td className="px-6 py-4 whitespace-nowrap">2025-04-10</td>
-                            </tr>
-                            <tr>
-                                <td className="px-6 py-4 whitespace-nowrap">마케팅 인턴</td>
-                                <td className="px-6 py-4 whitespace-nowrap">디지털 마케팅</td>
-                                <td className="px-6 py-4 whitespace-nowrap">2025-04-05</td>
-                            </tr>
+                            {recentJobPosts.length > 0 ? (
+                                recentJobPosts.map((post, index) => (
+                                    <tr key={index}>
+                                        <td className="px-6 py-4 whitespace-nowrap">{post.jobPostTitle}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap">{post.companyName}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            {format(new Date(post.jobPostDueDate), 'yyyy-MM-dd')}
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="3" className="px-6 py-4 text-center text-gray-500">
+                                        최근 등록된 공고가 없습니다.
+                                    </td>
+                                </tr>
+                            )}
                             </tbody>
                         </table>
                     </div>
-                    <div className="mt-4 text-right">
-                        <Link to="/admin/jobposts" className="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                            모든 공고 보기
-                        </Link>
-                    </div>
                 </div>
             </div>
+
+            {/* 통계 차트 */}
+            <DashboardCharts />
         </AdminLayout>
     );
 };

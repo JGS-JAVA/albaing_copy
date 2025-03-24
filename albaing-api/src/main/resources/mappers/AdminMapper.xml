@@ -380,4 +380,54 @@
             LIMIT 5
     </select>
 
+    <!-- 직종별 채용공고 통계 -->
+    <select id="getJobCategoryStats" resultType="map">
+        SELECT
+            job_post_job_category AS name,
+            COUNT(*) AS value
+        FROM
+            JOB_POSTS
+        WHERE
+            job_post_status = true
+          AND job_post_due_date >= CURRENT_DATE
+        GROUP BY
+            job_post_job_category
+        ORDER BY
+            value DESC
+            LIMIT 10
+    </select>
+
+    <!-- 고용형태별 채용공고 통계 -->
+    <select id="getJobTypeStats" resultType="map">
+        SELECT
+            job_post_job_type AS name,
+            COUNT(*) AS value
+        FROM
+            JOB_POSTS
+        WHERE
+            job_post_status = true
+          AND job_post_due_date >= CURRENT_DATE
+        GROUP BY
+            job_post_job_type
+        ORDER BY
+            value DESC
+    </select>
+
+    <!-- 지역별 회원 통계 -->
+    <select id="getUserRegionStats" resultType="map">
+        SELECT
+            SUBSTRING_INDEX(user_address, ' ', 2) AS name,
+            COUNT(*) AS value
+        FROM
+            USERS
+        WHERE
+            user_address IS NOT NULL
+          AND user_address != ''
+        GROUP BY
+            name
+        ORDER BY
+            value DESC
+            LIMIT 10
+    </select>
+
 </mapper>

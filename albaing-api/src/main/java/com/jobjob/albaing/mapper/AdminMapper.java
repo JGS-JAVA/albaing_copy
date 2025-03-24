@@ -61,4 +61,13 @@ public interface AdminMapper {
 
     List<Map<String, Object>> getRecentJobPosts();
 
+    // 직종별 채용공고 통계
+    List<Map<String, Object>> getJobCategoryStats();
+
+    // 고용형태별 채용공고 통계
+    List<Map<String, Object>> getJobTypeStats();
+
+    // 지역별 회원 통계
+    List<Map<String, Object>> getUserRegionStats();
+
 }

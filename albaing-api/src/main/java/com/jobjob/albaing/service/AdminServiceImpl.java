@@ -130,4 +130,18 @@ public class AdminServiceImpl implements AdminService {
     public List<Map<String, Object>> getRecentJobPosts() {
         return adminMapper.getRecentJobPosts();
     }
+    @Override
+    public List<Map<String, Object>> getJobCategoryStats() {
+        return adminMapper.getJobCategoryStats();
+    }
+
+    @Override
+    public List<Map<String, Object>> getJobTypeStats() {
+        return adminMapper.getJobTypeStats();
+    }
+
+    @Override
+    public List<Map<String, Object>> getUserRegionStats() {
+        return adminMapper.getUserRegionStats();
+    }
 }

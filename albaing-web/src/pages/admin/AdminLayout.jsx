@@ -35,12 +35,12 @@ const AdminLayout = ({ children }) => {
 
     return (
         <div className="flex h-screen bg-gray-100">
-            {/* 모바일 사이드바 */}
+            {/* 모바일 사이드바 오버레이 */}
             <div className={`fixed inset-0 z-20 transition-opacity ease-linear duration-300 ${sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'}`}>
                 <div className="absolute inset-0 bg-gray-600 opacity-75" onClick={() => setSidebarOpen(false)}></div>
             </div>
 
-            {/* 모바일 사이드바 */}
+            {/* 사이드바 */}
             <div className={`fixed inset-y-0 left-0 z-30 w-64 transition duration-300 transform bg-blue-800 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 md:static md:inset-0`}>
                 <div className="flex items-center justify-center mt-8">
                     <div className="flex items-center">
