@@ -38,7 +38,6 @@ public class AdminController {
                                             @RequestParam(required = false) String userPhone,
                                             @RequestParam(required = false) String sortOrderBy,
                                             @RequestParam(required = false) Boolean isDESC) {
-        // 프론트엔드에서 온 필드명을 백엔드 필드명으로 변환
         if (sortOrderBy != null) {
             if (sortOrderBy.equals("userId")) {
                 sortOrderBy = "userId";
@@ -173,7 +172,6 @@ public class AdminController {
     // 개인 회원 정보 수정
     @PutMapping("/users/{userId}")
     public ResponseEntity<User> updateUser(@PathVariable Long userId, @RequestBody User user) {
-        // ID 확인
         if (!userId.equals(user.getUserId())) {
             return ResponseEntity.badRequest().build();
         }
@@ -215,7 +213,6 @@ public class AdminController {
         @PathVariable int resumeId,
         @RequestBody ResumeUpdateRequest resumeUpdateRequest) {
 
-        // 이력서 ID 확인
         if (resumeUpdateRequest.getResume() != null) {
             resumeUpdateRequest.getResume().setResumeId(resumeId);
         } else {
@@ -249,17 +246,35 @@ public class AdminController {
         return adminService.adminSearchJobApplications(userName, companyName, jobPostTitle, sortOrderBy, isDESC);
     }
 
-    // 법인 검색
+    // 회사 검색
     @GetMapping("/companies")
-    public List<Company> adminSearchCompanies(@RequestParam(required = false) String companyName,
-                                              @RequestParam(required = false) String companyOwnerName,
-                                              @RequestParam(required = false) String companyPhone,
-                                              @RequestParam(required = false) String companyRegistrationNumber,
-                                              @RequestParam(defaultValue = "법인명") String sortOrderBy,
-                                              @RequestParam(required = false) Boolean isDESC) {
+    public List<Company> adminSearchCompanies(
+        @RequestParam(required = false) String companyName,
+        @RequestParam(required = false) String companyOwnerName,
+        @RequestParam(required = false) String companyPhone,
+        @RequestParam(required = false) String companyRegistrationNumber,
+        @RequestParam(required = false) String sortOrderBy,
+        @RequestParam(required = false) Boolean isDESC) {
+
+        if (sortOrderBy != null) {
+            if (sortOrderBy.equals("companyId")) {
+                sortOrderBy = "companyId";
+            } else if (sortOrderBy.equals("companyName")) {
+                sortOrderBy = "법인명";
+            } else if (sortOrderBy.equals("companyOwnerName")) {
+                sortOrderBy = "대표자명";
+            } else if (sortOrderBy.equals("companyRegistrationNumber")) {
+                sortOrderBy = "사업자번호";
+            } else if (sortOrderBy.equals("createdAt")) {
+                sortOrderBy = "가입일";
+            }
+        } else {
+            sortOrderBy = "법인명";
+        }
 
         return adminService.adminSearchCompanies(companyName, companyOwnerName, companyPhone, companyRegistrationNumber, sortOrderBy, isDESC);
     }
+
 
     // 회사 상세 조회
     @GetMapping("/companies/{companyId}")

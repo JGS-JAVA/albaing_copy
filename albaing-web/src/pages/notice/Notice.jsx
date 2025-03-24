@@ -6,7 +6,6 @@ import Pagination from '../../components/common/Pagination';
 import { format } from 'date-fns';
 
 const NoticeItem = ({ notice, onView }) => {
-    // 날짜 포맷 변환
     const formatDate = (dateString) => {
         if (!dateString) return '-';
         return format(new Date(dateString), 'yyyy-MM-dd');
@@ -31,7 +30,6 @@ const NoticeItem = ({ notice, onView }) => {
 const NoticeDetailModal = ({ isOpen, onClose, notice }) => {
     if (!isOpen || !notice) return null;
 
-    // 날짜 포맷 변환
     const formatDate = (dateString) => {
         if (!dateString) return '-';
         return format(new Date(dateString), 'yyyy-MM-dd HH:mm');
@@ -90,7 +88,6 @@ const Notices = () => {
     const [selectedNotice, setSelectedNotice] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // 공지사항 목록 불러오기
     useEffect(() => {
         const fetchNotices = () => {
             setLoading(true);
@@ -106,21 +103,21 @@ const Notices = () => {
                     setLoading(false);
                 });
         }
+
+        fetchNotices();
     }, []);
-    // 현재 페이지에 표시할 공지사항
+
     const getCurrentNotices = () => {
         const indexOfLastItem = currentPage * itemsPerPage;
         const indexOfFirstItem = indexOfLastItem - itemsPerPage;
         return notices.slice(indexOfFirstItem, indexOfLastItem);
     };
 
-    // 공지사항 상세 보기
     const handleViewNotice = (notice) => {
         setSelectedNotice(notice);
         setIsModalOpen(true);
     };
 
-    // 모달 닫기
     const handleCloseModal = () => {
         setIsModalOpen(false);
     };
