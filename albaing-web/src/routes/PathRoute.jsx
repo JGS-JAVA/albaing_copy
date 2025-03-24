@@ -49,6 +49,8 @@ import Notice from "../pages/notice/Notice";
 import AdminCompanyEdit from "../pages/admin/manage/companies/AdminCompanyEdit";
 import PendingCompanies from "../pages/admin/manage/companies/PendingCompanies";
 import AdminCompanyDetail from "../pages/admin/manage/companies/AdminCompanyDetail";
+import AdminJobPostEdit from "../pages/admin/manage/jobPosts/AdminJobPostEdit";
+import AdminJobPostDetail from "../pages/admin/manage/jobPosts/AdminJobPostDetail";
 
 // 메인 레이아웃 컴포넌트
 const MainLayout = ({children}) => (
@@ -123,8 +125,10 @@ function PathRoute() {
                     <Route path="/admin/companies" element={<AdminCompanies />} /> {/* 기업 관리 */}
                     <Route path="/admin/companies/:companyId" element={<AdminCompanyDetail />} /> {/* 기업 상세 */}
                     <Route path="/admin/companies/:companyId/edit" element={<AdminCompanyEdit />} /> {/* 기업 정보 수정 */}
-                    <Route path="/admin/pending-companies" element={<PendingCompanies />} />
+                    <Route path="/admin/pending-companies" element={<PendingCompanies />} /> {/* 승인 대기중인 기업 목록 */}
                     <Route path="/admin/jobposts" element={<AdminJobPosts />} /> {/* 공고 관리 */}
+                    <Route path="/admin/jobposts/:jobPostId" element={<AdminJobPostDetail />} /> {/* 공고 상세 */}
+                    <Route path="/admin/jobposts/:jobPostId/edit" element={<AdminJobPostEdit />} /> {/* 공고 수정 */}
                     <Route path="/admin/reviews" element={<AdminReviews />} /> {/* 리뷰 관리 */}
                     <Route path="/admin/notices" element={<AdminNotices />} /> {/* 공지사항 관리 */}
                 </Route>

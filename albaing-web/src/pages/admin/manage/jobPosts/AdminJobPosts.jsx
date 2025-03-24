@@ -1,147 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { format } from 'date-fns';
 import { LoadingSpinner, ErrorMessage, ConfirmModal, useModal } from '../../../../components';
 import AdminLayout from '../../AdminLayout';
 import Pagination from '../../../../components/common/Pagination';
 
-const JobPostDetailModal = ({ isOpen, onClose, jobPost }) => {
-    if (!isOpen || !jobPost) return null;
-
-    const formatDate = (dateString) => {
-        if (!dateString) return '-';
-        return format(new Date(dateString), 'yyyy-MM-dd');
-    };
-
-    return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
-                <div className="px-6 py-4 border-b flex justify-between items-center sticky top-0 bg-white">
-                    <h3 className="text-xl font-semibold text-gray-800">채용공고 상세 정보</h3>
-                    <button
-                        onClick={onClose}
-                        className="text-gray-500 hover:text-gray-700"
-                    >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-
-                <div className="p-6">
-                    <div className="flex flex-col md:flex-row mb-6">
-                        <div className="md:w-1/4 mb-4 md:mb-0">
-                            <div className="flex justify-center">
-                                <img
-                                    src={jobPost.companyLogo || `https://ui-avatars.com/api/?name=${encodeURIComponent(jobPost.companyName || 'Company')}&background=2563EB&color=fff&size=150`}
-                                    alt={jobPost.companyName}
-                                    className="w-32 h-32 object-contain border border-gray-200 rounded-lg p-2"
-                                />
-                            </div>
-                        </div>
-                        <div className="md:w-3/4 md:pl-6">
-                            <h2 className="text-2xl font-bold text-gray-800">{jobPost.jobPostTitle}</h2>
-                            <p className="text-lg text-gray-600 mt-1">{jobPost.companyName}</p>
-
-                            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <h4 className="text-sm font-medium text-gray-500">마감일</h4>
-                                    <p className="text-base">{formatDate(jobPost.jobPostDueDate)}</p>
-                                </div>
-                                <div>
-                                    <h4 className="text-sm font-medium text-gray-500">공고 상태</h4>
-                                    <p className={`text-base font-medium ${jobPost.jobPostStatus ? 'text-green-600' : 'text-red-600'}`}>
-                                        {jobPost.jobPostStatus ? '공개' : '비공개'}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="border-t border-gray-200 pt-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <h3 className="text-lg font-semibold mb-3">채용 정보</h3>
-                                <div className="space-y-3">
-                                    <div>
-                                        <h4 className="text-sm font-medium text-gray-500">직무 분류</h4>
-                                        <p className="mt-1">{jobPost.jobPostJobCategory || '-'}</p>
-                                    </div>
-                                    <div>
-                                        <h4 className="text-sm font-medium text-gray-500">고용 형태</h4>
-                                        <p className="mt-1">{jobPost.jobPostJobType || '-'}</p>
-                                    </div>
-                                    <div>
-                                        <h4 className="text-sm font-medium text-gray-500">근무 기간</h4>
-                                        <p className="mt-1">{jobPost.jobPostWorkingPeriod || '-'}</p>
-                                    </div>
-                                    <div>
-                                        <h4 className="text-sm font-medium text-gray-500">근무 요일</h4>
-                                        <p className="mt-1">{jobPost.jobWorkSchedule || '-'}</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div>
-                                <h3 className="text-lg font-semibold mb-3">근무 조건</h3>
-                                <div className="space-y-3">
-                                    <div>
-                                        <h4 className="text-sm font-medium text-gray-500">근무 시간</h4>
-                                        <p className="mt-1">{jobPost.jobPostShiftHours || '-'}</p>
-                                    </div>
-                                    <div>
-                                        <h4 className="text-sm font-medium text-gray-500">급여</h4>
-                                        <p className="mt-1">{jobPost.jobPostSalary || '-'}</p>
-                                    </div>
-                                    <div>
-                                        <h4 className="text-sm font-medium text-gray-500">근무지</h4>
-                                        <p className="mt-1">{jobPost.jobPostWorkPlace || '-'}</p>
-                                    </div>
-                                    <div>
-                                        <h4 className="text-sm font-medium text-gray-500">요구 학력</h4>
-                                        <p className="mt-1">{jobPost.jobPostRequiredEducations || '-'}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {jobPost.jobPostOptionalImage && (
-                        <div className="border-t border-gray-200 pt-6 mt-6">
-                            <h3 className="text-lg font-semibold mb-3">추가 정보</h3>
-                            <div className="flex justify-center">
-                                <img
-                                    src={jobPost.jobPostOptionalImage}
-                                    alt="추가 정보"
-                                    className="max-w-full rounded-lg border border-gray-200"
-                                />
-                            </div>
-                        </div>
-                    )}
-
-                    <div className="border-t border-gray-200 pt-6 mt-6">
-                        <div className="flex justify-between text-sm text-gray-500">
-                            <div>게시일: {formatDate(jobPost.jobPostCreatedAt)}</div>
-                            {jobPost.jobPostUpdatedAt && (
-                                <div>최근 수정일: {formatDate(jobPost.jobPostUpdatedAt)}</div>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="mt-8 flex justify-end">
-                        <button
-                            onClick={onClose}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                        >
-                            닫기
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
-
+// 상태 변경 모달 컴포넌트
 const JobPostStatusModal = ({ isOpen, onClose, jobPost, onUpdateStatus }) => {
     const [status, setStatus] = useState(true);
 
@@ -251,7 +116,6 @@ const AdminJobPosts = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
     const [itemsPerPage] = useState(10);
-    const [selectedJobPost, setSelectedJobPost] = useState(null);
     const [filters, setFilters] = useState({
         companyName: '',
         jobPostTitle: '',
@@ -259,8 +123,9 @@ const AdminJobPosts = () => {
     });
     const [sortField, setSortField] = useState('jobPostCreatedAt');
     const [sortDirection, setSortDirection] = useState('desc');
+    const [selectedJobPost, setSelectedJobPost] = useState(null);
 
-    const detailModal = useModal();
+    // 모달 상태 관리
     const statusModal = useModal();
     const deleteModal = useModal();
 
@@ -293,42 +158,6 @@ const AdminJobPosts = () => {
         fetchJobPosts();
     }, [sortField, sortDirection]);
 
-    // 공고 삭제
-    const handleDeleteJobPost = () => {
-        if (!selectedJobPost) return;
-
-        setLoading(true);
-
-        axios.delete(`/api/admin/job-posts/${selectedJobPost.jobPostId}`)
-            .then(() => {
-                fetchJobPosts();
-                deleteModal.closeModal();
-                setSelectedJobPost(null);
-            })
-            .catch(error => {
-                console.error('공고 삭제 실패:', error);
-                setError('공고 삭제에 실패했습니다.');
-                setLoading(false);
-            });
-    };
-
-    // 공고 상태 변경
-    const handleUpdateJobPostStatus = (jobPostId, status) => {
-        setLoading(true);
-
-        axios.patch(`/api/admin/job-posts/${jobPostId}/status`, { status })
-            .then(() => {
-                fetchJobPosts();
-                statusModal.closeModal();
-                setSelectedJobPost(null);
-            })
-            .catch(error => {
-                console.error('공고 상태 변경 실패:', error);
-                setError('공고 상태 변경에 실패했습니다.');
-                setLoading(false);
-            });
-    };
-
     const downloadCSV = (url, filename) => {
         axios({
             url: url,
@@ -356,16 +185,48 @@ const AdminJobPosts = () => {
             });
     };
 
-    const handleViewJobPost = (jobPost) => {
-        setSelectedJobPost(jobPost);
-        detailModal.openModal();
+    // 공고 상태 변경 함수
+    const handleUpdateStatus = (jobPostId, status) => {
+        setLoading(true);
+
+        axios.patch(`/api/admin/job-posts/${jobPostId}/status`, { status })
+            .then(() => {
+                fetchJobPosts();
+                statusModal.closeModal();
+            })
+            .catch(error => {
+                console.error('공고 상태 변경 실패:', error);
+                setError('공고 상태 변경에 실패했습니다.');
+                setLoading(false);
+            });
     };
 
+    // 공고 삭제 함수
+    const handleDeleteJobPost = () => {
+        if (!selectedJobPost) return;
+
+        setLoading(true);
+
+        axios.delete(`/api/admin/job-posts/${selectedJobPost.jobPostId}`)
+            .then(() => {
+                fetchJobPosts();
+                deleteModal.closeModal();
+                setSelectedJobPost(null);
+            })
+            .catch(error => {
+                console.error('공고 삭제 실패:', error);
+                setError('공고 삭제에 실패했습니다.');
+                setLoading(false);
+            });
+    };
+
+    // 상태 변경 모달 열기
     const handleOpenStatusModal = (jobPost) => {
         setSelectedJobPost(jobPost);
         statusModal.openModal();
     };
 
+    // 삭제 확인 모달 열기
     const handleOpenDeleteModal = (jobPost) => {
         setSelectedJobPost(jobPost);
         deleteModal.openModal();
@@ -576,12 +437,12 @@ const AdminJobPosts = () => {
                                                 {jobPost.companyName}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                                                <button
-                                                    onClick={() => handleViewJobPost(jobPost)}
+                                                <Link
+                                                    to={`/admin/jobposts/${jobPost.jobPostId}`}
                                                     className="hover:text-blue-600 hover:underline"
                                                 >
                                                     {jobPost.jobPostTitle}
-                                                </button>
+                                                </Link>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm">
                                                 {getDueDateStatus(jobPost.jobPostDueDate)}
@@ -600,21 +461,21 @@ const AdminJobPosts = () => {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm">
                                                 <div className="flex space-x-2">
-                                                    <button
-                                                        onClick={() => handleViewJobPost(jobPost)}
+                                                    <Link
+                                                        to={`/admin/jobposts/${jobPost.jobPostId}`}
                                                         className="text-blue-600 hover:text-blue-900"
                                                     >
                                                         상세
-                                                    </button>
+                                                    </Link>
                                                     <button
                                                         onClick={() => handleOpenStatusModal(jobPost)}
-                                                        className="text-yellow-600 hover:text-yellow-900"
+                                                        className="text-yellow-600 hover:text-yellow-800"
                                                     >
                                                         상태변경
                                                     </button>
                                                     <button
                                                         onClick={() => handleOpenDeleteModal(jobPost)}
-                                                        className="text-red-600 hover:text-red-900"
+                                                        className="text-red-600 hover:text-red-800"
                                                     >
                                                         삭제
                                                     </button>
@@ -643,19 +504,12 @@ const AdminJobPosts = () => {
                 )}
             </div>
 
-            {/* 공고 상세 모달 */}
-            <JobPostDetailModal
-                isOpen={detailModal.isOpen}
-                onClose={detailModal.closeModal}
-                jobPost={selectedJobPost}
-            />
-
-            {/* 공고 상태 변경 모달 */}
+            {/* 상태 변경 모달 */}
             <JobPostStatusModal
                 isOpen={statusModal.isOpen}
                 onClose={statusModal.closeModal}
                 jobPost={selectedJobPost}
-                onUpdateStatus={handleUpdateJobPostStatus}
+                onUpdateStatus={handleUpdateStatus}
             />
 
             {/* 삭제 확인 모달 */}
