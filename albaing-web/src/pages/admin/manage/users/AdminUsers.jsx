@@ -7,11 +7,9 @@ import Pagination from '../../../../components/common/Pagination';
 import UserEditModal from '../../../../components/modals/UserEditModal';
 import ResumeViewEditModal from '../../../../components/modals/ResumeViewEditModal';
 
-// 회원 상세 모달
 const UserDetailModal = ({ isOpen, onClose, user, onEdit, onViewResume }) => {
     if (!isOpen || !user) return null;
 
-    // 날짜 포맷 변환
     const formatDate = (dateString) => {
         if (!dateString) return '-';
         return format(new Date(dateString), 'yyyy-MM-dd');
@@ -124,7 +122,6 @@ const AdminUsers = () => {
     const [sortField, setSortField] = useState('name');
     const [sortDirection, setSortDirection] = useState('asc');
 
-    // 모달 관리
     const detailModal = useModal();
     const deleteModal = useModal();
     const editModal = useModal();
@@ -179,19 +176,16 @@ const AdminUsers = () => {
             });
     };
 
-    // 회원 상세 보기
     const handleViewUser = (user) => {
         setSelectedUser(user);
         detailModal.openModal();
     };
 
-    // 회원 정보 수정 모달 열기
     const handleEditUser = (user) => {
         setSelectedUser(user);
         editModal.openModal();
     };
 
-    // 이력서 보기 모달 열기
     const handleViewResume = (user) => {
         setSelectedUser(user);
         resumeModal.openModal();
@@ -201,16 +195,12 @@ const AdminUsers = () => {
     const handleUpdateUser = (updatedUser) => {
         setLoading(true);
 
-        // 날짜 형식 처리 - 문자열이 아닌 Date 객체로 변환
         const formattedUser = {
             ...updatedUser,
-            // 필수 필드가 누락되지 않도록 기존 데이터와 병합
             userBirthdate: updatedUser.userBirthdate ? new Date(updatedUser.userBirthdate) : null,
             userCreatedAt: selectedUser.userCreatedAt || new Date(),
             userUpdatedAt: new Date()
         };
-
-        console.log('서버로 보내는 데이터:', formattedUser);
 
         axios.put(`/api/admin/users/${updatedUser.userId}`, formattedUser)
             .then(() => {
@@ -228,44 +218,42 @@ const AdminUsers = () => {
     };
 
     const downloadCSV = (url, filename) => {
-        fetch(url)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.blob();
-            })
-            .then(blob => {
-                const url = window.URL.createObjectURL(blob);
+        axios({
+            url: url,
+            method: 'GET',
+            responseType: 'blob',
+            headers: {
+                'Accept': 'text/csv;charset=UTF-8'
+            }
+        })
+            .then((response) => {
+                const blob = new Blob([response.data], { type: 'text/csv;charset=UTF-8' });
+                const downloadUrl = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.style.display = 'none';
-                a.href = url;
+                a.href = downloadUrl;
                 a.download = filename;
                 document.body.appendChild(a);
                 a.click();
-
-                window.URL.revokeObjectURL(url);
+                window.URL.revokeObjectURL(downloadUrl);
                 document.body.removeChild(a);
             })
-            .catch(e => {
-                console.error('CSV 다운로드 실패:', e);
+            .catch((error) => {
+                console.error('CSV 다운로드 실패:', error);
                 alert('CSV 파일 다운로드에 실패했습니다.');
             });
     };
 
-    // 회원 삭제 모달 열기
     const handleOpenDeleteModal = (user) => {
         setSelectedUser(user);
         deleteModal.openModal();
     };
 
-    // 검색 필터 적용
     const handleSearch = (e) => {
         e.preventDefault();
         fetchUsers();
     };
 
-    // 필터 변경 핸들러
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
         setFilters(prev => ({
@@ -274,7 +262,6 @@ const AdminUsers = () => {
         }));
     };
 
-    // 정렬 변경 핸들러
     const handleSort = (field) => {
         if (sortField === field) {
             setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
@@ -284,14 +271,12 @@ const AdminUsers = () => {
         }
     };
 
-    // 현재 페이지의 회원 목록
     const getCurrentUsers = () => {
         const indexOfLastItem = currentPage * itemsPerPage;
         const indexOfFirstItem = indexOfLastItem - itemsPerPage;
         return users.slice(indexOfFirstItem, indexOfLastItem);
     };
 
-    // 정렬 아이콘 표시
     const renderSortIcon = (field) => {
         if (sortField !== field) {
             return (

@@ -45,6 +45,22 @@ public class AdminController {
         return adminService.adminSearchUsers(userName, userEmail, userPhone, sortOrderBy, isDESC);
     }
 
+    private String formatDateSafely(Object dateObj, SimpleDateFormat dateFormat) {
+        if (dateObj == null) return "";
+
+        if (dateObj instanceof Date) {
+            return dateFormat.format(dateObj);
+        } else if (dateObj instanceof String) {
+            try {
+                return dateFormat.format(dateFormat.parse((String)dateObj));
+            } catch (Exception e) {
+                return (String)dateObj;
+            }
+        }
+
+        return "";
+    }
+
     // 회원 목록 CSV 다운로드
     @GetMapping("/users/csv")
     public ResponseEntity<byte[]> getUsersCSV(
@@ -54,11 +70,9 @@ public class AdminController {
 
         List<AdminUser> users = adminService.adminSearchUsers(userName, userEmail, userPhone, "이름", false);
 
-        // CSV 헤더
         StringBuilder csv = new StringBuilder();
         csv.append("회원ID,이름,이메일,전화번호,성별,생년월일,주소,가입일,수정일,관리자여부\n");
 
-        // CSV 데이터 행
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         for (AdminUser user : users) {
             csv.append(user.getUserId()).append(",");
@@ -66,22 +80,19 @@ public class AdminController {
             csv.append(escapeCsvField(user.getUserEmail())).append(",");
             csv.append(escapeCsvField(user.getUserPhone())).append(",");
             csv.append(user.getUserGender() != null ? user.getUserGender() : "").append(",");
-            csv.append(user.getUserBirthdate() != null ? dateFormat.format(user.getUserBirthdate()) : "").append(",");
+            csv.append(formatDateSafely(user.getUserBirthdate(), dateFormat)).append(",");
             csv.append(escapeCsvField(user.getUserAddress())).append(",");
-            csv.append(user.getUserCreatedAt() != null ? dateFormat.format(user.getUserCreatedAt()) : "").append(",");
-            csv.append(user.getUserUpdatedAt() != null ? dateFormat.format(user.getUserUpdatedAt()) : "").append(",");
+            csv.append(formatDateSafely(user.getUserCreatedAt(), dateFormat)).append(",");
+            csv.append(formatDateSafely(user.getUserUpdatedAt(), dateFormat)).append(",");
             csv.append(user.getUserIsAdmin() != null && user.getUserIsAdmin() ? "예" : "아니오").append("\n");
         }
 
-        // 파일명 설정
         String filename = "알바잉_회원목록_" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + ".csv";
 
-        // HTTP 헤더 설정
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.parseMediaType("text/csv;charset=UTF-8"));
         headers.set("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 
-        // Access-Control-Allow-Origin 추가
         headers.add("Access-Control-Allow-Origin", "*");
 
         return ResponseEntity.ok()
@@ -98,11 +109,9 @@ public class AdminController {
 
         List<ViewJobPost> jobPosts = adminService.adminSearchJobPosts(companyName, jobPostTitle, jobPostStatus, "공고 제목", false);
 
-        // CSV 헤더
         StringBuilder csv = new StringBuilder();
         csv.append("공고ID,공고제목,회사명,직무분류,고용형태,근무지,급여,근무기간,마감일,등록일,공개여부\n");
 
-        // CSV 데이터 행
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         for (ViewJobPost post : jobPosts) {
             csv.append(post.getJobPostId()).append(",");
@@ -118,15 +127,12 @@ public class AdminController {
             csv.append(post.getJobPostStatus() != null && post.getJobPostStatus() ? "공개" : "비공개").append("\n");
         }
 
-        // 파일명 설정
         String filename = "알바잉_채용공고목록_" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + ".csv";
 
-        // HTTP 헤더 설정
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.parseMediaType("text/csv;charset=UTF-8"));
         headers.set("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 
-        // Access-Control-Allow-Origin 추가
         headers.add("Access-Control-Allow-Origin", "*");
 
         return ResponseEntity.ok()
@@ -134,13 +140,10 @@ public class AdminController {
             .body(csv.toString().getBytes(StandardCharsets.UTF_8));
     }
 
-    // CSV 필드 이스케이프 처리 (쉼표, 쌍따옴표 등 처리)
     private String escapeCsvField(String field) {
         if (field == null) return "";
 
-        // 쉼표, 쌍따옴표, 개행문자가 있는 경우
         if (field.contains(",") || field.contains("\"") || field.contains("\n") || field.contains("\r")) {
-            // 쌍따옴표를 두 개의 쌍따옴표로 변경 후 전체를 쌍따옴표로 감싸기
             return "\"" + field.replace("\"", "\"\"") + "\"";
         }
         return field;

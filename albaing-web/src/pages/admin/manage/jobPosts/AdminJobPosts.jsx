@@ -5,11 +5,9 @@ import { LoadingSpinner, ErrorMessage, ConfirmModal, useModal } from '../../../.
 import AdminLayout from '../../AdminLayout';
 import Pagination from '../../../../components/common/Pagination';
 
-// 공고 상세 모달
 const JobPostDetailModal = ({ isOpen, onClose, jobPost }) => {
     if (!isOpen || !jobPost) return null;
 
-    // 날짜 포맷 변환
     const formatDate = (dateString) => {
         if (!dateString) return '-';
         return format(new Date(dateString), 'yyyy-MM-dd');
@@ -144,7 +142,6 @@ const JobPostDetailModal = ({ isOpen, onClose, jobPost }) => {
     );
 };
 
-// 공고 상태 변경 모달
 const JobPostStatusModal = ({ isOpen, onClose, jobPost, onUpdateStatus }) => {
     const [status, setStatus] = useState(true);
 
@@ -263,12 +260,10 @@ const AdminJobPosts = () => {
     const [sortField, setSortField] = useState('jobPostCreatedAt');
     const [sortDirection, setSortDirection] = useState('desc');
 
-    // 모달 상태 관리
     const detailModal = useModal();
     const statusModal = useModal();
     const deleteModal = useModal();
 
-    // 공고 목록 가져오기
     const fetchJobPosts = () => {
         setLoading(true);
         setError(null);
@@ -335,56 +330,52 @@ const AdminJobPosts = () => {
     };
 
     const downloadCSV = (url, filename) => {
-        fetch(url)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.blob();
-            })
-            .then(blob => {
-                const url = window.URL.createObjectURL(blob);
+        axios({
+            url: url,
+            method: 'GET',
+            responseType: 'blob',
+            headers: {
+                'Accept': 'text/csv;charset=UTF-8'
+            }
+        })
+            .then((response) => {
+                const blob = new Blob([response.data], { type: 'text/csv;charset=UTF-8' });
+                const downloadUrl = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.style.display = 'none';
-                a.href = url;
+                a.href = downloadUrl;
                 a.download = filename;
                 document.body.appendChild(a);
                 a.click();
-
-                window.URL.revokeObjectURL(url);
+                window.URL.revokeObjectURL(downloadUrl);
                 document.body.removeChild(a);
             })
-            .catch(e => {
-                console.error('CSV 다운로드 실패:', e);
+            .catch((error) => {
+                console.error('CSV 다운로드 실패:', error);
                 alert('CSV 파일 다운로드에 실패했습니다.');
             });
     };
 
-    // 공고 상세 보기
     const handleViewJobPost = (jobPost) => {
         setSelectedJobPost(jobPost);
         detailModal.openModal();
     };
 
-    // 공고 상태 변경 모달 열기
     const handleOpenStatusModal = (jobPost) => {
         setSelectedJobPost(jobPost);
         statusModal.openModal();
     };
 
-    // 공고 삭제 모달 열기
     const handleOpenDeleteModal = (jobPost) => {
         setSelectedJobPost(jobPost);
         deleteModal.openModal();
     };
 
-    // 검색 필터 적용
     const handleSearch = (e) => {
         e.preventDefault();
         fetchJobPosts();
     };
 
-    // 필터 변경 핸들러
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
         setFilters(prev => ({
@@ -393,7 +384,6 @@ const AdminJobPosts = () => {
         }));
     };
 
-    // 정렬 변경 핸들러
     const handleSort = (field) => {
         if (sortField === field) {
             setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
@@ -403,14 +393,12 @@ const AdminJobPosts = () => {
         }
     };
 
-    // 현재 페이지의 공고 목록
     const getCurrentJobPosts = () => {
         const indexOfLastItem = currentPage * itemsPerPage;
         const indexOfFirstItem = indexOfLastItem - itemsPerPage;
         return jobPosts.slice(indexOfFirstItem, indexOfLastItem);
     };
 
-    // 정렬 아이콘 표시
     const renderSortIcon = (field) => {
         if (sortField !== field) {
             return (
@@ -431,7 +419,6 @@ const AdminJobPosts = () => {
         );
     };
 
-    // 마감일 상태 표시
     const getDueDateStatus = (dueDate) => {
         const today = new Date();
         const due = new Date(dueDate);

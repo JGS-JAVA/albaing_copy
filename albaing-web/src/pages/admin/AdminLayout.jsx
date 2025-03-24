@@ -18,7 +18,6 @@ const AdminLayout = ({ children }) => {
     const navigate = useNavigate();
     const { logout } = useAuth();
 
-    // 현재 활성화된 메뉴 확인
     const isActive = (path) => {
         if (path === '/admin') {
             return location.pathname === '/admin';
@@ -26,7 +25,6 @@ const AdminLayout = ({ children }) => {
         return location.pathname.startsWith(path);
     };
 
-    // 로그아웃 처리
     const handleLogout = () => {
         logout().then(() => {
             navigate('/login');
@@ -34,7 +32,8 @@ const AdminLayout = ({ children }) => {
     };
 
     return (
-        <div className="flex h-screen bg-gray-100">
+        <div className="flex h-screen bg-gray-100 overflow-hidden">
+
             {/* 모바일 사이드바 오버레이 */}
             <div className={`fixed inset-0 z-20 transition-opacity ease-linear duration-300 ${sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'}`}>
                 <div className="absolute inset-0 bg-gray-600 opacity-75" onClick={() => setSidebarOpen(false)}></div>

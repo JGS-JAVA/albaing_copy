@@ -6,7 +6,6 @@ import { LoadingSpinner } from '../../components';
 import AdminLayout from './AdminLayout';
 import DashboardCharts from './DashboardCharts';
 
-// 통계 카드 컴포넌트
 const StatCard = ({ title, value, icon, color, link }) => {
     return (
         <div className={`bg-white rounded-lg shadow-md p-6 border-l-4 ${color}`}>
