@@ -6,6 +6,7 @@ import com.jobjob.albaing.service.ResumeServiceImpl;
 import com.jobjob.albaing.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -117,37 +118,52 @@ public class AdminController {
         @RequestParam(required = false) String jobPostTitle,
         @RequestParam(required = false) String jobPostStatus) {
 
-        List<ViewJobPost> jobPosts = adminService.adminSearchJobPosts(companyName, jobPostTitle, jobPostStatus, "공고 제목", false);
+        try {
+            List<ViewJobPost> jobPosts = adminService.adminSearchJobPosts(companyName, jobPostTitle, jobPostStatus, "공고 제목", false);
 
-        StringBuilder csv = new StringBuilder();
-        csv.append("공고ID,공고제목,회사명,직무분류,고용형태,근무지,급여,근무기간,마감일,등록일,공개여부\n");
+            StringBuilder csv = new StringBuilder();
+            csv.append("공고ID,공고제목,회사명,직무분류,고용형태,근무지,급여,근무기간,마감일,등록일,공개여부\n");
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        for (ViewJobPost post : jobPosts) {
-            csv.append(post.getJobPostId()).append(",");
-            csv.append(escapeCsvField(post.getJobPostTitle())).append(",");
-            csv.append(escapeCsvField(post.getCompanyName())).append(",");
-            csv.append(escapeCsvField(post.getJobPostJobCategory())).append(",");
-            csv.append(escapeCsvField(post.getJobPostJobType())).append(",");
-            csv.append(escapeCsvField(post.getJobPostWorkPlace())).append(",");
-            csv.append(escapeCsvField(post.getJobPostSalary())).append(",");
-            csv.append(escapeCsvField(post.getJobPostWorkingPeriod())).append(",");
-            csv.append(post.getJobPostDueDate() != null ? dateFormat.format(post.getJobPostDueDate()) : "").append(",");
-            csv.append(post.getJobPostCreatedAt() != null ? dateFormat.format(post.getJobPostCreatedAt()) : "").append(",");
-            csv.append(post.getJobPostStatus() != null && post.getJobPostStatus() ? "공개" : "비공개").append("\n");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            for (ViewJobPost post : jobPosts) {
+                csv.append(post.getJobPostId()).append(",");
+                csv.append(escapeCsvField(post.getJobPostTitle() != null ? post.getJobPostTitle() : "")).append(",");
+                csv.append(escapeCsvField(post.getCompanyName() != null ? post.getCompanyName() : "")).append(",");
+                csv.append(escapeCsvField(post.getJobPostJobCategory() != null ? post.getJobPostJobCategory() : "")).append(",");
+                csv.append(escapeCsvField(post.getJobPostJobType() != null ? post.getJobPostJobType() : "")).append(",");
+                csv.append(escapeCsvField(post.getJobPostWorkPlace() != null ? post.getJobPostWorkPlace() : "")).append(",");
+                csv.append(escapeCsvField(post.getJobPostSalary() != null ? post.getJobPostSalary() : "")).append(",");
+                csv.append(escapeCsvField(post.getJobPostWorkingPeriod() != null ? post.getJobPostWorkingPeriod() : "")).append(",");
+                csv.append(formatDateSafely(post.getJobPostDueDate(), dateFormat)).append(",");
+                csv.append(formatDateSafely(post.getJobPostCreatedAt(), dateFormat)).append(",");
+                csv.append(post.getJobPostStatus() != null && post.getJobPostStatus() ? "공개" : "비공개").append("\n");
+            }
+
+            String filename = "알바잉_채용공고목록_" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + ".csv";
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType("text/csv;charset=UTF-8"));
+            headers.set("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+            headers.add("Access-Control-Allow-Origin", "*");
+
+            return ResponseEntity.ok()
+                .headers(headers)
+                .body(csv.toString().getBytes(StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(("CSV 생성 중 오류가 발생했습니다: " + e.getMessage()).getBytes(StandardCharsets.UTF_8));
         }
+    }
 
-        String filename = "알바잉_채용공고목록_" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + ".csv";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType("text/csv;charset=UTF-8"));
-        headers.set("Content-Disposition", "attachment; filename=\"" + filename + "\"");
-
-        headers.add("Access-Control-Allow-Origin", "*");
-
-        return ResponseEntity.ok()
-            .headers(headers)
-            .body(csv.toString().getBytes(StandardCharsets.UTF_8));
+    // 안전한 날짜 형식화를 위한 메서드 추가
+    private String formatDateSafely(Date date, SimpleDateFormat dateFormat) {
+        if (date == null) return "";
+        try {
+            return dateFormat.format(date);
+        } catch (Exception e) {
+            return "";
+        }
     }
 
     private String escapeCsvField(String field) {
