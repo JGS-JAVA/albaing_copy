@@ -81,41 +81,45 @@ const AdminCompanyEdit = () => {
         }
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         setLoading(true);
 
-        try {
-            const formPayload = new FormData();
+        const formPayload = new FormData();
 
-            if (logoFile) {
-                formPayload.append('companyLogo', logoFile, logoFile.name);
-            }
-
-            // 회사 정보 추가
-            const companyData = {
-                ...company,
-                ...formData,
-                companyId: parseInt(companyId),
-                companyUpdatedAt: new Date()
-            };
-
-            formPayload.append('company', new Blob([JSON.stringify(companyData)], {
-                type: 'application/json'
-            }));
-
-            await axios.put(`/api/companies/${companyId}`, formPayload, {
-                headers: {
-                    'Content-Type': undefined
-                }
-            });
-
-            navigate(`/admin/companies/${companyId}`);
-        } catch (error) {
-            setError('기업 정보 수정에 실패했습니다.');
-            setLoading(false);
+        if (logoFile) {
+            formPayload.append('companyLogo', logoFile, logoFile.name);
         }
+
+        const companyData = {
+            ...company,
+            ...formData,
+            companyId: parseInt(companyId, 10),
+            companyUpdatedAt: new Date()
+        };
+
+        formPayload.append('company', new Blob([JSON.stringify(companyData)], {
+            type: 'application/json'
+        }));
+
+        axios.put(`/api/companies/${companyId}`, formPayload, {
+            headers: {
+                'Content-Type': undefined
+            }
+        })
+            .then((response) => {
+                if (response.status === 200) {
+                    navigate(`/admin/companies/${companyId}`);
+                }
+            })
+            .catch((error) => {
+                console.error("회사 정보 업데이트 오류:", error);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     };
+
 
     return (
         <AdminLayout>
