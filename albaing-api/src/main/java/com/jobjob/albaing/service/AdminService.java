@@ -23,6 +23,8 @@ public interface AdminService {
 
     Resume adminResumeDetail(String resumeId);
 
+    void updateCompanyApprovalStatus(Long companyId, String status);
+
     void adminResumeDelete(String userId);
 
     Company adminCompanyDetail(String companyId);

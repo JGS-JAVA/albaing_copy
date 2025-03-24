@@ -1,128 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { format } from 'date-fns';
 import { LoadingSpinner, ErrorMessage, ConfirmModal, useModal } from '../../../../components';
 import AdminLayout from '../../AdminLayout';
 import Pagination from '../../../../components/common/Pagination';
-
-// 기업 상세 모달
-const CompanyDetailModal = ({ isOpen, onClose, company }) => {
-    if (!isOpen || !company) return null;
-
-    // 날짜 포맷 변환
-    const formatDate = (dateString) => {
-        if (!dateString) return '-';
-        return format(new Date(dateString), 'yyyy-MM-dd');
-    };
-
-    // 승인 상태 표시 (한글화)
-    const getApprovalStatusText = (status) => {
-        switch(status) {
-            case 'approved': return '승인됨';
-            case 'approving': return '대기중';
-            case 'hidden': return '숨김';
-            default: return status;
-        }
-    };
-
-    return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4">
-                <div className="px-6 py-4 border-b flex justify-between items-center">
-                    <h3 className="text-xl font-semibold text-gray-800">기업 상세 정보</h3>
-                    <button
-                        onClick={onClose}
-                        className="text-gray-500 hover:text-gray-700"
-                    >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-
-                <div className="p-6">
-                    <div className="flex flex-col md:flex-row items-start">
-                        <div className="md:w-1/3 mb-4 md:mb-0 flex justify-center">
-                            <div className="relative">
-                                <img
-                                    src={company.companyLogo || `https://ui-avatars.com/api/?name=${encodeURIComponent(company.companyName)}&background=2563EB&color=fff&size=150`}
-                                    alt={company.companyName}
-                                    className="w-36 h-36 rounded object-contain border border-gray-200 shadow-md p-2"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="md:w-2/3 md:pl-8">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <h4 className="text-sm font-medium text-gray-500">회사명</h4>
-                                    <p className="text-lg font-medium">{company.companyName}</p>
-                                </div>
-                                <div>
-                                    <h4 className="text-sm font-medium text-gray-500">사업자등록번호</h4>
-                                    <p className="text-lg">{company.companyRegistrationNumber}</p>
-                                </div>
-                                <div>
-                                    <h4 className="text-sm font-medium text-gray-500">대표자명</h4>
-                                    <p className="text-lg">{company.companyOwnerName}</p>
-                                </div>
-                                <div>
-                                    <h4 className="text-sm font-medium text-gray-500">개업일</h4>
-                                    <p className="text-lg">{company.companyOpenDate ? formatDate(company.companyOpenDate) : '-'}</p>
-                                </div>
-                                <div>
-                                    <h4 className="text-sm font-medium text-gray-500">이메일</h4>
-                                    <p className="text-lg">{company.companyEmail}</p>
-                                </div>
-                                <div>
-                                    <h4 className="text-sm font-medium text-gray-500">전화번호</h4>
-                                    <p className="text-lg">{company.companyPhone || '-'}</p>
-                                </div>
-                                <div>
-                                    <h4 className="text-sm font-medium text-gray-500">지역</h4>
-                                    <p className="text-lg">{company.companyLocalAddress || '-'}</p>
-                                </div>
-                                <div>
-                                    <h4 className="text-sm font-medium text-gray-500">승인 상태</h4>
-                                    <p className={`text-lg font-medium ${
-                                        company.companyApprovalStatus === 'approved' ? 'text-green-600' :
-                                            company.companyApprovalStatus === 'approving' ? 'text-yellow-600' : 'text-red-600'
-                                    }`}>
-                                        {getApprovalStatusText(company.companyApprovalStatus)}
-                                    </p>
-                                </div>
-                                <div>
-                                    <h4 className="text-sm font-medium text-gray-500">가입일</h4>
-                                    <p className="text-lg">{formatDate(company.companyCreatedAt)}</p>
-                                </div>
-                                <div>
-                                    <h4 className="text-sm font-medium text-gray-500">최근 수정일</h4>
-                                    <p className="text-lg">{formatDate(company.companyUpdatedAt)}</p>
-                                </div>
-                            </div>
-
-                            {company.companyDescription && (
-                                <div className="mt-4">
-                                    <h4 className="text-sm font-medium text-gray-500">회사 소개</h4>
-                                    <p className="text-sm mt-1 bg-gray-50 p-3 rounded whitespace-pre-line">{company.companyDescription}</p>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="mt-8 flex justify-end">
-                        <button
-                            onClick={onClose}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                        >
-                            닫기
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
 
 // 승인 상태 변경 모달
 const ApprovalStatusModal = ({ isOpen, onClose, company, onUpdateStatus }) => {
@@ -232,51 +114,63 @@ const AdminCompanies = () => {
         companyOwnerName: '',
         companyPhone: '',
         companyRegistrationNumber: '',
-        status: ''
+        showPending: false
     });
     const [sortField, setSortField] = useState('companyName');
     const [sortDirection, setSortDirection] = useState('asc');
 
-    // 모달 상태 관리
-    const detailModal = useModal();
-    const approveModal = useModal();
     const deleteModal = useModal();
+    const approveModal = useModal();
 
-    // 기업 목록 가져오기
     const fetchCompanies = () => {
         setLoading(true);
         setError(null);
 
-        axios.get('/api/admin/companies', {
-            params: {
-                companyName: filters.companyName,
-                companyOwnerName: filters.companyOwnerName,
-                companyPhone: filters.companyPhone,
-                companyRegistrationNumber: filters.companyRegistrationNumber,
-                sortOrderBy: sortField,
-                isDESC: sortDirection === 'desc'
-            }
-        })
+        let params = {
+            companyName: filters.companyName,
+            companyOwnerName: filters.companyOwnerName,
+            companyPhone: filters.companyPhone,
+            companyRegistrationNumber: filters.companyRegistrationNumber,
+            sortOrderBy: mapSortFieldToBackend(sortField),
+            isDESC: sortDirection === 'desc'
+        };
+
+        axios.get('/api/admin/companies', { params })
             .then(response => {
-                setCompanies(response.data);
-                setTotalItems(response.data.length);
+                let data = response.data;
+
+                // 승인 대기 필터링이 활성화된 경우
+                if (filters.showPending) {
+                    data = data.filter(company => company.companyApprovalStatus === 'approving');
+                }
+
+                setCompanies(data);
+                setTotalItems(data.length);
                 setLoading(false);
             })
             .catch(error => {
-                console.error('기업 목록 로딩 실패:', error);
                 setError('기업 목록을 불러오는데 실패했습니다.');
                 setLoading(false);
             });
     };
 
+    const mapSortFieldToBackend = (field) => {
+        switch(field) {
+            case 'companyName': return '법인명';
+            case 'companyOwnerName': return '대표자명';
+            case 'companyRegistrationNumber': return '사업자등록번호';
+            case 'companyId': return 'companyId';
+            case 'createdAt': return '가입일';
+            default: return '법인명';
+        }
+    };
+
     useEffect(() => {
         fetchCompanies();
-    }, [sortField, sortDirection]);
+    }, [sortField, sortDirection, filters.showPending]);
 
-    // 기업 삭제
     const handleDeleteCompany = () => {
         if (!selectedCompany) return;
-
         setLoading(true);
 
         axios.delete(`/api/admin/companies/${selectedCompany.companyId}`)
@@ -286,17 +180,15 @@ const AdminCompanies = () => {
                 setSelectedCompany(null);
             })
             .catch(error => {
-                console.error('기업 삭제 실패:', error);
                 setError('기업 삭제에 실패했습니다.');
                 setLoading(false);
             });
     };
 
-    // 승인 상태 업데이트
     const handleUpdateApprovalStatus = (companyId, status) => {
         setLoading(true);
 
-        axios.patch(`/api/admin/companies/${companyId}/approval`, { status })
+        axios.patch(`/api/admin/companies/${companyId}/approval-status`, { status })
             .then(() => {
                 fetchCompanies();
                 approveModal.closeModal();
@@ -309,31 +201,28 @@ const AdminCompanies = () => {
             });
     };
 
-    // 기업 상세 보기
-    const handleViewCompany = (company) => {
-        setSelectedCompany(company);
-        detailModal.openModal();
+    const togglePendingFilter = () => {
+        setFilters(prev => ({
+            ...prev,
+            showPending: !prev.showPending
+        }));
     };
 
-    // 승인 상태 변경 모달 열기
     const handleOpenApprovalModal = (company) => {
         setSelectedCompany(company);
         approveModal.openModal();
     };
 
-    // 삭제 확인 모달 열기
     const handleOpenDeleteModal = (company) => {
         setSelectedCompany(company);
         deleteModal.openModal();
     };
 
-    // 검색 필터 적용
     const handleSearch = (e) => {
         e.preventDefault();
         fetchCompanies();
     };
 
-    // 필터 변경 핸들러
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
         setFilters(prev => ({
@@ -342,7 +231,6 @@ const AdminCompanies = () => {
         }));
     };
 
-    // 정렬 변경 핸들러
     const handleSort = (field) => {
         if (sortField === field) {
             setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
@@ -352,14 +240,12 @@ const AdminCompanies = () => {
         }
     };
 
-    // 현재 페이지의 회원 목록
     const getCurrentCompanies = () => {
         const indexOfLastItem = currentPage * itemsPerPage;
         const indexOfFirstItem = indexOfLastItem - itemsPerPage;
         return companies.slice(indexOfFirstItem, indexOfLastItem);
     };
 
-    // 정렬 아이콘 표시
     const renderSortIcon = (field) => {
         if (sortField !== field) {
             return (
@@ -380,7 +266,6 @@ const AdminCompanies = () => {
         );
     };
 
-    // 승인 상태 뱃지 색상
     const getStatusBadgeClass = (status) => {
         switch(status) {
             case 'approved': return 'bg-green-100 text-green-800';
@@ -390,7 +275,6 @@ const AdminCompanies = () => {
         }
     };
 
-    // 승인 상태 한글 표시
     const getStatusText = (status) => {
         switch(status) {
             case 'approved': return '승인됨';
@@ -408,20 +292,15 @@ const AdminCompanies = () => {
                     <p className="text-gray-600 mt-1">기업 회원 정보를 관리할 수 있습니다.</p>
                 </div>
                 <div className="mt-4 lg:mt-0">
-                    <div className="flex space-x-2">
-                        <button
-                            onClick={() => {
-                                setFilters(prev => ({ ...prev, status: 'approving' }));
-                                fetchCompanies();
-                            }}
-                            className="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 flex items-center"
-                        >
-                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            승인 대기 기업 보기
-                        </button>
-                    </div>
+                    <button
+                        onClick={togglePendingFilter}
+                        className={`px-4 py-2 ${filters.showPending ? 'bg-blue-600' : 'bg-yellow-500'} text-white rounded-md hover:${filters.showPending ? 'bg-blue-700' : 'bg-yellow-600'} flex items-center`}
+                    >
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {filters.showPending ? '전체 기업 보기' : '승인 대기 기업만 보기'}
+                    </button>
                 </div>
             </div>
 
@@ -474,21 +353,6 @@ const AdminCompanies = () => {
                             placeholder="전화번호 검색"
                             className="w-full p-2 border border-gray-300 rounded-lg"
                         />
-                    </div>
-                    <div>
-                        <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">승인 상태</label>
-                        <select
-                            id="status"
-                            name="status"
-                            value={filters.status}
-                            onChange={handleFilterChange}
-                            className="w-full p-2 border border-gray-300 rounded-lg bg-white"
-                        >
-                            <option value="all">모든 상태</option>
-                            <option value="approved">승인됨</option>
-                            <option value="approving">승인 대기중</option>
-                            <option value="hidden">숨김</option>
-                        </select>
                     </div>
                     <div className="flex items-end">
                         <button
@@ -590,21 +454,21 @@ const AdminCompanies = () => {
                                                 {company.companyRegistrationNumber}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(company.companyApprovalStatus)}`}>
-                                                        {getStatusText(company.companyApprovalStatus)}
-                                                    </span>
+                                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(company.companyApprovalStatus)}`}>
+                                                    {getStatusText(company.companyApprovalStatus)}
+                                                </span>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 {format(new Date(company.companyCreatedAt), 'yyyy-MM-dd')}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm">
                                                 <div className="flex space-x-2">
-                                                    <button
-                                                        onClick={() => handleViewCompany(company)}
+                                                    <Link
+                                                        to={`/admin/companies/${company.companyId}`}
                                                         className="text-blue-600 hover:text-blue-900"
                                                     >
                                                         상세
-                                                    </button>
+                                                    </Link>
                                                     <button
                                                         onClick={() => handleOpenApprovalModal(company)}
                                                         className="text-yellow-600 hover:text-yellow-900"
@@ -624,7 +488,7 @@ const AdminCompanies = () => {
                                 ) : (
                                     <tr>
                                         <td colSpan="7" className="px-6 py-4 text-center text-gray-500">
-                                            검색 결과가 없습니다.
+                                            {filters.showPending ? '승인 대기 중인 기업이 없습니다.' : '검색 결과가 없습니다.'}
                                         </td>
                                     </tr>
                                 )}
@@ -642,14 +506,6 @@ const AdminCompanies = () => {
                 )}
             </div>
 
-            {/* 기업 상세 모달 */}
-            <CompanyDetailModal
-                isOpen={detailModal.isOpen}
-                onClose={detailModal.closeModal}
-                company={selectedCompany}
-            />
-
-            {/* 승인 상태 변경 모달 */}
             <ApprovalStatusModal
                 isOpen={approveModal.isOpen}
                 onClose={approveModal.closeModal}
@@ -657,7 +513,6 @@ const AdminCompanies = () => {
                 onUpdateStatus={handleUpdateApprovalStatus}
             />
 
-            {/* 삭제 확인 모달 */}
             <ConfirmModal
                 isOpen={deleteModal.isOpen}
                 onClose={deleteModal.closeModal}

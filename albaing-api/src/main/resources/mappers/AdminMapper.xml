@@ -277,7 +277,7 @@
     <!-- int companyId 를 받아 일치하는 공고들 모두 삭제 -->
     <!-- 반환값 없음 -->
     <update id="adminJobPostStatusChange">
-        update JobPosts
+        update JOB_POSTS
         set job_post_status = false
         where company_id = #{companyId}
     </update>
@@ -429,5 +429,12 @@
             value DESC
             LIMIT 10
     </select>
+
+    <update id="updateCompanyApprovalStatus">
+        UPDATE COMPANIES
+        SET company_approval_status = #{status},
+            company_updated_at = CURRENT_TIMESTAMP
+        WHERE company_id = #{companyId}
+    </update>
 
 </mapper>

@@ -46,6 +46,9 @@ import AdminJobPosts from "../pages/admin/manage/jobPosts/AdminJobPosts";
 import AdminReviews from "../pages/admin/manage/reviews/AdminReviews";
 import AdminNotices from "../pages/admin/manage/notices/AdminNotices";
 import Notice from "../pages/notice/Notice";
+import CompanyStatusEdit from "../pages/admin/manage/companies/CompanyStatusEdit";
+import CompanyEdit from "../pages/admin/manage/companies/CompanyEdit";
+import PendingCompanies from "../pages/admin/manage/companies/PendingCompanies";
 
 // 메인 레이아웃 컴포넌트
 const MainLayout = ({children}) => (
@@ -114,12 +117,16 @@ function PathRoute() {
 
                 {/* 관리자만 접근 가능 */}
                 <Route element={<ProtectedRoute userTypeRequired="admin"/>}>
-                    <Route path="/admin" element={<MainLayout><AdminMain /></MainLayout>} /> {/* 관리자 대시보드 */}
-                    <Route path="/admin/users" element={<MainLayout><AdminUsers /></MainLayout>} /> {/* 회원 관리 */}
-                    <Route path="/admin/companies" element={<MainLayout><AdminCompanies /></MainLayout>} /> {/* 기업 관리 */}
-                    <Route path="/admin/jobposts" element={<MainLayout><AdminJobPosts /></MainLayout>} /> {/* 공고 관리 */}
-                    <Route path="/admin/reviews" element={<MainLayout><AdminReviews /></MainLayout>} /> {/* 리뷰 관리 */}
-                    <Route path="/admin/notices" element={<MainLayout><AdminNotices /></MainLayout>} /> {/* 공지사항 관리 */}
+                    <Route path="/admin" element={<AdminMain />} /> {/* 관리자 대시보드 */}
+                    <Route path="/admin/users" element={<AdminUsers />} /> {/* 회원 관리 */}
+                    <Route path="/admin/companies" element={<AdminCompanies />} /> {/* 기업 관리 */}
+                    <Route path="/admin/companies/:companyId" element={<CompanyDetail />} /> {/* 기업 상세 */}
+                    <Route path="/admin/companies/:companyId" element={<CompanyStatusEdit />} /> {/* 기업 상태 변경 */}
+                    <Route path="/admin/companies/:companyId/edit" element={<CompanyEdit />} /> {/* 기업 정보 수정 */}
+                    <Route path="/admin/pending-companies" element={<PendingCompanies />} />
+                    <Route path="/admin/jobposts" element={<AdminJobPosts />} /> {/* 공고 관리 */}
+                    <Route path="/admin/reviews" element={<AdminReviews />} /> {/* 리뷰 관리 */}
+                    <Route path="/admin/notices" element={<AdminNotices />} /> {/* 공지사항 관리 */}
                 </Route>
 
                 {/* 모든 정의되지 않은 경로 */}

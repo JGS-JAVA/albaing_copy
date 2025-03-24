@@ -256,12 +256,25 @@ public class AdminController {
         return adminService.adminCompanyDetail(companyId);
     }
 
-    // 회사 유저 삭제 + 공고 상태 전환
+    // 회사 상태 변경
+    @PatchMapping("/companies/{companyId}/approval-status")
+    public ResponseEntity<Void> updateCompanyApprovalStatus(
+        @PathVariable Long companyId,
+        @RequestBody Map<String, String> requestBody) {
+
+        String status = requestBody.get("status");
+        if (status == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        adminService.updateCompanyApprovalStatus(companyId, status);
+        return ResponseEntity.ok().build();
+    }
+
+    // 회사 삭제
     @DeleteMapping("/companies/{companyId}")
     public void adminCompanyDelete(@PathVariable String companyId) {
-        adminService.adminCompanyDelete(companyId);
-        // 공고 상태 비공개로 전환
-        adminService.adminJobPostStatusChange(companyId);
+        adminService.deleteCompanyWithJobPosts(companyId);
     }
 
     // 공고 검색

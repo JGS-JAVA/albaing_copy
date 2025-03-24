@@ -4,6 +4,7 @@ import com.jobjob.albaing.dto.*;
 import com.jobjob.albaing.mapper.AdminMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +34,11 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public List<Company> adminSearchCompanies(String companyName, String companyOwnerName, String companyPhone, String companyRegistrationNumber, String sortOrderBy, Boolean isDESC) {
         return adminMapper.adminSearchCompanies(companyName, companyOwnerName, companyPhone, companyRegistrationNumber, sortOrderBy, isDESC);
+    }
+
+    @Override
+    public void updateCompanyApprovalStatus(Long companyId, String status) {
+        adminMapper.updateCompanyApprovalStatus(companyId, status);
     }
 
     @Override
@@ -68,6 +74,12 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void adminCompanyDelete(String companyId) {
         adminMapper.adminCompanyDelete(companyId);
+    }
+
+    @Transactional
+    public void deleteCompanyWithJobPosts(String companyId) {
+        adminJobPostStatusChange(companyId);
+        adminCompanyDelete(companyId);
     }
 
     @Override
