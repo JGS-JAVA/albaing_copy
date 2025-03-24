@@ -41,6 +41,10 @@ public interface ReviewMapper {
     // 어드민 회사 전체 리스트
     List<Map<String, Object>> getAllReviewsForAdmin();
 
+    String getCompanyNameByReviewId(long reviewId);
+
+    String getUserNameByReviewId(long reviewId);
+
     // 어드민 리뷰 수정
     int updateReviewByAdmin(Review review);
 

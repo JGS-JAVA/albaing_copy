@@ -47,8 +47,13 @@ const CompanyDetail = () => {
     }, [companyId]);
 
     // 리뷰 추가 후 전체 리뷰 목록을 다시 불러옴
-    const handleReviewAdded = async () => {
-        await fetchCompanyData(); // 리뷰 추가 후 최신 데이터 다시 불러오기
+    const handleReviewAdded = () => {
+        fetchCompanyData()
+            .then(() => {
+            })
+            .catch((error) => {
+                console.error("리뷰 목록 재불러오기 오류:", error);
+            });
     };
 
     if (loading) {
