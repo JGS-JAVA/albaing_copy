@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import apiReviewService from "../../../service/apiReviewService";
 import { Link, useParams } from "react-router-dom";
 import Pagination from "../../../components/common/Pagination";
-import { FaTrashAlt, FaCheckSquare, FaSquare } from "react-icons/fa"; // FontAwesome 아이콘
+import { FaTrashAlt, FaCheckSquare, FaSquare } from "react-icons/fa";
 
 const MyReviews = () => {
     const { userId } = useParams();
