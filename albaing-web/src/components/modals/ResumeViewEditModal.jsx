@@ -687,3 +687,5 @@ const ResumeViewEditModal = ({ isOpen, onClose, user, onUpdate }) => {
         </div>
     );
 }
+
+export default ResumeViewEditModal;

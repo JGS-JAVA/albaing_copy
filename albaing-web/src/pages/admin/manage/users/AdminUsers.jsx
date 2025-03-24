@@ -4,6 +4,8 @@ import { format } from 'date-fns';
 import { LoadingSpinner, ErrorMessage, ConfirmModal, useModal } from '../../../../components';
 import AdminLayout from '../../AdminLayout';
 import Pagination from '../../../../components/common/Pagination';
+import UserEditModal from '../../../../components/modals/UserEditModal';
+import ResumeViewEditModal from '../../../../components/modals/ResumeViewEditModal';
 
 // 회원 상세 모달
 const UserDetailModal = ({ isOpen, onClose, user, onEdit, onViewResume }) => {
@@ -125,6 +127,8 @@ const AdminUsers = () => {
     // 모달 관리
     const detailModal = useModal();
     const deleteModal = useModal();
+    const editModal = useModal();
+    const resumeModal = useModal();
 
     // 회원 목록 가져오기
     const fetchUsers = () => {
@@ -173,12 +177,54 @@ const AdminUsers = () => {
                 setError('회원 삭제에 실패했습니다.');
                 setLoading(false);
             });
-        }
+    };
 
     // 회원 상세 보기
     const handleViewUser = (user) => {
         setSelectedUser(user);
         detailModal.openModal();
+    };
+
+    // 회원 정보 수정 모달 열기
+    const handleEditUser = (user) => {
+        setSelectedUser(user);
+        editModal.openModal();
+    };
+
+    // 이력서 보기 모달 열기
+    const handleViewResume = (user) => {
+        setSelectedUser(user);
+        resumeModal.openModal();
+    };
+
+    // 회원 정보 업데이트
+    const handleUpdateUser = (updatedUser) => {
+        setLoading(true);
+
+        // 날짜 형식 처리 - 문자열이 아닌 Date 객체로 변환
+        const formattedUser = {
+            ...updatedUser,
+            // 필수 필드가 누락되지 않도록 기존 데이터와 병합
+            userBirthdate: updatedUser.userBirthdate ? new Date(updatedUser.userBirthdate) : null,
+            userCreatedAt: selectedUser.userCreatedAt || new Date(),
+            userUpdatedAt: new Date()
+        };
+
+        console.log('서버로 보내는 데이터:', formattedUser);
+
+        axios.put(`/api/admin/users/${updatedUser.userId}`, formattedUser)
+            .then(() => {
+                fetchUsers();
+                editModal.closeModal();
+                detailModal.closeModal();
+                setSelectedUser(null);
+            })
+            .catch(error => {
+                console.error('회원 정보 수정 실패:', error);
+                console.error('에러 상세:', error.response?.data || error.message);
+                setError(`회원 정보 수정에 실패했습니다: ${error.response?.data?.message || error.message}`);
+                setLoading(false);
+            });
     };
 
     // 회원 삭제 모달 열기
@@ -423,6 +469,24 @@ const AdminUsers = () => {
                 isOpen={detailModal.isOpen}
                 onClose={detailModal.closeModal}
                 user={selectedUser}
+                onEdit={handleEditUser}
+                onViewResume={handleViewResume}
+            />
+
+            {/* 회원 정보 수정 모달 */}
+            <UserEditModal
+                isOpen={editModal.isOpen}
+                onClose={editModal.closeModal}
+                user={selectedUser}
+                onUpdate={handleUpdateUser}
+            />
+
+            {/* 이력서 보기 모달 */}
+            <ResumeViewEditModal
+                isOpen={resumeModal.isOpen}
+                onClose={resumeModal.closeModal}
+                user={selectedUser}
+                onUpdate={fetchUsers}
             />
 
             {/* 삭제 확인 모달 */}

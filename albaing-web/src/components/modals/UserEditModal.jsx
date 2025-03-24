@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { format, parse } from 'date-fns';
 
 const UserEditModal = ({ isOpen, onClose, user, onUpdate }) => {
@@ -28,13 +27,18 @@ const UserEditModal = ({ isOpen, onClose, user, onUpdate }) => {
             }
 
             setFormData({
+                userId: user.userId,
                 userName: user.userName || '',
                 userEmail: user.userEmail || '',
                 userPhone: user.userPhone || '',
                 userBirthdate: formattedBirthdate,
                 userGender: user.userGender || 'male',
                 userAddress: user.userAddress || '',
-                userIsAdmin: user.userIsAdmin || false
+                userIsAdmin: user.userIsAdmin || false,
+                // 필수 필드 추가 - 데이터 누락 방지
+                userPassword: user.userPassword || '',
+                userProfileImage: user.userProfileImage || '',
+                userTermsAgreement: user.userTermsAgreement || false
             });
         }
     }, [user]);
@@ -70,10 +74,15 @@ const UserEditModal = ({ isOpen, onClose, user, onUpdate }) => {
         if (validate()) {
             setLoading(true);
 
-            // 날짜 형식 변환 (input에서 받은 형식을 서버에 맞게)
+            // 기존 사용자 데이터와 새 데이터 병합하여 필수 필드 누락 방지
             const updatedData = {
-                ...formData,
-                userId: user.userId
+                ...user, // 기존 데이터 모두 포함
+                ...formData, // 수정된 데이터로 덮어쓰기
+                // 날짜 데이터는 특별히 처리
+                userBirthdate: formData.userBirthdate || null,
+                // 서버에서 필요한 다른 필드 유지
+                userCreatedAt: user.userCreatedAt,
+                userUpdatedAt: new Date()
             };
 
             onUpdate(updatedData);
