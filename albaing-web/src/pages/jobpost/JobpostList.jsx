@@ -10,13 +10,19 @@ import {useNavigate, useParams} from "react-router-dom";
 // 카테고리 분류 데이터
 const categories = [
     {name: '전체', value: 'all'},
-    {name: '사무직', value: 'office'},
-    {name: '서비스업', value: 'service'},
-    {name: 'IT/개발', value: 'it'},
-    {name: '판매/영업', value: 'sales'},
-    {name: '교육', value: 'education'},
-    {name: '생산/건설', value: 'production'},
-    {name: '운전/배달', value: 'delivery'},
+    {name: '외식/음료', value: 'food/drinks'},
+    {name: '유통/판매', value: 'sales'},
+    {name: '문화/여가생활', value: 'culture/hobby'},
+    {name: '서비스', value: 'service'},
+    {name: '사무/회계', value: 'paperwork'},
+    {name: '고객상담/리서치', value: 'production'},
+    {name: '생산/건설/노무', value: 'delivery'},
+    {name: 'IT/기술', value: 'it/tech'},
+    {name: '디자인', value: 'design'},
+    {name: '미디어', value: 'media'},
+    {name: '운전/배달', value: 'drive/delivery'},
+    {name: '병원/간호/연구', value: 'medical/research'},
+    {name: '교육/강사', value: 'education'},
 ];
 
 // 지역 분류 데이터
@@ -45,14 +51,32 @@ export default function JobpostList() {
     const [companyInfo, setCompanyInfo] = useState({});  // 회사 정보(이름, 이미지)
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [selectedCategory, setSelectedCategory] = useState('all');
-    const [selectedLocation, setSelectedLocation] = useState('all');
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedLocation, setSelectedLocation] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
     const [itemsPerPage] = useState(10);
     const [scrapedPosts, setScrapedPosts] = useState([]);
     const alertModal = useModal();
+    const [imminentPosts, setImminentPosts] = useState([]);
+    const [newPosts, setNewPosts] = useState([]);
+    const [randomPosts, setRandomPosts] = useState([]);
+
+    useEffect(() => {
+        axios.get("/api/jobs/mainPage/imminentPosts")
+            .then((response) => {
+                setImminentPosts(response.data);
+            })
+        axios.get("/api/jobs/mainPage/newPosts")
+        .then((response) => {
+            setNewPosts(response.data);
+        })
+        axios.get("/api/jobs/mainPage/randomPosts")
+        .then((response) => {
+            setRandomPosts(response.data);
+        })
+    }, [])
 
     useEffect(() => {
         fetchJobListings();
@@ -201,10 +225,9 @@ export default function JobpostList() {
     // 검색하기 버튼 클릭 시
     const handleSearch = () => {
         const params = new URLSearchParams();
-        params.append("regionSelect", regionSelect);
-        params.append("jobCategorySelect", jobCategorySelect);
-        params.append("searchKeyword", searchKeyword);
-        console.log(params.toString());
+        params.append("regionSelect", selectedLocation);
+        params.append("jobCategorySelect", selectedCategory);
+        params.append("searchKeyword", searchQuery);
         navigate(`/search?${params.toString()}`);
         setCurrentPage(1); // 검색 시 첫 페이지로 이동
     };
@@ -259,53 +282,53 @@ export default function JobpostList() {
         );
 
 
-            if (isCurrentlyScraped) {
-                apiScrapService.removeScrap(userData.userId, jobPostId)
-                    .then(() => {
-                        const updatedScraps = scrapedPosts.filter(post => post.jobPostId !== jobPostId);
-                        setScrapedPosts(updatedScraps);
+        if (isCurrentlyScraped) {
+            apiScrapService.removeScrap(userData.userId, jobPostId)
+                .then(() => {
+                    const updatedScraps = scrapedPosts.filter(post => post.jobPostId !== jobPostId);
+                    setScrapedPosts(updatedScraps);
 
-                        const scrapIds = updatedScraps.map(post => post.jobPostId);
-                        localStorage.setItem("scrapedPosts", JSON.stringify(scrapIds))
+                    const scrapIds = updatedScraps.map(post => post.jobPostId);
+                    localStorage.setItem("scrapedPosts", JSON.stringify(scrapIds))
 
-                        alertModal.openModal({
-                            title: '스크랩 취소',
-                            message: '스크랩에서 제거되었습니다.',
-                            type: 'success'
-                        });
-
-                    })
-                    .catch((err) => {
-                        console.error("스크랩 삭제 실패", error);
-                        alertModal.openModal({
-                            title: '오류',
-                            message: '스크랩 추가 중 오류가 발생했습니다.',
-                            type: 'error'
-                        });
-                    })
-            } else {
-                // 스크랩 추가
-                apiScrapService.addScrap(userData.userId, jobPostId)
-                    .then(() => {
-                        // API 요청 후 최신 목록을 다시 가져오기
-                        return apiScrapService.getScrapsByUser(userData.userId, setScrapedPosts);
-                    })
-                    .then(() => {
-                        alertModal.openModal({
-                            title: '스크랩 추가',
-                            message: '스크랩에 추가되었습니다.',
-                            type: 'success'
-                        });
-                    })
-                    .catch((err) => {
-                        console.error("스크랩 추가 실패", err);
-                        alertModal.openModal({
-                            title: '오류',
-                            message: '스크랩 추가 중 오류가 발생했습니다.',
-                            type: 'error'
-                        });
+                    alertModal.openModal({
+                        title: '스크랩 취소',
+                        message: '스크랩에서 제거되었습니다.',
+                        type: 'success'
                     });
-            }
+
+                })
+                .catch((err) => {
+                    console.error("스크랩 삭제 실패", error);
+                    alertModal.openModal({
+                        title: '오류',
+                        message: '스크랩 추가 중 오류가 발생했습니다.',
+                        type: 'error'
+                    });
+                })
+        } else {
+            // 스크랩 추가
+            apiScrapService.addScrap(userData.userId, jobPostId)
+                .then(() => {
+                    // API 요청 후 최신 목록을 다시 가져오기
+                    return apiScrapService.getScrapsByUser(userData.userId, setScrapedPosts);
+                })
+                .then(() => {
+                    alertModal.openModal({
+                        title: '스크랩 추가',
+                        message: '스크랩에 추가되었습니다.',
+                        type: 'success'
+                    });
+                })
+                .catch((err) => {
+                    console.error("스크랩 추가 실패", err);
+                    alertModal.openModal({
+                        title: '오류',
+                        message: '스크랩 추가 중 오류가 발생했습니다.',
+                        type: 'error'
+                    });
+                });
+        }
 
     };
 
@@ -429,6 +452,94 @@ export default function JobpostList() {
                 )}
             </div>
 
+            <div>
+                <br/>
+                <h1> 마감 임박 공고 </h1>
+                <br/>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {imminentPosts.map((job) => {
+                        const company = getCompanyInfo(job);
+                        const isScraped = Array.isArray(scrapedPosts) && scrapedPosts.some(
+                            scrap => (typeof scrap === 'object' && scrap.jobPostId === job.jobPostId) ||
+                                (typeof scrap === 'number' && scrap === job.jobPostId)
+                        );
+
+                        return (
+                            <JobCard
+                                key={job.jobPostId}
+                                job={job}
+                                company={company}
+                                isScraped={isScraped}
+                                isLoggedIn={isLoggedIn}
+                                userType={userType}
+                                toggleScrap={toggleScrap}
+                                formatDate={formatDate}
+                            />
+                        );
+                    })}
+                </div>
+                <br/>
+            </div>
+
+
+            <div>
+                <br/>
+                <h1> 최신 공고 </h1>
+                <br/>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {newPosts.map((job) => {
+                        const company = getCompanyInfo(job);
+                        const isScraped = Array.isArray(scrapedPosts) && scrapedPosts.some(
+                            scrap => (typeof scrap === 'object' && scrap.jobPostId === job.jobPostId) ||
+                                (typeof scrap === 'number' && scrap === job.jobPostId)
+                        );
+
+                        return (
+                            <JobCard
+                                key={job.jobPostId}
+                                job={job}
+                                company={company}
+                                isScraped={isScraped}
+                                isLoggedIn={isLoggedIn}
+                                userType={userType}
+                                toggleScrap={toggleScrap}
+                                formatDate={formatDate}
+                            />
+                        );
+                    })}
+                </div>
+                <br/>
+            </div>
+
+            <div>
+                <br/>
+                <h1> 랜덤 공고 </h1>
+                <br/>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {randomPosts.map((job) => {
+                        const company = getCompanyInfo(job);
+                        const isScraped = Array.isArray(scrapedPosts) && scrapedPosts.some(
+                            scrap => (typeof scrap === 'object' && scrap.jobPostId === job.jobPostId) ||
+                                (typeof scrap === 'number' && scrap === job.jobPostId)
+                        );
+
+                        return (
+                            <JobCard
+                                key={job.jobPostId}
+                                job={job}
+                                company={company}
+                                isScraped={isScraped}
+                                isLoggedIn={isLoggedIn}
+                                userType={userType}
+                                toggleScrap={toggleScrap}
+                                formatDate={formatDate}
+                            />
+                        );
+                    })}
+                </div>
+                <br/>
+            </div>
+
             {/* 모달 */}
             <AlertModal
                 isOpen={alertModal.isOpen}
@@ -439,5 +550,7 @@ export default function JobpostList() {
                 type={alertModal.modalProps.type || 'info'}
             />
         </div>
+
+
     );
 }
