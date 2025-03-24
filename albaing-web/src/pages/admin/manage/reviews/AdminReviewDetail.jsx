@@ -19,15 +19,15 @@ const AdminReviewDetail = () => {
     const deleteCommentModal = useModal();
     const [selectedCommentId, setSelectedCommentId] = useState(null);
 
-    const fetchReviewDetail = () => {
-        if (!companyId) {
-            setError('회사 정보가 없습니다.');
-            setLoading(false);
-            return;
+    useEffect(() => {
+        if (reviewId && companyId) {
+            fetchReviewDetail();
         }
+    }, [reviewId, companyId]);
 
+
+    const fetchReviewDetail = () => {
         setLoading(true);
-        setError(null);
 
         axios.get(`/api/companies/${companyId}/reviews/${reviewId}`)
             .then(response => {
@@ -36,8 +36,7 @@ const AdminReviewDetail = () => {
                 setLoading(false);
             })
             .catch(error => {
-                console.error('리뷰 상세 정보 로딩 실패:', error);
-                setError('리뷰 정보를 불러오는데 실패했습니다.');
+                setError(`리뷰 조회 실패: ${error.message}`);
                 setLoading(false);
             });
     };
@@ -101,7 +100,7 @@ const AdminReviewDetail = () => {
                 <h1 className="text-2xl font-bold text-gray-800">리뷰 상세</h1>
                 <div className="flex space-x-2">
                     <Link
-                        to={`/admin/reviews/${reviewId}/edit`}
+                        to={`/admin/reviews/${review.reviewId}/edit?companyId=${review.companyId}`}
                         className="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700"
                     >
                         수정

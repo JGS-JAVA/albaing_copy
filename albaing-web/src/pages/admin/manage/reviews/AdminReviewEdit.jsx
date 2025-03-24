@@ -18,34 +18,29 @@ const AdminReviewEdit = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetchReviewDetail();
-    }, [reviewId]);
+        if (reviewId && companyId) {
+            fetchReviewDetail();
+        }
+    }, [reviewId, companyId]);
 
     const fetchReviewDetail = () => {
-        if (!companyId) {
-            setError('회사 정보가 없습니다.');
-            setLoading(false);
-            return;
-        }
-
         setLoading(true);
-        setError(null);
 
         axios.get(`/api/companies/${companyId}/reviews/${reviewId}`)
             .then(response => {
-                // 데이터가 snake_case 또는 camelCase일 수 있으므로 두 방식 모두 처리
+                const data = response.data;
                 setFormData({
-                    reviewTitle: response.data.reviewTitle || response.data.review_title || '',
-                    reviewContent: response.data.reviewContent || response.data.review_content || ''
+                    reviewTitle: data.reviewTitle || data.review_title || '',
+                    reviewContent: data.reviewContent || data.review_content || ''
                 });
                 setLoading(false);
             })
             .catch(error => {
-                console.error('리뷰 정보 로딩 실패:', error);
-                setError('리뷰 정보를 불러오는데 실패했습니다.');
+                setError(`리뷰 조회 실패: ${error.message}`);
                 setLoading(false);
             });
     };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -76,7 +71,7 @@ const AdminReviewEdit = () => {
             reviewContent: formData.reviewContent
         })
             .then(() => {
-                navigate(`/admin/reviews/${reviewId}`);
+                navigate(`/admin/reviews/${reviewId}?companyId=${companyId}`);
             })
             .catch(error => {
                 console.error('리뷰 수정 실패:', error);

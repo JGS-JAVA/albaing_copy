@@ -293,10 +293,10 @@ const AdminReviews = () => {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
                                                 <Link
-                                                    to={`/admin/reviews/${review.review_id}?companyId=${review.company_id}`}
+                                                    to={`/admin/reviews/${review.reviewId}?companyId=${review.companyId}`}
                                                     className="hover:text-blue-600 hover:underline"
                                                 >
-                                                    {review.review_title}
+                                                    {review.reviewTitle}
                                                 </Link>
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
@@ -308,17 +308,17 @@ const AdminReviews = () => {
                                             <td className="px-6 py-4 whitespace-nowrap text-sm">
                                                 <div className="flex space-x-2">
                                                     <Link
-                                                        to={`/admin/reviews/${review.review_id}?companyId=${review.company_id}`}
+                                                        to={`/admin/reviews/${review.reviewId}?companyId=${review.companyId}`}
                                                         className="text-blue-600 hover:text-blue-900"
                                                     >
                                                         상세
                                                     </Link>
                                                     <Link
-                                                    to={`/admin/reviews/${review.review_id}/edit?companyId=${review.company_id}`}
-                                                    className="text-yellow-600 hover:text-yellow-900"
-                                                >
-                                                    수정
-                                                </Link>
+                                                        to={`/admin/reviews/${review.reviewId}/edit?companyId=${review.companyId}`}
+                                                        className="text-yellow-600 hover:text-yellow-900"
+                                                    >
+                                                        수정
+                                                    </Link>
                                                     <button
                                                         onClick={() => handleOpenDeleteModal(review)}
                                                         className="text-red-600 hover:text-red-900"
