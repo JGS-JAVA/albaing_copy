@@ -47,6 +47,14 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public void updateJobPostStatus(String jobPostId, Boolean status) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("jobPostId", jobPostId);
+        params.put("status", status);
+        adminMapper.updateJobPostStatus(params);
+    }
+
+    @Override
     public User adminUserDetail(String userId) {
         return adminMapper.adminUserDetail(userId);
     }

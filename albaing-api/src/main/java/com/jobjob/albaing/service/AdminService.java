@@ -37,6 +37,8 @@ public interface AdminService {
 
     void adminJobPostStatusChange(String CompanyId);
 
+    void updateJobPostStatus(String jobPostId, Boolean status);
+
     // 모든 공지사항 조회
     List<Notice> getAllNotices();
 

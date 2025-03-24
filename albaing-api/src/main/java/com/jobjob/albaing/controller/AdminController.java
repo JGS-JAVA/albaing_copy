@@ -320,6 +320,21 @@ public class AdminController {
         return adminService.adminJobPostDetail(jobPostId);
     }
 
+    // 공고 상태 변경
+    @PatchMapping("/job-posts/{jobPostId}/status")
+    public ResponseEntity<Void> updateJobPostStatus(
+        @PathVariable String jobPostId,
+        @RequestBody Map<String, Object> requestBody) {
+
+        Boolean status = (Boolean) requestBody.get("status");
+        if (status == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        adminService.updateJobPostStatus(jobPostId, status);
+        return ResponseEntity.ok().build();
+    }
+
     // 공고 삭제
     @DeleteMapping("/job-posts/{jobPostId}")
     public void adminJobPostDelete(@PathVariable String jobPostId) {

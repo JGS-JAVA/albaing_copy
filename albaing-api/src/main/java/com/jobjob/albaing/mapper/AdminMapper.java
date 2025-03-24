@@ -44,6 +44,8 @@ public interface AdminMapper {
 
     void updateCompanyApprovalStatus(Long companyId, String status);
 
+    void updateJobPostStatus(Map<String, Object> params);
+
     // 모든 공지사항 조회
     List<Notice> getAllNotices();
 
