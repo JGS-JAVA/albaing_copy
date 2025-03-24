@@ -9,7 +9,7 @@ const ReviewListTab = ({ reviews, companyId, onReviewAdded }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [showReviewModal, setShowReviewModal] = useState(false);
     const [commentCounts, setCommentCounts] = useState({});  // 댓글 수 상태
-    const itemsPerPage = 5;
+    const itemsPerPage = 4;
     const navigate = useNavigate();
 
     // 현재 페이지에 보여줄 리뷰 목록
@@ -22,23 +22,32 @@ const ReviewListTab = ({ reviews, companyId, onReviewAdded }) => {
 
     // 리뷰 목록이 변경될 때마다 댓글 수를 가져옴
     useEffect(() => {
-        const fetchCommentCounts = async () => {
+        const fetchCommentCounts = () => {
             const counts = {};
-            for (const review of reviews) {
-                try {
-                    const count = await apiReviewService.getCommentCountByReviewId(review.reviewId);
-                    counts[review.reviewId] = count;  // 댓글 수 설정
-                } catch (error) {
-                    counts[review.reviewId] = 0;  // 오류가 발생하면 기본값 0
-                }
-            }
-            setCommentCounts(counts);  // 댓글 수 상태 업데이트
+            let completedRequests = 0;
+
+            reviews.forEach((review) => {
+                apiReviewService.getCommentCountByReviewId(review.reviewId)
+                    .then(count => {
+                        counts[review.reviewId] = count;
+                    })
+                    .catch(() => {
+                        counts[review.reviewId] = 0;
+                    })
+                    .finally(() => {
+                        completedRequests++;
+                        if (completedRequests === reviews.length) {
+                            setCommentCounts(counts);
+                        }
+                    });
+            });
         };
 
         if (reviews.length > 0) {
             fetchCommentCounts();
         }
     }, [reviews]);  // 리뷰 목록이 바뀔 때마다 댓글 수를 가져옴
+
 
     // 리뷰 상세 페이지로 이동
     const navigateToReviewDetail = (reviewId) => {
