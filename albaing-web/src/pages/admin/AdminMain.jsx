@@ -45,30 +45,29 @@ const AdminMain = () => {
     const [recentJobPosts, setRecentJobPosts] = useState([]);
 
     useEffect(() => {
-        const fetchDashboardData = async () => {
-            setLoading(true);
-            try {
-                // 병렬로 여러 요청 처리
-                const [statsRes, usersRes, jobPostsRes] = await Promise.all([
-                    axios.get('/api/admin/dashboard/stats'),
-                    axios.get('/api/admin/recent/users'),
-                    axios.get('/api/admin/recent/jobposts')
-                ]);
-
-                setStats(statsRes.data);
-                setRecentUsers(usersRes.data);
-                setRecentJobPosts(jobPostsRes.data);
-            } catch (error) {
+        setLoading(true);
+        axios
+            .all([
+                axios.get('/api/admin/dashboard/stats'),
+                axios.get('/api/admin/recent/users'),
+                axios.get('/api/admin/recent/jobposts')
+            ])
+            .then(
+                axios.spread((statsRes, usersRes, jobPostsRes) => {
+                    setStats(statsRes.data);
+                    setRecentUsers(usersRes.data);
+                    setRecentJobPosts(jobPostsRes.data);
+                })
+            )
+            .catch(error => {
                 console.error('대시보드 데이터 로딩 실패:', error);
-            } finally {
+            })
+            .finally(() => {
                 setLoading(false);
-            }
-        };
-
-        fetchDashboardData();
+            });
     }, []);
 
-// CSV 다운로드 함수
+
     const downloadCSV = (url, filename) => {
         fetch(url)
             .then(response => {
@@ -95,12 +94,10 @@ const AdminMain = () => {
             });
     };
 
-// 최근 회원 CSV 다운로드
     const handleDownloadUsers = () => {
         downloadCSV('/api/admin/users/csv', `알바잉_회원목록_${format(new Date(), 'yyyyMMdd')}.csv`);
     };
 
-// 채용공고 CSV 다운로드
     const handleDownloadJobPosts = () => {
         downloadCSV('/api/admin/job-posts/csv', `알바잉_채용공고목록_${format(new Date(), 'yyyyMMdd')}.csv`);
     };
