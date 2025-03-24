@@ -52,6 +52,7 @@ const MainLayout = ({children}) => (
         <Footer/>
     </div>
 );
+
 function PathRoute() {
     return (
         <BrowserRouter>
@@ -73,6 +74,7 @@ function PathRoute() {
                 <Route path="/find/id" element={<MainLayout><FindId /></MainLayout>} /> {/* 아이디 찾기 페이지 */}
                 <Route path="/find/password" element={<MainLayout><FindPassword /></MainLayout>} /> {/* 비밀번호 변경 페이지 */}
                 <Route path="/change/password" element={<MainLayout><ChangePassword /></MainLayout>} /> {/* 비밀번호 변경 페이지 */}
+                <Route path="/search/:regionSelect?/:jobCategorySelect?/:searchKeyword?" element={<MainLayout><JobPostSearchResults /></MainLayout>} /> {/* 검색 결과 페이지 */}
 
                 {/* 로그인한 모든 사용자 접근 가능 */}
                 <Route element={<ProtectedRoute/>}>
