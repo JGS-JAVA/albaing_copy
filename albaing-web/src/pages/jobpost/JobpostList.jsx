@@ -539,7 +539,7 @@ export default function JobpostList() {
                 </div>
                 <br/>
             </div>
-
+            <br/>
             {/* 모달 */}
             <AlertModal
                 isOpen={alertModal.isOpen}
