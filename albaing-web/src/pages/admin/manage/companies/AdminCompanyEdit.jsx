@@ -4,7 +4,7 @@ import axios from 'axios';
 import { LoadingSpinner, ErrorMessage } from '../../../../components';
 import AdminLayout from '../../AdminLayout';
 
-const CompanyEdit = () => {
+const AdminCompanyEdit = () => {
     const { companyId } = useParams();
     const navigate = useNavigate();
     const [company, setCompany] = useState(null);
@@ -88,9 +88,8 @@ const CompanyEdit = () => {
         try {
             const formPayload = new FormData();
 
-            // companyLogo가 변경된 경우에만 추가
             if (logoFile) {
-                formPayload.append('companyLogo', logoFile);
+                formPayload.append('companyLogo', logoFile, logoFile.name);
             }
 
             // 회사 정보 추가
@@ -101,11 +100,13 @@ const CompanyEdit = () => {
                 companyUpdatedAt: new Date()
             };
 
-            formPayload.append('company', JSON.stringify(companyData));
+            formPayload.append('company', new Blob([JSON.stringify(companyData)], {
+                type: 'application/json'
+            }));
 
             await axios.put(`/api/companies/${companyId}`, formPayload, {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': undefined
                 }
             });
 
@@ -275,4 +276,4 @@ const CompanyEdit = () => {
     );
 };
 
-export default CompanyEdit;
+export default AdminCompanyEdit;

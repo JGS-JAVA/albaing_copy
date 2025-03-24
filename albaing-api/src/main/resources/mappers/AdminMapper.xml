@@ -37,6 +37,10 @@
             <if test="sortOrderBy == '가입일'">
                 user_created_at
             </if>
+            <!-- 추가 -->
+            <if test="sortOrderBy == 'userId'">
+                user_id
+            </if>
             <if test="isDESC == true">
                 DESC
             </if>

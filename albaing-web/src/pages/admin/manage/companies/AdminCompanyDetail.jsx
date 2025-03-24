@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 import { LoadingSpinner, ErrorMessage, ConfirmModal, useModal } from '../../../../components';
 import AdminLayout from '../../AdminLayout';
 
-const CompanyDetail = () => {
+const AdminCompanyDetail = () => {
     const { companyId } = useParams();
     const navigate = useNavigate();
     const [company, setCompany] = useState(null);
@@ -187,4 +187,4 @@ const CompanyDetail = () => {
     );
 };
 
-export default CompanyDetail;
+export default AdminCompanyDetail;

@@ -38,7 +38,18 @@ public class AdminController {
                                             @RequestParam(required = false) String userPhone,
                                             @RequestParam(required = false) String sortOrderBy,
                                             @RequestParam(required = false) Boolean isDESC) {
-        if (Objects.equals(sortOrderBy, "") || sortOrderBy == null) {
+        // 프론트엔드에서 온 필드명을 백엔드 필드명으로 변환
+        if (sortOrderBy != null) {
+            if (sortOrderBy.equals("userId")) {
+                sortOrderBy = "userId";
+            } else if (sortOrderBy.equals("companyId")) {
+                sortOrderBy = "companyId";
+            } else if (sortOrderBy.equals("name")) {
+                sortOrderBy = "이름";
+            } else if (sortOrderBy.equals("createdAt")) {
+                sortOrderBy = "가입일";
+            }
+        } else {
             sortOrderBy = "이름";
         }
 
