@@ -6,7 +6,7 @@ import AdminLayout from '../../AdminLayout';
 import Pagination from '../../../../components/common/Pagination';
 
 // 회원 상세 모달
-const UserDetailModal = ({ isOpen, onClose, user }) => {
+const UserDetailModal = ({ isOpen, onClose, user, onEdit, onViewResume }) => {
     if (!isOpen || !user) return null;
 
     // 날짜 포맷 변환
@@ -80,7 +80,19 @@ const UserDetailModal = ({ isOpen, onClose, user }) => {
                         </div>
                     </div>
 
-                    <div className="mt-8 flex justify-end">
+                    <div className="mt-8 flex justify-end space-x-3">
+                        <button
+                            onClick={() => onViewResume(user)}
+                            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                        >
+                            이력서 보기
+                        </button>
+                        <button
+                            onClick={() => onEdit(user)}
+                            className="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700"
+                        >
+                            회원정보 수정
+                        </button>
                         <button
                             onClick={onClose}
                             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"

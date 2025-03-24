@@ -3,6 +3,8 @@ package com.jobjob.albaing.controller;
 import com.jobjob.albaing.dto.*;
 import com.jobjob.albaing.mapper.AdminMapper;
 import com.jobjob.albaing.service.AdminServiceImpl;
+import com.jobjob.albaing.service.ResumeServiceImpl;
+import com.jobjob.albaing.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,12 @@ public class AdminController {
     @Autowired
     private AdminServiceImpl adminService;
 
+    @Autowired
+    private UserServiceImpl userService;
+
+    @Autowired
+    private ResumeServiceImpl resumeService;
+
     // 개인 검색
     @GetMapping("/users")
     public List<AdminUser> adminSearchUsers(@RequestParam(required = false) String userName,
@@ -30,6 +38,72 @@ public class AdminController {
         }
 
         return adminService.adminSearchUsers(userName, userEmail, userPhone, sortOrderBy, isDESC);
+    }
+
+    // 개인 회원 상세 정보 조회
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<User> getUserById(@PathVariable Long userId) {
+        User user = userService.getUserById(userId);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(user);
+    }
+
+    // 개인 회원 정보 수정
+    @PutMapping("/users/{userId}")
+    public ResponseEntity<User> updateUser(@PathVariable Long userId, @RequestBody User user) {
+        // ID 확인
+        if (!userId.equals(user.getUserId())) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        userService.updateUser(user);
+        return ResponseEntity.ok(user);
+    }
+
+    // 개인 유저 삭제 + 이력서 삭제
+    @DeleteMapping("/users/{userId}")
+    public void adminUserDelete(@PathVariable String userId) {
+        adminService.adminUserDelete(userId);
+        adminService.adminResumeDelete(userId);
+    }
+
+    // 유저 ID로 이력서 조회
+    @GetMapping("/resumes/user/{userId}")
+    public ResponseEntity<Resume> getResumeByUserId(@PathVariable int userId) {
+        Resume resume = resumeService.getResumeByUserId(userId);
+        if (resume == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(resume);
+    }
+
+    // 이력서 ID로 이력서 조회
+    @GetMapping("/resumes/{resumeId}")
+    public ResponseEntity<Resume> getResumeById(@PathVariable int resumeId) {
+        Resume resume = resumeService.resumeDetails(resumeId);
+        if (resume == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(resume);
+    }
+
+    // 이력서 수정
+    @PutMapping("/resumes/update/{resumeId}")
+    public ResponseEntity<Void> updateResume(
+        @PathVariable int resumeId,
+        @RequestBody ResumeUpdateRequest resumeUpdateRequest) {
+
+        // 이력서 ID 확인
+        if (resumeUpdateRequest.getResume() != null) {
+            resumeUpdateRequest.getResume().setResumeId(resumeId);
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+
+        resumeService.updateResume(resumeUpdateRequest);
+        return ResponseEntity.ok().build();
     }
 
     // 이력서 검색
@@ -67,36 +141,6 @@ public class AdminController {
         return adminService.adminSearchCompanies(companyName, companyOwnerName, companyPhone, companyRegistrationNumber, sortOrderBy, isDESC);
     }
 
-    // 공고 검색
-    @GetMapping("/job-posts")
-    public List<ViewJobPost> adminSearchJobPosts(@RequestParam(required = false) String companyName,
-                                                 @RequestParam(required = false) String jobPostTitle,
-                                                 @RequestParam(required = false) String jobPostStatus,
-                                                 @RequestParam(defaultValue = "공고 제목") String sortOrderBy,
-                                                 @RequestParam(required = false) Boolean isDESC) {
-
-        return adminService.adminSearchJobPosts(companyName, jobPostTitle, jobPostStatus, sortOrderBy, isDESC);
-    }
-
-    // 개인 상세 조회
-    @GetMapping("/users/{userId}")
-    public User adminUserDetail(@PathVariable String userId) {
-        return adminService.adminUserDetail(userId);
-    }
-
-    // 개인 유저 삭제 + 이력서 삭제
-    @DeleteMapping("/users/{userId}")
-    public void adminUserDelete(@PathVariable String userId) {
-        adminService.adminUserDelete(userId);
-        adminService.adminResumeDelete(userId);
-    }
-
-    // 이력서 상세 조회
-    @GetMapping("/resumes/{resumeId}")
-    public Resume adminResumeDetail(@PathVariable String resumeId) {
-        return adminService.adminResumeDetail(resumeId);
-    }
-
     // 회사 상세 조회
     @GetMapping("/companies/{companyId}")
     public Company adminCompanyDetail(@PathVariable String companyId) {
@@ -109,6 +153,17 @@ public class AdminController {
         adminService.adminCompanyDelete(companyId);
         // 공고 상태 비공개로 전환
         adminService.adminJobPostStatusChange(companyId);
+    }
+
+    // 공고 검색
+    @GetMapping("/job-posts")
+    public List<ViewJobPost> adminSearchJobPosts(@RequestParam(required = false) String companyName,
+                                                 @RequestParam(required = false) String jobPostTitle,
+                                                 @RequestParam(required = false) String jobPostStatus,
+                                                 @RequestParam(defaultValue = "공고 제목") String sortOrderBy,
+                                                 @RequestParam(required = false) Boolean isDESC) {
+
+        return adminService.adminSearchJobPosts(companyName, jobPostTitle, jobPostStatus, sortOrderBy, isDESC);
     }
 
     // 공고 상세 조회
@@ -171,5 +226,4 @@ public class AdminController {
         List<Map<String, Object>> jobPosts = adminService.getRecentJobPosts();
         return ResponseEntity.ok(jobPosts);
     }
-
 }
