@@ -39,6 +39,7 @@ import FAQ from "../pages/home/FAQ";
 import Contact from "../pages/home/Contact";
 import Terms from "../pages/home/Terms";
 import Privacy from "../pages/home/Privacy";
+import JobPostSearchResults from "../pages/jobpost/JobPostSearchResults";
 
 // 메인 레이아웃 컴포넌트
 const MainLayout = ({children}) => (

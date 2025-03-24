@@ -9,32 +9,32 @@ import {useNavigate, useParams} from "react-router-dom";
 
 // 카테고리 분류 데이터
 const categories = [
-    {name: '전체', value: 'all'},
-    {name: '외식/음료', value: 'food/drinks'},
-    {name: '유통/판매', value: 'sales'},
-    {name: '문화/여가생활', value: 'culture/hobby'},
-    {name: '서비스', value: 'service'},
-    {name: '사무/회계', value: 'paperwork'},
-    {name: '고객상담/리서치', value: 'production'},
-    {name: '생산/건설/노무', value: 'delivery'},
-    {name: 'IT/기술', value: 'it/tech'},
-    {name: '디자인', value: 'design'},
-    {name: '미디어', value: 'media'},
-    {name: '운전/배달', value: 'drive/delivery'},
-    {name: '병원/간호/연구', value: 'medical/research'},
-    {name: '교육/강사', value: 'education'},
+    {name: '전체', value: null},
+    {name: '외식/음료', value: '외식/음료'},
+    {name: '유통/판매', value: '유통/판매'},
+    {name: '문화/여가생활', value: '문화/여가생활'},
+    {name: '서비스', value: '서비스'},
+    {name: '사무/회계', value: '사무/회계'},
+    {name: '고객상담/리서치', value: '고객상담/리서치'},
+    {name: '생산/건설/노무', value: '생산/건설/노무'},
+    {name: 'IT/기술', value: 'IT/기술'},
+    {name: '디자인', value: '디자인'},
+    {name: '미디어', value: '미디어'},
+    {name: '운전/배달', value: '운전/배달'},
+    {name: '병원/간호/연구', value: '병원/간호/연구'},
+    {name: '교육/강사', value: '교육/강사'},
 ];
 
 // 지역 분류 데이터
 const locations = [
-    {name: '전체', value: 'all'},
-    {name: '서울', value: 'seoul'},
-    {name: '경기', value: 'gyeonggi'},
-    {name: '인천', value: 'incheon'},
-    {name: '부산', value: 'busan'},
-    {name: '대구', value: 'daegu'},
-    {name: '대전', value: 'daejeon'},
-    {name: '광주', value: 'gwangju'},
+    {name: '전체', value: null},
+    {name: '서울', value: '서울'},
+    {name: '경기', value: '경기'},
+    {name: '인천', value: '인천'},
+    {name: '부산', value: '부산'},
+    {name: '대구', value: '대구'},
+    {name: '대전', value: '대전'},
+    {name: '광주', value: '광주'},
 ];
 
 export default function JobpostList() {
@@ -190,36 +190,36 @@ export default function JobpostList() {
         }
 
         // API 요청 실행
-        axios.get(endpoint, {
-            params,
-            withCredentials: true
-        })
-            .then(response => {
-                if (response.data) {
-                    const jobPosts = Array.isArray(response.data) ? response.data :
-                        (response.data.content ? response.data.content : []);
-
-                    setJobListings(jobPosts);
-
-                    // 총 아이템 수 설정 (페이지네이션용)
-                    const total = response.data.totalElements ||
-                        response.data.totalItems ||
-                        response.headers['x-total-count'] ||
-                        jobPosts.length;
-
-                    setTotalItems(Number(total));
-                } else {
-                    setJobListings([]);
-                    setTotalItems(0);
-                }
-                setLoading(false);
-            })
-            .catch(() => {
-                setError('채용 공고를 불러오는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-                setJobListings([]);
-                setTotalItems(0);
-                setLoading(false);
-            });
+        // axios.get(endpoint, {
+        //     params,
+        //     withCredentials: true
+        // })
+        //     .then(response => {
+        //         if (response.data) {
+        //             const jobPosts = Array.isArray(response.data) ? response.data :
+        //                 (response.data.content ? response.data.content : []);
+        //
+        //             setJobListings(jobPosts);
+        //
+        //             // 총 아이템 수 설정 (페이지네이션용)
+        //             const total = response.data.totalElements ||
+        //                 response.data.totalItems ||
+        //                 response.headers['x-total-count'] ||
+        //                 jobPosts.length;
+        //
+        //             setTotalItems(Number(total));
+        //         } else {
+        //             setJobListings([]);
+        //             setTotalItems(0);
+        //         }
+        //         setLoading(false);
+        //     })
+        //     .catch(() => {
+        //         setError('채용 공고를 불러오는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+        //         setJobListings([]);
+        //         setTotalItems(0);
+        //         setLoading(false);
+        //     });
     };
 
     // 검색하기 버튼 클릭 시
@@ -402,54 +402,54 @@ export default function JobpostList() {
                 </div>
 
                 {/* 로딩 및 에러 상태 */}
-                {loading && <LoadingSpinner message="채용 공고를 불러오는 중..." fullScreen={false} className="py-10"/>}
-                {error && <ErrorMessage message={error}/>}
+                {/*{loading && <LoadingSpinner message="채용 공고를 불러오는 중..." fullScreen={false} className="py-10"/>}*/}
+                {/*{error && <ErrorMessage message={error}/>}*/}
 
                 {/* 채용 공고 목록 - 카드 형식 */}
-                {!loading && !error && (
-                    <div>
-                        {jobListings.length === 0 ? (
-                            <div className="text-center py-10 bg-white rounded-lg shadow">
-                                <p className="text-gray-500">검색 결과가 없습니다.</p>
-                            </div>
-                        ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {jobListings.map((job) => {
-                                    const company = getCompanyInfo(job);
-                                    const isScraped = Array.isArray(scrapedPosts) && scrapedPosts.some(
-                                        scrap => (typeof scrap === 'object' && scrap.jobPostId === job.jobPostId) ||
-                                            (typeof scrap === 'number' && scrap === job.jobPostId)
-                                    );
+                {/*{!loading && !error && (*/}
+                {/*    <div>*/}
+                {/*        {jobListings.length === 0 ? (*/}
+                {/*            <div className="text-center py-10 bg-white rounded-lg shadow">*/}
+                {/*                <p className="text-gray-500">검색 결과가 없습니다.</p>*/}
+                {/*            </div>*/}
+                {/*        ) : (*/}
+                {/*            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">*/}
+                {/*                {jobListings.map((job) => {*/}
+                {/*                    const company = getCompanyInfo(job);*/}
+                {/*                    const isScraped = Array.isArray(scrapedPosts) && scrapedPosts.some(*/}
+                {/*                        scrap => (typeof scrap === 'object' && scrap.jobPostId === job.jobPostId) ||*/}
+                {/*                            (typeof scrap === 'number' && scrap === job.jobPostId)*/}
+                {/*                    );*/}
 
-                                    return (
-                                        <JobCard
-                                            key={job.jobPostId}
-                                            job={job}
-                                            company={company}
-                                            isScraped={isScraped}
-                                            isLoggedIn={isLoggedIn}
-                                            userType={userType}
-                                            toggleScrap={toggleScrap}
-                                            formatDate={formatDate}
-                                        />
-                                    );
-                                })}
-                            </div>
-                        )}
+                {/*                    return (*/}
+                {/*                        <JobCard*/}
+                {/*                            key={job.jobPostId}*/}
+                {/*                            job={job}*/}
+                {/*                            company={company}*/}
+                {/*                            isScraped={isScraped}*/}
+                {/*                            isLoggedIn={isLoggedIn}*/}
+                {/*                            userType={userType}*/}
+                {/*                            toggleScrap={toggleScrap}*/}
+                {/*                            formatDate={formatDate}*/}
+                {/*                        />*/}
+                {/*                    );*/}
+                {/*                })}*/}
+                {/*            </div>*/}
+                {/*        )}*/}
 
-                        {/* 페이지네이션 */}
-                        {totalItems > 0 && (
-                            <div className="mt-8">
-                                <Pagination
-                                    totalItems={totalItems}
-                                    itemsPerPage={itemsPerPage}
-                                    currentPage={currentPage}
-                                    setCurrentPage={setCurrentPage}
-                                />
-                            </div>
-                        )}
-                    </div>
-                )}
+                {/*        /!* 페이지네이션 *!/*/}
+                {/*        {totalItems > 0 && (*/}
+                {/*            <div className="mt-8">*/}
+                {/*                <Pagination*/}
+                {/*                    totalItems={totalItems}*/}
+                {/*                    itemsPerPage={itemsPerPage}*/}
+                {/*                    currentPage={currentPage}*/}
+                {/*                    setCurrentPage={setCurrentPage}*/}
+                {/*                />*/}
+                {/*            </div>*/}
+                {/*        )}*/}
+                {/*    </div>*/}
+                {/*)}*/}
             </div>
 
             <div>
