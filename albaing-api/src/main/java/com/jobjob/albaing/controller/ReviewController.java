@@ -203,6 +203,40 @@ public class ReviewController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/admin/reviews/{reviewId}")
+    public ResponseEntity<?> getReviewDetailForAdmin(@PathVariable long reviewId) {
+        try {
+            Review review = reviewService.reviewCheck(reviewId);
+            if (review == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // 댓글 목록 조회
+            List<Comment> comments = reviewService.getCommentsByReviewId(reviewId);
+
+            // 추가 정보 조회 (회사명, 사용자명 등)
+            String companyName = reviewService.getCompanyNameByReviewId(reviewId);
+            String userName = reviewService.getUserNameByReviewId(reviewId);
+
+            // 응답 데이터 구성
+            Map<String, Object> response = new HashMap<>();
+            response.put("reviewId", review.getReviewId());
+            response.put("userId", review.getUserId());
+            response.put("companyId", review.getCompanyId());
+            response.put("reviewTitle", review.getReviewTitle());
+            response.put("reviewContent", review.getReviewContent());
+            response.put("reviewCreatedAt", review.getReviewCreatedAt());
+            response.put("reviewUpdatedAt", review.getReviewUpdatedAt());
+            response.put("companyName", companyName);
+            response.put("userName", userName);
+            response.put("comments", comments);
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("message", "리뷰 조회 중 오류가 발생했습니다: " + e.getMessage()));
+        }
+    }
+
     // 어드민 - 리뷰 수정
     @PutMapping("/admin/reviews/{reviewId}")
     public ResponseEntity<?> updateReviewByAdmin(
