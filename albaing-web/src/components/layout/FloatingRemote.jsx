@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../../components/modals/Modal';
 import SalaryCalculator from './SalaryCalculator';
-import { useNavigate } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import QuickSearch from './QuickSearch';
 import TimeTracker from './TimeTracker';
 import WageChecker from './WageChecker';
@@ -48,6 +48,7 @@ const FloatingRemote = () => {
     const tabs = [
         { id: 'calculator', label: '계산기', icon: 'calculator' },
         { id: 'search', label: '채용검색', icon: 'search' },
+        { id: 'chatbot', label: '챗봇', icon: 'search' },
         { id: 'tools', label: '도구', icon: 'tools' },
         { id: 'recent', label: '최근', icon: 'clock' }
     ];
@@ -61,6 +62,12 @@ const FloatingRemote = () => {
                     </svg>
                 );
             case 'search':
+                return (
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                );
+                case 'chatbot':
                 return (
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -174,6 +181,14 @@ const FloatingRemote = () => {
                                     </button>
                                 ))}
                             </div>
+                        </div>
+                    </div>
+                );
+                case 'chatbot':
+                return (
+                    <div className="p-4">
+                        <div className="space-y-2">
+                            <h3 className="text-sm font-medium text-gray-600"><Link to={`/find/chatbot`}>챗봇으로 이동</Link></h3>
                         </div>
                     </div>
                 );
