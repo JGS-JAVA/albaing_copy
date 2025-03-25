@@ -25,6 +25,8 @@ public class UserController {
     @Autowired
     private UserServiceImpl userService;
     @Autowired
+    private ResumeServiceImpl resumeService;
+    @Autowired
     private ReviewServiceImpl reviewService;
     @Autowired
     private FileService fileService;
