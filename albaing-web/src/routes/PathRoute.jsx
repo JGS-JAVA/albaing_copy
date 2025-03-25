@@ -17,6 +17,7 @@ import RegisterCompany from '../pages/auth/register/RegisterCompany';
 import RegisterPerson from '../pages/auth/register/RegisterPerson';
 import FindId from '../pages/auth/find/FindId';
 import FindPassword from '../pages/auth/find/FindPassword';
+import ChatBot from "../pages/auth/find/ChatBot";
 import BusinessValidation from "../pages/auth/register/BusinessValidation";
 import Resume from '../pages/user/resume/Resume';
 import ResumeEdit from '../pages/user/resume/ResumeEdit';
@@ -93,6 +94,7 @@ function PathRoute() {
                 <Route path="/find/id" element={<MainLayout><FindId /></MainLayout>} /> {/* 아이디 찾기 페이지 */}
                 <Route path="/find/password" element={<MainLayout><FindPassword /></MainLayout>} /> {/* 비밀번호 변경 페이지 */}
                 <Route path="/change/password" element={<MainLayout><ChangePassword /></MainLayout>} /> {/* 비밀번호 변경 페이지 */}
+                <Route path="/find/chatbot" element={<MainLayout><ChatBot /></MainLayout>} /> {/* 비밀번호 변경 페이지 */}
                 <Route path="/search/:regionSelect?/:jobCategorySelect?/:searchKeyword?" element={<MainLayout><JobPostSearchResults /></MainLayout>} /> {/* 검색 결과 페이지 */}
 
                 {/* 로그인한 모든 사용자 접근 가능 */}

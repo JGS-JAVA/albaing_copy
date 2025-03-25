@@ -1,0 +1,56 @@
+{
+  "description": "Allow your app to engage in small talk about a variety of topics.",
+  "language": "ko",
+  "shortDescription": "Small talk topics to help make your bot more personable",
+  "examples": "User: 안녕.\nUser: 잘 지냈어?\nUser: 고마워.\nUser: 고맙긴 뭘.\nUser: 잘 지내?\nUser: 나 심심해.\nUser: 농담이야.\nUser: 잘했어.\nUser: 넌 누구야?\nUser: 몇 살이야?\nUser: 너 참 똑똑하구나.\nUser: 취미가 뭐야?",
+  "linkToDocs": "",
+  "displayName": "Small-Talk",
+  "disableInteractionLogs": false,
+  "disableStackdriverLogs": false,
+  "googleAssistant": {
+    "googleAssistantCompatible": false,
+    "project": "",
+    "welcomeIntentSignInRequired": false,
+    "startIntents": [],
+    "systemIntents": [],
+    "endIntentIds": [],
+    "oAuthLinking": {
+      "required": false,
+      "providerId": "",
+      "authorizationUrl": "",
+      "tokenUrl": "",
+      "scopes": "",
+      "privacyPolicyUrl": "",
+      "grantType": "AUTH_CODE_GRANT"
+    },
+    "voiceType": "MALE_1",
+    "capabilities": [],
+    "env": "",
+    "protocolVersion": "V1",
+    "autoPreviewEnabled": false,
+    "isDeviceAgent": false
+  },
+  "defaultTimezone": "Asia/Tokyo",
+  "webhook": {
+    "url": "https://localhost:3000/find/chatbot/dialogflow",
+    "username": "",
+    "headers": {},
+    "available": false,
+    "useForDomains": true,
+    "cloudFunctionsEnabled": false,
+    "cloudFunctionsInitialized": false
+  },
+  "isPrivate": false,
+  "mlMinConfidence": 0.6,
+  "supportedLanguages": [
+    "en"
+  ],
+  "onePlatformApiVersion": "v1legacy",
+  "secondaryKey": "10fe47056d714dda829025e1365fa60f",
+  "analyzeQueryTextSentiment": false,
+  "enabledKnowledgeBaseNames": [],
+  "knowledgeServiceConfidenceAdjustment": -0.4,
+  "dialogBuilderMode": false,
+  "baseActionPackagesUrl": "",
+  "enableSpellCorrection": false
+}
