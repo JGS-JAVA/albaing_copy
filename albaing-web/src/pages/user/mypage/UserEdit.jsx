@@ -40,21 +40,44 @@ const EditUserPage = () => {
                 setLoading(false);
             })
             .catch(() => {
-                alertModal.openModal({
-                    title: '오류',
-                    message: '사용자 정보를 불러오는데 실패했습니다.',
-                    type: 'error'
-                });
+                alert("사용자 정보를 불러오는데 실패했습니다.");
                 setLoading(false);
             });
     }, [userId]);
 
+
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setUserData((prevData) => ({
-            ...prevData,
-            [name]: value
-        }));
+        e.preventDefault();
+
+        const formDataToSend = new FormData();
+
+        formDataToSend.append('user', new Blob([JSON.stringify({
+            userEmail: user.userEmail,
+            userPassword: user.userPassword,
+            userName: user.userName,
+            userPhone: user.userPhone,
+            userGender: user.userGender,
+            userBirthdate: user.userBirthdate,
+            userAddress: user.userAddress,
+            userProfileImage: user.userProfileImage
+        })], {type: 'application/json'}));
+
+        if (profileImageFile) {
+            formDataToSend.append('profileImage', profileImageFile);
+        }
+
+        axios.put(`/api/user/update/${userId}`, formDataToSend, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        })
+            .then((res) => {
+                alert('사용자 정보가 성공적으로 수정되었습니다!');
+                setUserData(res.data);
+                navigate(-1);
+            })
+            .catch((error) => {
+                alert(error.response?.data || "회사의 정보를 수정하는 데 실패했습니다.");
+            });
+
     };
 
     const handleImageChange = (e) => {
@@ -84,39 +107,39 @@ const EditUserPage = () => {
         }
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        const formDataToSend = new FormData();
-        formDataToSend.append(
-            'user',
-            new Blob([JSON.stringify(user)], { type: 'application/json' })
-        );
-
-        if (profileImageFile) {
-            formDataToSend.append('userProfileImage', profileImageFile);
-        }
-
-        axios.put(`/api/user/update/${userId}`, formDataToSend, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        })
-            .then((res) => {
-                alertModal.openModal({
-                    title: '성공',
-                    message: '사용자 정보가 성공적으로 수정되었습니다!',
-                    type: 'success',
-                    onClose: () => navigate(-1)
-                });
-                setUserData(res.data);
-            })
-            .catch((error) => {
-                alertModal.openModal({
-                    title: '오류',
-                    message: error.response?.data || "사용자 정보를 수정하는 데 실패했습니다.",
-                    type: 'error'
-                });
-            });
-    };
+    // const handleSubmit = (e) => {
+    //     e.preventDefault();
+    //
+    //     const formDataToSend = new FormData();
+    //     formDataToSend.append(
+    //         'user',
+    //         new Blob([JSON.stringify(user)], { type: 'application/json' })
+    //     );
+    //
+    //     if (profileImageFile) {
+    //         formDataToSend.append('userProfileImage', profileImageFile);
+    //     }
+    //
+    //     axios.put(`/api/user/update/${userId}`, formDataToSend, {
+    //         headers: { 'Content-Type': 'multipart/form-data' }
+    //     })
+    //         .then((res) => {
+    //             alertModal.openModal({
+    //                 title: '성공',
+    //                 message: '사용자 정보가 성공적으로 수정되었습니다!',
+    //                 type: 'success',
+    //                 onClose: () => navigate(-1)
+    //             });
+    //             setUserData(res.data);
+    //         })
+    //         .catch((error) => {
+    //             alertModal.openModal({
+    //                 title: '오류',
+    //                 message: error.response?.data || "사용자 정보를 수정하는 데 실패했습니다.",
+    //                 type: 'error'
+    //             });
+    //         });
+    // };
 
     if (loading) return (
         <div className="flex justify-center items-center h-screen">
@@ -136,7 +159,7 @@ const EditUserPage = () => {
                 </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-8">
+            <form onSubmit={handleInputChange} className="space-y-8">
                 {/* 프로필 이미지 섹션 */}
                 <div className="flex flex-col items-center">
                     <div className="relative group">
