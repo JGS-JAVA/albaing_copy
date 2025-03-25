@@ -8,9 +8,8 @@ albaing-api/src/main/resources/config.properties
 albaing-api/src/main/resources/firebase-config.json
 
 albaing-api/src/main/resources/small-talk-nafl-78e62567a0c7.json
-albaing-api/src/main/resources/dialogflow/Small-Talk/agent.json
-albaing-api/src/main/resources/dialogflow/Small-Talk/package.json
-albaing-api/src/main/resources/dialogflow/Small-Talk/intents
+albaing-api/src/main/resources/dialogflow
+
 
 ### STS ###
 .apt_generated

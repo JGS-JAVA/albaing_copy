@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "./ChatBot.css";
-
+// 커밋하기
 const ChatBot = () => {
     const [messages, setMessages] = useState([{ sender: "bot", text: "안녕하세요! 무엇을 도와드릴까요?" }]);
     const [input, setInput] = useState("");
