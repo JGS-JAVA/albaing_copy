@@ -258,7 +258,7 @@ const FloatingRemote = () => {
                                             break;
                                         case 'salary-page':
                                             buttonText = '상세 계산기 페이지';
-                                            action = () => navigate('/salary-calculator');
+                                            action = () => navigate('/calculator');
                                             break;
                                         default:
                                             buttonText = feature;
