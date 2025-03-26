@@ -31,6 +31,16 @@ public class UserController {
     @Autowired
     private FileService fileService;
 
+    // 유저 회원탈퇴
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long userId) {
+        try {
+            userService.deleteUser(userId);
+            return ResponseEntity.ok("회원 탈퇴 완료");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("탈퇴 실패");
+        }
+    }
 
     // 마이페이지 - 사용자 정보 조회
     @GetMapping("/{userId}")
