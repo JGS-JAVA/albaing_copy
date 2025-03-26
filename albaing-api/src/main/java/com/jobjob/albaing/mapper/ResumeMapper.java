@@ -39,5 +39,5 @@ public interface ResumeMapper {
         CareerHistory getCareerHistoryByResumeId(int resumeId);
 
 
-
-    }
+        List<ResumeSummary> getAllResumeSummaries();
+}
