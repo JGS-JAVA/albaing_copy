@@ -9,9 +9,11 @@ import lombok.*;
 @AllArgsConstructor
 
 public class ResumeSummary {
-    private Integer resumeId;
+    private int resumeId;
     private String maskedName;
     private String profileImage;
     private String resumeJobCategory;
     private String resumeLocation;
+
+    private int userId;
 }

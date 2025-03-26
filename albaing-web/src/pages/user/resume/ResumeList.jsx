@@ -1,98 +1,105 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useAuth } from '../../../contexts/AuthContext'
+import { useAuth } from '../../../contexts/AuthContext';
+import { useModal, AlertModal } from '../../../components';
+import ResumeCard from './components/ResumeCard';
 
-// 예시 직종/지역 옵션
-const categories = ['전체','외식/음료','유통/판매','사무/회계','IT/기술','...'];
-const locations  = ['전체','서울','경기','인천','부산','대구','...'];
+const categories = [
+    '전체','외식/음료','유통/판매','문화/여가생활','서비스','사무/회계',
+    '고객상담/리서치','생산/건설/노무','IT/기술','디자인','미디어',
+    '운전/배달','병원/간호/연구','교육/강사'
+];
+const locations = ['전체','서울','경기','인천','부산','대구','대전','광주'];
 
 export default function ResumeList() {
-    const { userType } = useAuth();  // "personal", "company", "admin" 등
+    const { isLoggedIn, userType } = useAuth();
     const [resumes, setResumes] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState('전체');
-    const [selectedLocation, setSelectedLocation] = useState('전체');
+    const [category, setCategory] = useState('전체');
+    const [location, setLocation] = useState('전체');
+    const alertModal = useModal();
 
-    // 서버에서 목록 가져오기
     useEffect(() => {
         axios.get('/api/resume/list')
             .then(res => setResumes(res.data))
-            .catch(err => console.error('이력서 목록 불러오기 오류:', err));
+            .catch(console.error);
     }, []);
 
-    // 필터링 로직 (프론트엔드에서 단순히 filter)
-    const filteredResumes = resumes.filter(r => {
-        // 직종 필터
-        const matchCategory = (selectedCategory === '전체')
-            || (r.resumeJobCategory && r.resumeJobCategory.includes(selectedCategory));
-        // 지역 필터
-        const matchLocation = (selectedLocation === '전체')
-            || (r.resumeLocation && r.resumeLocation.includes(selectedLocation));
-        return matchCategory && matchLocation;
-    });
+    const filtered = resumes.filter(r =>
+        (category === '전체' || r.resumeJobCategory?.includes(category)) &&
+        (location === '전체' || r.resumeLocation?.includes(location))
+    );
+
+    const handleClick = (resumeId, userId) => {
+        if (userType === 'company') {
+            window.location.href = `/resumes/${resumeId}/user/${userId}`;
+        } else {
+            alertModal.openModal({
+                title: '접근 불가',
+                message: '기업 회원만 이력서 상세를 볼 수 있습니다.',
+                type: 'warning'
+            });
+        }
+    };
 
     return (
-        <div className="max-w-5xl mx-auto py-10 px-4">
-            <h2 className="text-2xl font-bold mb-6">인재 정보</h2>
+        <div className="max-w-6xl mx-auto py-12 px-4">
+            <h1 className="text-4xl font-bold text-center mb-8">인재 정보</h1>
 
-            {/* 필터 UI */}
-            <div className="flex space-x-4 mb-8">
-                <div>
-                    <label className="mr-2 font-medium">직종</label>
+            {/* 필터 */}
+            <div className="flex items-end justify-center space-x-8 mb-10">
+                {/* 직종 */}
+                <div className="flex flex-col">
+                    <label htmlFor="category" className="mb-1 text-sm font-medium text-gray-700">
+                        직종
+                    </label>
                     <select
-                        className="border p-1 rounded"
-                        value={selectedCategory}
-                        onChange={e => setSelectedCategory(e.target.value)}
+                        id="category"
+                        className="w-48 border border-gray-300 rounded-lg px-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-200"
+                        value={category}
+                        onChange={e => setCategory(e.target.value)}
                     >
-                        {categories.map(cat => (
-                            <option key={cat} value={cat}>{cat}</option>
+                        {categories.map(c => (
+                            <option key={c} value={c}>{c}</option>
                         ))}
                     </select>
                 </div>
 
-                <div>
-                    <label className="mr-2 font-medium">근무지</label>
+                {/* 지역 */}
+                <div className="flex flex-col">
+                    <label htmlFor="location" className="mb-1 text-sm font-medium text-gray-700">
+                        지역
+                    </label>
                     <select
-                        className="border p-1 rounded"
-                        value={selectedLocation}
-                        onChange={e => setSelectedLocation(e.target.value)}
+                        id="location"
+                        className="w-48 border border-gray-300 rounded-lg px-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-200"
+                        value={location}
+                        onChange={e => setLocation(e.target.value)}
                     >
-                        {locations.map(loc => (
-                            <option key={loc} value={loc}>{loc}</option>
+                        {locations.map(l => (
+                            <option key={l} value={l}>{l}</option>
                         ))}
                     </select>
                 </div>
             </div>
 
-            {/* 이력서 카드 목록 */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {filteredResumes.map((resume) => {
-                    // 기업 유저만 실제 프로필 이미지를 보고, 나머지는 기본 이미지
-                    const profileSrc = (userType === 'company' && resume.profileImage)
-                        ? resume.profileImage
-                        : '/images/default-profile.jpg'; // 실제 default 이미지 경로
-
-                    return (
-                        <div
-                            key={resume.resumeId}
-                            className="border rounded-lg shadow p-6 flex flex-col items-center"
-                        >
-                            <img
-                                src={profileSrc}
-                                alt="Profile"
-                                className="w-24 h-24 object-cover rounded-full mb-4"
-                                onError={(e) => { e.target.src = '/images/default-profile.jpg'; }}
-                            />
-                            <h3 className="text-lg font-bold mb-2">{resume.maskedName}</h3>
-                            <p className="text-sm text-gray-600">
-                                희망 직종: {resume.resumeJobCategory || '미입력'}
-                            </p>
-                            <p className="text-sm text-gray-600">
-                                희망 근무지: {resume.resumeLocation || '미입력'}
-                            </p>
-                        </div>
-                    );
-                })}
+            <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+                {filtered.map(r => (
+                    <ResumeCard
+                        key={r.resumeId}
+                        resume={r}
+                        isCompany={isLoggedIn && userType === 'company'}
+                        onClick={() => handleClick(r.resumeId, r.userId)}
+                    />
+                ))}
             </div>
+
+            <AlertModal
+                isOpen={alertModal.isOpen}
+                onClose={alertModal.closeModal}
+                title={alertModal.modalProps.title}
+                message={alertModal.modalProps.message}
+                type={alertModal.modalProps.type}
+            />
         </div>
     );
 }
