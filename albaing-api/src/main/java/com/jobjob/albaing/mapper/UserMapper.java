@@ -31,6 +31,8 @@ public interface UserMapper {
     void updateUserPassword(@Param("userEmail") String userEmail,
                             @Param("encodedPassword") String encodedPassword);
 
+    // 유저 회원탈퇴
+    void deleteUser(Long userId);
 
     // 마이페이지- 사용자 정보 조회
     User getUserById(Long userId);

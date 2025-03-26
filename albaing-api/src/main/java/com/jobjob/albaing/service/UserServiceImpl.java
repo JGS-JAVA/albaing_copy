@@ -19,6 +19,11 @@ public class UserServiceImpl implements UserService {
     UserMapper userMapper;
 
 
+    @Override
+    public void deleteUser(Long userId) {
+        userMapper.deleteUser(userId);
+    }
+
     // 사용자 정보 조회
     @Override
     public User getUserById(Long userId) {
