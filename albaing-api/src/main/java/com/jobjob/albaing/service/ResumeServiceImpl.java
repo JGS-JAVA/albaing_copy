@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class ResumeServiceImpl implements ResumeService {
@@ -121,5 +123,10 @@ public class ResumeServiceImpl implements ResumeService {
     @Override
     public Resume getResumeByUserId(int userId) {
         return resumeMapper.getResumeByUserId(userId);
+    }
+
+    @Override
+    public List<ResumeSummary> getAllResumeSummaries() {
+        return resumeMapper.getAllResumeSummaries();
     }
 }

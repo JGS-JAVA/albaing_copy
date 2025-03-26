@@ -4,7 +4,10 @@ package com.jobjob.albaing.controller;
 import com.jobjob.albaing.dto.*;
 import com.jobjob.albaing.service.ResumeServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/resume")
@@ -39,6 +42,12 @@ public class ResumeController {
     @PostMapping("/resume/create")
     public void createResumeForUser(@RequestBody User user) {
         resumeService.createResumeForUser(user);
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<ResumeSummary>> listResumes() {
+        List<ResumeSummary> result = resumeService.getAllResumeSummaries();
+        return ResponseEntity.ok(result);
     }
 
 }
