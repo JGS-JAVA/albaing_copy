@@ -79,13 +79,13 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
 
-
     // 이력서 상세 조회
     @Override
     public Resume resumeDetails(int resumeId) {
         return resumeMapper.resumeDetails(resumeId);
     }
 
+    //아력서 수정
     @Override
     public void updateResume(ResumeUpdateRequest resumeUpdateRequest) {
         try {
@@ -181,8 +181,4 @@ public class ResumeServiceImpl implements ResumeService {
         }
     }
 
-    @Override
-    public List<ResumeSummary> getAllResumeSummaries() {
-        return resumeMapper.getAllResumeSummaries();
-    }
 }
