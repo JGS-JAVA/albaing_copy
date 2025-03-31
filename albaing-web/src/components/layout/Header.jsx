@@ -31,7 +31,7 @@ const categories = [
     },
     {
         name: '인재정보',
-        href: '/resume',
+        href: '/resumeslist',
     },
     {
         name: '공지사항',

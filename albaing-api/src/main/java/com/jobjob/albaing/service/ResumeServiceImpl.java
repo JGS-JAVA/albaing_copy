@@ -155,7 +155,6 @@ public class ResumeServiceImpl implements ResumeService {
     public Resume getResumeByUserId(int userId) {
         return resumeMapper.getResumeByUserId(userId);
     }
-
      */
     @Override
     public Resume getResumeByUserId(int userId) {
@@ -182,10 +181,8 @@ public class ResumeServiceImpl implements ResumeService {
         }
     }
 
-
-
-
-
-
-
+    @Override
+    public List<ResumeSummary> getAllResumeSummaries() {
+        return resumeMapper.getAllResumeSummaries();
+    }
 }

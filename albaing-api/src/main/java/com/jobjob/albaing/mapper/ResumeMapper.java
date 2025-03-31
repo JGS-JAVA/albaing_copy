@@ -43,5 +43,5 @@ public interface ResumeMapper {
         int deleteCareer(Integer careerId, int resumeId);
 
 
-
-    }
+        List<ResumeSummary> getAllResumeSummaries();
+}

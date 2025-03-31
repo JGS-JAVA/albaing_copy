@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/resume")
@@ -49,6 +50,11 @@ public class ResumeController {
     @DeleteMapping("{userId}/careers/{careerId}")
     public void deleteCareer(@PathVariable Integer careerId, @PathVariable int userId) {
         resumeService.deleteCareer(careerId, userId);
+
+    @GetMapping("/list")
+    public ResponseEntity<List<ResumeSummary>> listResumes() {
+        List<ResumeSummary> result = resumeService.getAllResumeSummaries();
+        return ResponseEntity.ok(result);
     }
 
 }

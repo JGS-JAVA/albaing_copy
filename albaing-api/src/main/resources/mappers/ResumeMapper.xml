@@ -257,4 +257,17 @@
         WHERE career_id = #{careerId}
           AND resume_id = #{resumeId}
     </delete>
+
+    <select id="getAllResumeSummaries" resultType="com.jobjob.albaing.dto.ResumeSummary">
+        SELECT
+            r.resume_id                AS resumeId,
+            CONCAT(SUBSTR(u.user_name, 1, 1), '*') AS maskedName,
+            COALESCE(u.user_profile_image, '')   AS profileImage,
+            r.resume_job_category      AS resumeJobCategory,
+            r.resume_location          AS resumeLocation,
+            r.user_id                  AS userId
+        FROM resumes r
+                 JOIN users u ON r.user_id = u.user_id
+        ORDER BY r.resume_id DESC
+    </select>
 </mapper>

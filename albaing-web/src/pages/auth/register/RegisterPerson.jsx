@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import {useEffect, useState} from "react";
+import {Link, useNavigate} from "react-router-dom";
 import axios from "axios";
 import {AlertModal, ErrorMessage, useModal} from "../../../components";
+import KakaoPostcodeModal from "./KakaoPostcodeModal";
 
 const RegisterPerson = () => {
 
@@ -22,6 +23,8 @@ const RegisterPerson = () => {
     const [error, setError] = useState("");
     const navigate = useNavigate();
     const alertModal = useModal();
+    const [detailAddress, setDetailAddress] = useState("");
+    const [isPostcodeOpen, setIsPostcodeOpen] = useState(false);
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -75,7 +78,7 @@ const RegisterPerson = () => {
         setError("");
 
         axios
-            .post("/api/auth/sendCode", { email: userEmail })
+            .post("/api/auth/sendCode", {email: userEmail})
             .then(() => {
                 alertModal.openModal({
                     title: '인증번호 발송 완료',
@@ -102,7 +105,7 @@ const RegisterPerson = () => {
         setError("");
 
         axios
-            .post("/api/auth/checkCode", { email: userEmail, code: verificationCode })
+            .post("/api/auth/checkCode", {email: userEmail, code: verificationCode})
             .then(() => {
                 setEmailVerified(true);
                 alertModal.openModal({
@@ -194,7 +197,7 @@ const RegisterPerson = () => {
             userBirthdate: userBirthdate ? new Date(userBirthdate).toISOString().split("T")[0] : "",
             userGender,
             userPhone,
-            userAddress,
+            userAddress: `${userAddress} ${detailAddress}`.trim(),
             userTermsAgreement,
             emailVerified: kakaoId || naverId ? true : emailVerified,
             kakaoId: kakaoId || "",
@@ -208,7 +211,7 @@ const RegisterPerson = () => {
         }
 
         const formData = new FormData();
-        formData.append("user", new Blob([JSON.stringify(user)], { type: "application/json" }));
+        formData.append("user", new Blob([JSON.stringify(user)], {type: "application/json"}));
 
         // Only append actual file uploads to formData
         if (userProfileImage instanceof File) {
@@ -222,7 +225,7 @@ const RegisterPerson = () => {
 // The sendRequest function remains the same
     const sendRequest = (formData) => {
         axios.post("/api/auth/register/person", formData, {
-            headers: { "Content-Type": "multipart/form-data" },
+            headers: {"Content-Type": "multipart/form-data"},
         })
             .then(() => {
                 alertModal.openModal({
@@ -242,8 +245,6 @@ const RegisterPerson = () => {
     };
 
 
-
-
     return (
         <div className="max-w-2xl mx-auto px-4 py-10">
             <div className="text-center mb-10">
@@ -251,7 +252,7 @@ const RegisterPerson = () => {
                 <p className="mt-2 text-gray-600">알바잉에 가입하고 다양한 일자리를 찾아보세요.</p>
             </div>
 
-            {error && <ErrorMessage message={error} />}
+            {error && <ErrorMessage message={error}/>}
 
             <div className="bg-white shadow-md rounded-lg p-6 mb-8">
                 <div className="space-y-6">
@@ -287,7 +288,8 @@ const RegisterPerson = () => {
 
                         {!emailVerified && userEmail && (
                             <div className="mb-4">
-                                <label htmlFor="verificationCode" className="block text-sm font-medium text-gray-700 mb-1">
+                                <label htmlFor="verificationCode"
+                                       className="block text-sm font-medium text-gray-700 mb-1">
                                     인증번호 <span className="text-red-500">*</span>
                                 </label>
                                 <div className="flex">
@@ -335,7 +337,8 @@ const RegisterPerson = () => {
                             </div>
 
                             <div>
-                                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                                <label htmlFor="confirmPassword"
+                                       className="block text-sm font-medium text-gray-700 mb-1">
                                     비밀번호 확인 <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -417,17 +420,45 @@ const RegisterPerson = () => {
 
                             <div className="md:col-span-2">
                                 <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
-                                    주소
+                                    주소 <span className="text-red-500">*</span>
                                 </label>
+
+                                <div className="flex mb-2">
+                                    <input
+                                        type="text"
+                                        id="address"
+                                        value={userAddress}
+                                        onChange={(e) => setUserAddress(e.target.value)}
+                                        className="flex-1 p-2 border rounded-l-md bg-gray-100"
+                                        placeholder="주소 검색 버튼을 클릭하세요"
+                                        readOnly
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsPostcodeOpen(true)}
+                                        className="px-4 py-2 bg-blue-600 text-white text-sm rounded-r-md hover:bg-blue-700"
+                                    >
+                                        주소 검색
+                                    </button>
+                                </div>
+
                                 <input
                                     type="text"
-                                    id="address"
-                                    value={userAddress}
-                                    onChange={(e) => setUserAddress(e.target.value)}
+                                    placeholder="상세 주소를 입력하세요"
+                                    value={detailAddress}
+                                    onChange={(e) => setDetailAddress(e.target.value)}
                                     className="w-full p-2 border rounded-md"
-                                    placeholder="주소를 입력하세요"
                                 />
                             </div>
+
+                            <KakaoPostcodeModal
+                                isOpen={isPostcodeOpen}
+                                onClose={() => setIsPostcodeOpen(false)}
+                                onComplete={(selectedAddress) => {
+                                    setUserAddress(selectedAddress);
+                                }}
+                            />
+
                         </div>
                     </div>
 
@@ -444,7 +475,8 @@ const RegisterPerson = () => {
                                         className="h-24 w-24 rounded-full object-cover"
                                     />
                                 ) : (
-                                    <div className="h-24 w-24 rounded-full bg-gray-200 flex items-center justify-center">
+                                    <div
+                                        className="h-24 w-24 rounded-full bg-gray-200 flex items-center justify-center">
                                         <span className="text-gray-400">No Image</span>
                                     </div>
                                 )}
@@ -458,15 +490,18 @@ const RegisterPerson = () => {
                                     accept="image/*"
                                     onChange={handleImageChange} // Use the handleImageChange function
                                     className="block w-full text-sm text-gray-500
-                file:mr-4 file:py-2 file:px-4
-                file:rounded-md file:border-0
-                file:text-sm file:font-semibold
-                file:bg-blue-50 file:text-blue-700
-                hover:file:bg-blue-100"
+                                    file:mr-4 file:py-2 file:px-4
+                                    file:rounded-md file:border-0
+                                    file:text-sm file:font-semibold
+                                    file:bg-blue-50 file:text-blue-700
+                                    hover:file:bg-blue-100"
                                 />
+                                {/*
                                 {userProfileImageUrl && (
-                                    <img src={userProfileImageUrl} alt="Profile Preview" className="mt-2 w-24 h-24 rounded-full object-cover" />
+                                    <img src={userProfileImageUrl} alt="Profile Preview"
+                                         className="mt-2 w-24 h-24 rounded-full object-cover"/>
                                 )}
+                                */}
                                 <p className="mt-1 text-xs text-gray-500">PNG, JPG, GIF 파일 (최대 2MB)</p>
                             </div>
                         </div>
@@ -491,10 +526,12 @@ const RegisterPerson = () => {
                                     이용약관에 동의합니다 <span className="text-red-500">*</span>
                                 </label>
                                 <p className="text-gray-500">
-                                    <Link to="/company/terms" className="text-blue-600 hover:text-blue-500" target="_blank">
+                                    <Link to="/company/terms" className="text-blue-600 hover:text-blue-500"
+                                          target="_blank">
                                         이용약관
                                     </Link>과{' '}
-                                    <Link to="/company/privacy" className="text-blue-600 hover:text-blue-500" target="_blank">
+                                    <Link to="/company/privacy" className="text-blue-600 hover:text-blue-500"
+                                          target="_blank">
                                         개인정보처리방침
                                     </Link>에 동의합니다.
                                 </p>
