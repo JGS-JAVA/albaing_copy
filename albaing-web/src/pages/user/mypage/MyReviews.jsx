@@ -23,6 +23,15 @@ const MyReviews = () => {
 
     }, [userId]);
 
+    // reviews가 변경될 때, 삭제된 리뷰의 댓글도 함께 삭제
+    useEffect(() => {
+        setComments(prevComments =>
+            prevComments.filter(comment =>
+                reviews.some(review => review.reviewId === comment.reviewId)
+            )
+        );
+    }, [reviews]);
+
     // 리뷰 및 댓글 선택 처리
     const handleSelectItem = (itemId, type) => {
         setSelectedItems((prevSelectedItems) => {
@@ -158,7 +167,7 @@ const MyReviews = () => {
                                             {review.reviewTitle}
                                         </Link>
                                         <span className="ml-2 text-gray-500">
-                                            ({getCommentCountByReviewId(review.reviewId)}개 댓글)
+                                            ({getCommentCountByReviewId(review.reviewId)})
                                         </span>
                                     </h3>
                                     <p className="text-gray-500">
