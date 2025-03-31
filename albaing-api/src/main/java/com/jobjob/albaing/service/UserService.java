@@ -7,7 +7,8 @@ import java.util.Map;
 
 public interface UserService {
 
-
+    // 유저 회원탈퇴
+    void deleteUser(Long userId);
 
     // 사용자 정보 조회
     User getUserById(Long userId);

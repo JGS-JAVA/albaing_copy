@@ -43,6 +43,9 @@ dependencies {
 	implementation 'javax.servlet:javax.servlet-api:4.0.0'
 
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	implementation 'com.google.cloud:google-cloud-dialogflow:4.51.0'
+	implementation 'com.google.auth:google-auth-library-oauth2-http:1.19.0'
 }
 
 tasks.named('test') {

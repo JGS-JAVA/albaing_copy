@@ -17,6 +17,7 @@ import RegisterCompany from '../pages/auth/register/RegisterCompany';
 import RegisterPerson from '../pages/auth/register/RegisterPerson';
 import FindId from '../pages/auth/find/FindId';
 import FindPassword from '../pages/auth/find/FindPassword';
+import ChatBot from "../pages/auth/find/ChatBot";
 import BusinessValidation from "../pages/auth/register/BusinessValidation";
 import Resume from '../pages/user/resume/Resume';
 import ResumeEdit from '../pages/user/resume/ResumeEdit';
@@ -56,6 +57,7 @@ import AdminReviewDetail from "../pages/admin/manage/reviews/AdminReviewDetail";
 import AdminReviewEdit from "../pages/admin/manage/reviews/AdminReviewEdit";
 import CalculatorPage from "../pages/home/CalculatorPage";
 import FloatingRemote from "../components/layout/FloatingRemote";
+import ResumeList from "../pages/user/resume/ResumeList";
 
 // 메인 레이아웃 컴포넌트
 const MainLayout = ({children}) => (
@@ -76,6 +78,7 @@ function PathRoute() {
         <BrowserRouter>
             <Routes>
                 {/* 모든 사용자 접근 가능 */}
+                <Route path="/resumeslist" element={<MainLayout><ResumeList /></MainLayout>} /> {/*인재정보페이지*/}
                 <Route path="/" element={<MainLayout><Home /></MainLayout>} /> {/* 메인 홈페이지 */}
                 <Route path="/about" element={<MainLayout><About /></MainLayout>} /> {/* 회사 소개 페이지 */}
                 <Route path="/customer/faq" element={<MainLayout><FAQ /></MainLayout>} /> {/* 자주 하는 문의 페이지 */}
@@ -93,6 +96,7 @@ function PathRoute() {
                 <Route path="/find/id" element={<MainLayout><FindId /></MainLayout>} /> {/* 아이디 찾기 페이지 */}
                 <Route path="/find/password" element={<MainLayout><FindPassword /></MainLayout>} /> {/* 비밀번호 변경 페이지 */}
                 <Route path="/change/password" element={<MainLayout><ChangePassword /></MainLayout>} /> {/* 비밀번호 변경 페이지 */}
+                <Route path="/find/chatbot" element={<MainLayout><ChatBot /></MainLayout>} /> {/* 비밀번호 변경 페이지 */}
                 <Route path="/search/:regionSelect?/:jobCategorySelect?/:searchKeyword?" element={<MainLayout><JobPostSearchResults /></MainLayout>} /> {/* 검색 결과 페이지 */}
 
                 {/* 로그인한 모든 사용자 접근 가능 */}
