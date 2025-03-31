@@ -147,39 +147,59 @@
     </select>
 
     <!-- 채용공고 조회 (잔여시간 기준 조회  - 곧마감) -->
-    <select id="mainPageJobPostsAlignByDueDateASC">
-        SELECT *
-        FROM JOB_POSTS
-        WHERE job_post_due_date >= NOW()
-        ORDER BY job_post_due_date ASC
-        LIMIT 3
+    <select id="mainPageJobPostsAlignByDueDateASC" resultType="JobPost">
+        SELECT
+            j.*,
+            c.company_name AS companyName,
+            c.company_logo AS companyLogo
+        FROM
+            JOB_POSTS j
+                LEFT JOIN COMPANIES c ON j.company_id = c.company_id
+        WHERE j.job_post_due_date >= NOW()
+        ORDER BY j.job_post_due_date ASC
+            LIMIT 3
     </select>
 
     <!-- 채용공고 조회 (잔여시간 기준 조회  - 신규) -->
-    <select id="mainPageJobPostsAlignByDueDateDESC">
-        SELECT *
-        FROM JOB_POSTS
-        WHERE job_post_due_date >= NOW()
-        ORDER BY job_post_due_date DESC
-        LIMIT 6
+    <select id="mainPageJobPostsAlignByDueDateDESC" resultType="JobPost">
+        SELECT
+            j.*,
+            c.company_name AS companyName,
+            c.company_logo AS companyLogo
+        FROM
+            JOB_POSTS j
+                LEFT JOIN COMPANIES c ON j.company_id = c.company_id
+        WHERE j.job_post_due_date >= NOW()
+        ORDER BY j.job_post_due_date DESC
+            LIMIT 6
     </select>
 
     <!-- 채용공고 조회 (맞춤형 조회) -->
-    <select id="mainPageJobPostsAlignByUserResume">
-        SELECT *
-        FROM JOB_POSTS
-        WHERE  job_post_work_place = #{resumeLocation} OR job_post_working_period = #{resumeJobDuration}
+    <select id="mainPageJobPostsAlignByUserResume" resultType="JobPost">
+        SELECT
+            j.*,
+            c.company_name AS companyName,
+            c.company_logo AS companyLogo
+        FROM
+            JOB_POSTS j
+                LEFT JOIN COMPANIES c ON j.company_id = c.company_id
+        WHERE j.job_post_work_place = #{resumeLocation} OR j.job_post_working_period = #{resumeJobDuration}
         ORDER BY RAND()
-        LIMIT 6
+            LIMIT 6
     </select>
 
     <!-- 채용공고 조회 (무작위 조회) -->
-    <select id="mainPageJobPostsRandom">
-        SELECT *
-        FROM JOB_POSTS
-        WHERE job_post_due_date >= NOW()
+    <select id="mainPageJobPostsRandom" resultType="JobPost">
+        SELECT
+            j.*,
+            c.company_name AS companyName,
+            c.company_logo AS companyLogo
+        FROM
+            JOB_POSTS j
+                LEFT JOIN COMPANIES c ON j.company_id = c.company_id
+        WHERE j.job_post_due_date >= NOW()
         ORDER BY RAND()
-        LIMIT 6
+            LIMIT 6
     </select>
 
     <!-- 검색 결과 표시 -->

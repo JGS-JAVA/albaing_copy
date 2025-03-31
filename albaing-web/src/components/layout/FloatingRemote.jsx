@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Modal from '../../components/modals/Modal';
 import SalaryCalculator from './SalaryCalculator';
 import {Link, useNavigate} from 'react-router-dom';
@@ -12,6 +13,11 @@ const FloatingRemote = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [activeTab, setActiveTab] = useState('calculator');
     const navigate = useNavigate();
+
+    // 챗봇 관련 상태
+    const [messages, setMessages] = useState([{ sender: "bot", text: "안녕하세요! 무엇을 도와드릴까요?" }]);
+    const [chatInput, setChatInput] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     const closeModalHandler = () => setOpenModal(null);
 
@@ -45,10 +51,45 @@ const FloatingRemote = () => {
             .map(([feature]) => feature);
     };
 
+    // 챗봇 메시지 전송 함수
+    const sendChatMessage = () => {
+        if (!chatInput.trim()) return;
+
+        const userMessage = { sender: "user", text: chatInput };
+        const currentInput = chatInput;
+
+        setMessages(prevMessages => [...prevMessages, userMessage]);
+        setChatInput("");
+        setIsLoading(true);
+        trackUsage('chatbot');
+
+        // axios & promise 방식 사용 (async/await 사용 금지)
+        axios.post("http://localhost:8080/chatbot/dialogflow", null, {
+            params: { sessionId: "user-" + Date.now(), message: currentInput }
+        })
+            .then(response => {
+                const botReply = response.data.response;
+                setMessages(prevMessages => [...prevMessages, {
+                    sender: "bot",
+                    text: botReply
+                }]);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                setMessages(prevMessages => [...prevMessages, {
+                    sender: "bot",
+                    text: "오류가 발생했어요. 다시 시도해주세요."
+                }]);
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
+    };
+
     const tabs = [
         { id: 'calculator', label: '계산기', icon: 'calculator' },
         { id: 'search', label: '채용검색', icon: 'search' },
-        { id: 'chatbot', label: '챗봇', icon: 'search' },
+        { id: 'chatbot', label: '챗봇', icon: 'chat' },
         { id: 'tools', label: '도구', icon: 'tools' },
         { id: 'recent', label: '최근', icon: 'clock' }
     ];
@@ -67,10 +108,10 @@ const FloatingRemote = () => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                 );
-                case 'chatbot':
+            case 'chat':
                 return (
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                     </svg>
                 );
             case 'tools':
@@ -184,11 +225,69 @@ const FloatingRemote = () => {
                         </div>
                     </div>
                 );
-                case 'chatbot':
+            case 'chatbot':
                 return (
-                    <div className="p-4">
-                        <div className="space-y-2">
-                            <h3 className="text-sm font-medium text-gray-600"><Link to={`/find/chatbot`}>챗봇으로 이동</Link></h3>
+                    <div className="flex flex-col h-96">
+                        {/* 채팅 메시지 영역 */}
+                        <div className="flex-1 p-4 overflow-y-auto flex flex-col space-y-3">
+                            {messages.map((msg, index) => (
+                                <div
+                                    key={index}
+                                    className={`max-w-3/4 p-3 rounded-lg ${
+                                        msg.sender === "user"
+                                            ? "self-end bg-blue-600 text-white"
+                                            : "self-start bg-gray-100 text-gray-800"
+                                    }`}
+                                >
+                                    {msg.text}
+                                </div>
+                            ))}
+                            {isLoading && (
+                                <div className="self-start bg-gray-100 text-gray-800 p-3 rounded-lg flex items-center space-x-2">
+                                    <span>처리 중</span>
+                                    <span className="flex">
+                                        <span className="animate-bounce">.</span>
+                                        <span className="animate-bounce delay-100">.</span>
+                                        <span className="animate-bounce delay-200">.</span>
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* 입력 영역 */}
+                        <div className="border-t border-gray-200 p-3 flex">
+                            <input
+                                type="text"
+                                value={chatInput}
+                                onChange={(e) => setChatInput(e.target.value)}
+                                placeholder="메시지를 입력하세요..."
+                                className="flex-1 border border-gray-300 rounded-l-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                onKeyDown={(e) => e.key === "Enter" && sendChatMessage()}
+                                disabled={isLoading}
+                            />
+                            <button
+                                onClick={sendChatMessage}
+                                disabled={isLoading}
+                                className="bg-blue-600 text-white px-4 py-2 rounded-r-md hover:bg-blue-700 transition-colors disabled:bg-blue-400"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clipRule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        {/* 전체 화면 링크 */}
+                        <div className="border-t border-gray-200 p-2">
+                            <Link
+                                to="/chatbot"
+                                className="flex justify-between items-center text-sm text-blue-600 hover:text-blue-800"
+                                onClick={() => trackUsage('chatbot-fullscreen')}
+                            >
+                                <span>전체 화면에서 채팅하기</span>
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                </svg>
+                            </Link>
                         </div>
                     </div>
                 );
@@ -275,6 +374,14 @@ const FloatingRemote = () => {
                                             buttonText = '상세 계산기 페이지';
                                             action = () => navigate('/calculator');
                                             break;
+                                        case 'chatbot':
+                                            buttonText = '챗봇';
+                                            action = () => setActiveTab('chatbot');
+                                            break;
+                                        case 'chatbot-fullscreen':
+                                            buttonText = '전체화면 챗봇';
+                                            action = () => navigate('/chatbot');
+                                            break;
                                         default:
                                             buttonText = feature;
                                             break;
@@ -329,7 +436,7 @@ const FloatingRemote = () => {
                     )}
 
                     {isMenuOpen && (
-                        <div className="absolute bottom-16 right-0 bg-white rounded-lg shadow-xl overflow-hidden transition-all duration-300 transform origin-bottom-right w-72">
+                        <div className="absolute bottom-16 right-0 bg-white rounded-lg shadow-xl overflow-hidden transition-all duration-300 transform origin-bottom-right w-80">
                             <div className="bg-blue-600 text-white px-4 py-3 flex justify-between items-center">
                                 <h3 className="font-medium">알바잉 도우미</h3>
                                 <button onClick={() => setIsMenuOpen(false)} className="text-white hover:text-gray-200">
