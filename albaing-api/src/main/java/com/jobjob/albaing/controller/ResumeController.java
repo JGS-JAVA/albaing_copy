@@ -50,4 +50,11 @@ public class ResumeController {
         resumeService.deleteCareer(careerId, userId);
     }
 
+
+    @GetMapping("/list")
+    public ResponseEntity<List<ResumeSummary>> listResumes() {
+        List<ResumeSummary> result = resumeService.getAllResumeSummaries();
+        return ResponseEntity.ok(result);
+    }
+
 }

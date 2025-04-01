@@ -181,4 +181,9 @@ public class ResumeServiceImpl implements ResumeService {
         }
     }
 
+
+    @Override
+    public List<ResumeSummary> getAllResumeSummaries() {
+        return resumeMapper.getAllResumeSummaries();
+    }
 }
