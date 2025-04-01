@@ -19,8 +19,8 @@ public class ResumeController {
     // 2. 이력서 수정
     @PutMapping("/update/{resumeId}")
     public void updateResume(
-        @PathVariable int resumeId,
-        @RequestBody ResumeUpdateRequest resumeUpdateRequest) {
+            @PathVariable int resumeId,
+            @RequestBody ResumeUpdateRequest resumeUpdateRequest) {
         if (resumeUpdateRequest.getResume() != null) {
             resumeUpdateRequest.getResume().setResumeId(resumeId);
         }
@@ -44,10 +44,10 @@ public class ResumeController {
         resumeService.createResumeForUser(user);
     }
 
-    @GetMapping("/list")
-    public ResponseEntity<List<ResumeSummary>> listResumes() {
-        List<ResumeSummary> result = resumeService.getAllResumeSummaries();
-        return ResponseEntity.ok(result);
+    //경력 삭제 delete
+    @DeleteMapping("{userId}/careers/{careerId}")
+    public void deleteCareer(@PathVariable Integer careerId, @PathVariable int userId) {
+        resumeService.deleteCareer(careerId, userId);
     }
 
 }
