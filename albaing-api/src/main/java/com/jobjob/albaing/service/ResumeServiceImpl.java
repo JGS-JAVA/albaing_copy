@@ -172,12 +172,14 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
-    public void deleteCareer(Integer careerId, int resumeId) {
+    public int deleteCareer(Integer careerId, int resumeId) {
         // 삭제 전 검증 로직 추가
         // 예: 해당 careerId가 존재하는지, 사용자가 이 경력 정보에 접근 권한이 있는지 등
         int existCareer = resumeMapper.deleteCareer(careerId,resumeId);
         if (existCareer == 0) {
             throw new EntityNotFoundException("해당 경력 정보를 찾을 수 없습니다: " + careerId);
+        } else {
+            return existCareer;
         }
     }
 
