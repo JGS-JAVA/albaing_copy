@@ -73,23 +73,50 @@ const CareerModal = ({ careerData, onSave, onCancel }) => {
                 alert('입사일을 선택해주세요.');
                 return;
             }
+
+            // 입사일 검증
+            const currentDate = new Date();
+            const joinDate = new Date(formData.careerJoinDate + '-01');  // 월의 첫 날로 변환
+
+            if (joinDate > currentDate) {
+                alert('입사일은 현재 날짜를 넘을 수 없습니다.');
+                return;
+            }
+
+            // 퇴사일 검증 (퇴사일이 있는 경우)
+            if (formData.careerQuitDate) {
+                const quitDate = new Date(formData.careerQuitDate + '-01');  // 월의 첫 날로 변환
+
+                if (quitDate > currentDate) {
+                    alert('퇴사일은 현재 날짜를 넘을 수 없습니다.');
+                    return;
+                }
+
+                if (quitDate < joinDate) {
+                    alert('퇴사일은 입사일보다 이후여야 합니다.');
+                    return;
+                }
+            }
         }
 
         onSave({ ...formData });
     };
 
-
     const formatDateForInput = (dateString) => {
         if (!dateString) return '';
 
-        if (/^\d{4}-\d{2}$/.test(dateString)) {
-            return dateString;
-        }
-
         try {
+            // 다양한 형식의 날짜 처리
             const date = new Date(dateString);
+
+            // 유효한 날짜인지 확인
+            if (isNaN(date.getTime())) {
+                return '';
+            }
+
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
+
             return `${year}-${month}`;
         } catch (error) {
             return '';
@@ -171,6 +198,7 @@ const CareerModal = ({ careerData, onSave, onCancel }) => {
                                             name="careerJoinDate"
                                             value={formatDateForInput(formData.careerJoinDate)}
                                             onChange={handleChange}
+                                            max={new Date().toISOString().slice(0, 7)} // 현재 년월까지만 선택 가능
                                             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm"
                                             required={formData.careerIsCareer === '경력'}
                                         />
@@ -186,7 +214,9 @@ const CareerModal = ({ careerData, onSave, onCancel }) => {
                                             name="careerQuitDate"
                                             value={formatDateForInput(formData.careerQuitDate)}
                                             onChange={handleChange}
+                                            max={new Date().toISOString().slice(0, 7)} // 현재 년월까지만 선택 가능
                                             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm"
+                                            disabled={formData.careerIsCareer === '신입'}
                                         />
                                         <p className="mt-1 text-xs text-gray-500">
                                             현재 재직 중인 경우 비워두세요.

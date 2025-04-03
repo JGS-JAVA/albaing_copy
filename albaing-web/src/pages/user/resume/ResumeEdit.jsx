@@ -197,28 +197,62 @@ const ResumeEdit = () => {
     };
 
     const confirmDeleteCareer = (index) => {
-        setCareerToDelete(index);
         confirmModal.openModal({
             title: '경력 삭제',
             message: '이 경력 항목을 삭제하시겠습니까?',
-            type: 'warning'
+            type: 'warning',
+            onConfirm: () => handleDeleteCareer(index)
         });
     };
 
-    const handleDeleteCareer = () => {
-        const index = careerToDelete;
-        if (index === null) return;
+    const handleDeleteCareer = (index) => {
+        if (index === null || index === undefined) return;
 
         const careerToDelete = resumeData.careerHistory[index];
 
-        // 이미 저장된 항목인 경우 (careerId가 있는 경우)
-        if (careerToDelete?.careerId && resumeId) {
+        if (typeof careerToDelete?.careerId === 'string' && careerToDelete.careerId.startsWith('temp-')) {
+            if (resumeData.careerHistory.length === 1) {
+                setResumeData(prev => ({
+                    ...prev,
+                    careerHistory: [{
+                        careerIsCareer: '신입',
+                        careerCompanyName: '',
+                        careerJoinDate: '',
+                        careerQuitDate: '',
+                        careerJobDescription: '',
+                        careerId: `temp-${Math.random().toString(36).substr(2, 9)}`,
+                        resumeId: prev.resumeId
+                    }]
+                }));
+            } else {
+                setResumeData(prev => ({
+                    ...prev,
+                    careerHistory: prev.careerHistory.filter((_, i) => i !== index)
+                }));
+            }
+        }
+        else if (careerToDelete?.careerId && resumeId) {
             apiResumeService.deleteCareer(careerToDelete.careerId, Number(resumeId))
                 .then(() => {
-                    setResumeData(prev => ({
-                        ...prev,
-                        careerHistory: prev.careerHistory.filter((_, i) => i !== index)
-                    }));
+                    if (resumeData.careerHistory.length === 1) {
+                        setResumeData(prev => ({
+                            ...prev,
+                            careerHistory: [{
+                                careerIsCareer: '신입',
+                                careerCompanyName: '',
+                                careerJoinDate: '',
+                                careerQuitDate: '',
+                                careerJobDescription: '',
+                                careerId: `temp-${Math.random().toString(36).substr(2, 9)}`,
+                                resumeId: prev.resumeId
+                            }]
+                        }));
+                    } else {
+                        setResumeData(prev => ({
+                            ...prev,
+                            careerHistory: prev.careerHistory.filter((_, i) => i !== index)
+                        }));
+                    }
                 })
                 .catch(error => {
                     alertModal.openModal({
@@ -227,12 +261,13 @@ const ResumeEdit = () => {
                         type: 'error'
                     });
                 });
-        } else {
-            // 아직 저장되지 않은 항목인 경우 (careerId가 없는 경우) state에서만 제거
-            setResumeData(prev => ({
-                ...prev,
-                careerHistory: prev.careerHistory.filter((_, i) => i !== index)
-            }));
+        }
+        else {
+            alertModal.openModal({
+                title: '삭제 오류',
+                message: '삭제할 수 없는 경력 정보입니다.',
+                type: 'error'
+            });
         }
     };
 
@@ -420,7 +455,7 @@ const ResumeEdit = () => {
             <ConfirmModal
                 isOpen={confirmModal.isOpen}
                 onClose={confirmModal.closeModal}
-                onConfirm={handleDeleteCareer}
+                onConfirm={() => confirmModal.modalProps.onConfirm && confirmModal.modalProps.onConfirm()}
                 title={confirmModal.modalProps.title}
                 message={confirmModal.modalProps.message}
                 type={confirmModal.modalProps.type}
