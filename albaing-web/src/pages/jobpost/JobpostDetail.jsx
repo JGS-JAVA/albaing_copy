@@ -20,6 +20,7 @@ export default function JobPostDetail() {
     const [applicationResult, setApplicationResult] = useState(null);
     const [companyName, setCompanyName] = useState("");
     const [companyLogo, setCompanyLogo] = useState("");
+    const [scrapedPosts, setScrapedPosts] = useState([]);
 
     const alertModal = useModal();
     const confirmModal = useModal();
@@ -39,6 +40,16 @@ export default function JobPostDetail() {
 
         loadJobPostData();
     }, [jobPostId, isLoggedIn, userType, userData]);
+
+    // 스크랩된 공고 목록 로드
+    useEffect(() => {
+        if (isLoggedIn && userType === "personal" && userData && userData.userId) {
+            apiScrapService.getScrapsByUser(userData.userId, setScrapedPosts);
+        } else {
+            // 로그인 상태가 아니면 빈 배열로 초기화
+            setScrapedPosts([]);
+        }
+    }, [isLoggedIn, userType, userData]);
 
     function loadJobPostData() {
         setLoading(true);
