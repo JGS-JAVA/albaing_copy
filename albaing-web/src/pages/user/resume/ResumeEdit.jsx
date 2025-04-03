@@ -169,18 +169,27 @@ const ResumeEdit = () => {
     const handleDeleteCareer = (index) => {
         if (!window.confirm('이 경력 항목을 삭제하시겠습니까?')) return;
         const careerToDelete = resumeData.careerHistory[index];
-        if (!careerToDelete?.careerId || !resumeId) return alert("삭제할 수 없습니다.");
-        apiResumeService.deleteCareer(careerToDelete.careerId, Number(resumeId))
-            .then(() => {
-                setResumeData(prev => ({
-                    ...prev,
-                    careerHistory: prev.careerHistory.filter((_, i) => i !== index)
-                }));
-            })
-            .catch(error => {
-                console.error("경력 삭제 중 오류:", error);
-                alert("삭제 중 오류가 발생했습니다.");
-            });
+
+        // 이미 저장된 항목인 경우 (careerId가 있는 경우)
+        if (careerToDelete?.careerId && resumeId) {
+            apiResumeService.deleteCareer(careerToDelete.careerId, Number(resumeId))
+                .then(() => {
+                    setResumeData(prev => ({
+                        ...prev,
+                        careerHistory: prev.careerHistory.filter((_, i) => i !== index)
+                    }));
+                })
+                .catch(error => {
+                    console.error("경력 삭제 중 오류:", error);
+                    alert("삭제 중 오류가 발생했습니다.");
+                });
+        } else {
+            // 아직 저장되지 않은 항목인 경우 (careerId가 없는 경우) state 에서만 제거
+            setResumeData(prev => ({
+                ...prev,
+                careerHistory: prev.careerHistory.filter((_, i) => i !== index)
+            }));
+        }
     };
 
     const handleSaveResume = () => {
@@ -200,8 +209,6 @@ const ResumeEdit = () => {
         });
 
 
-
-        console.log("💾 최종 저장될 careerHistory:", careerHistoryData);
 
         const requestData = {
             resume: {
@@ -238,7 +245,7 @@ const ResumeEdit = () => {
     return (
         <div className="max-w-5xl mx-auto p-6">
             <h1 className="text-3xl font-bold mb-6 text-center">이력서 수정</h1>
-
+            <p className="text-gray-600">이력서를 수정하여 다양한 일자리에 지원해보세요.</p>
             {error && <ErrorMessage message={error}/>}
             {success && <SuccessMessage message="이력서가 저장되었습니다."/>}
 
