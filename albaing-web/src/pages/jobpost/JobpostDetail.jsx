@@ -44,12 +44,18 @@ export default function JobPostDetail() {
     // 스크랩된 공고 목록 로드
     useEffect(() => {
         if (isLoggedIn && userType === "personal" && userData && userData.userId) {
-            apiScrapService.getScrapsByUser(userData.userId, setScrapedPosts);
+            apiScrapService.getScrapsByUser(userData.userId, (posts) => {
+                setScrapedPosts(posts);
+
+                if (posts.some(post => post.jobPostId === Number(jobPostId))) {
+                    setIsScraped(true);
+                }
+            });
         } else {
-            // 로그인 상태가 아니면 빈 배열로 초기화
             setScrapedPosts([]);
+            setIsScraped(false);
         }
-    }, [isLoggedIn, userType, userData]);
+    }, [isLoggedIn, userType, userData, jobPostId]);
 
     function loadJobPostData() {
         setLoading(true);
