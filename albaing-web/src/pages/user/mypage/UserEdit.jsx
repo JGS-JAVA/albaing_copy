@@ -47,7 +47,6 @@ const EditUserPage = () => {
                 alertModal.openModal({
                     title: '오류',
                     message: '사용자 정보를 불러오는데 실패했습니다.',
-                    type: 'error'
                 });
                 setLoading(false);
             });
@@ -109,7 +108,7 @@ const EditUserPage = () => {
                     title: '성공',
                     message: '사용자 정보가 성공적으로 수정되었습니다!',
                     type: 'success',
-                    onClose: () => navigate(-1)
+                    onClose: () => navigate(`/mypage/${userId}`)
                 });
                 setUserData(res.data);
             })
@@ -352,6 +351,7 @@ const EditUserPage = () => {
                     <button
                         type="submit"
                         className="py-3 px-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md"
+                        onClick={handleSubmit}
                     >
                         수정 완료
                     </button>
