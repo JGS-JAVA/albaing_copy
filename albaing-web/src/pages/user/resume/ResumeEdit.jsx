@@ -111,10 +111,25 @@ const ResumeEdit = () => {
         }));
         setShowEducationModal(false);
     };
+
     const handleCareerUpdate = (careerData) => {
         setResumeData(prev => {
+
+            if (careerData.careerIsCareer === '신입') {
+
+                const updatedData = {
+                    ...prev,
+                    careerHistory: [{
+                        ...careerData,
+                        careerId: careerData.careerId || `temp-${Date.now()}`,
+                        resumeId: prev.resumeId
+                    }]
+                };
+                return updatedData;
+            }
+
             const existingCareerHistory = Array.isArray(prev.careerHistory)
-                ? prev.careerHistory
+                ? prev.careerHistory.filter(c => c.careerIsCareer !== '신입')
                 : [];
 
             const updatedCareerHistory = careerData.careerId && existingCareerHistory.some(c => c.careerId === careerData.careerId)
@@ -123,7 +138,7 @@ const ResumeEdit = () => {
                 )
                 : [
                     ...existingCareerHistory,
-                    { ...careerData, careerId: `temp-${Date.now()}`, resumeId: prev.resumeId }
+                    { ...careerData, careerId: careerData.careerId || `temp-${Date.now()}`, resumeId: prev.resumeId }
                 ];
 
             return {
@@ -136,12 +151,6 @@ const ResumeEdit = () => {
         setShowCareerModal(false);
     };
 
-
-
-
-
-
-
     const handleEditCareer = (careerId) => {
         const list = Array.isArray(resumeData.careerHistory)
             ? resumeData.careerHistory
@@ -152,7 +161,6 @@ const ResumeEdit = () => {
         const foundCareer = list.find(c => c.careerId === careerId);
 
         if (foundCareer) {
-            console.log("✅ 수정 대상 경력:", foundCareer);
             setCurrentCareer(foundCareer);
             setShowCareerModal(true);
         } else {
@@ -162,7 +170,20 @@ const ResumeEdit = () => {
 
 
     const handleAddCareer = () => {
-        setCurrentCareer(null);
+        const isCurrentlyNewbie = resumeData.careerHistory?.some(c => c.careerIsCareer === '신입');
+
+        if (isCurrentlyNewbie) {
+            setCurrentCareer({
+                careerIsCareer: '경력',
+                careerCompanyName: '',
+                careerJoinDate: '',
+                careerQuitDate: '',
+                careerJobDescription: ''
+            });
+        } else {
+            setCurrentCareer(null);
+        }
+
         setShowCareerModal(true);
     };
 
@@ -245,7 +266,6 @@ const ResumeEdit = () => {
     return (
         <div className="max-w-5xl mx-auto p-6">
             <h1 className="text-3xl font-bold mb-6 text-center">이력서 수정</h1>
-            <p className="text-gray-600">이력서를 수정하여 다양한 일자리에 지원해보세요.</p>
             {error && <ErrorMessage message={error}/>}
             {success && <SuccessMessage message="이력서가 저장되었습니다."/>}
 

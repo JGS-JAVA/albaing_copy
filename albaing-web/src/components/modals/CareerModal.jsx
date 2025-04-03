@@ -13,6 +13,7 @@ const CareerModal = ({ careerData, onSave, onCancel }) => {
 
     useEffect(() => {
         if (careerData) {
+            // 기존 데이터가 있으면 해당 데이터로 폼 초기화
             setFormData({
                 careerId: careerData.careerId || null,
                 careerIsCareer: careerData.careerIsCareer || '신입',
@@ -20,6 +21,15 @@ const CareerModal = ({ careerData, onSave, onCancel }) => {
                 careerJoinDate: careerData.careerJoinDate || '',
                 careerQuitDate: careerData.careerQuitDate || '',
                 careerJobDescription: careerData.careerJobDescription || ''
+            });
+        } else {
+            // 기본값으로 초기화
+            setFormData({
+                careerIsCareer: '신입',
+                careerCompanyName: '',
+                careerJoinDate: '',
+                careerQuitDate: '',
+                careerJobDescription: ''
             });
         }
     }, [careerData]);
@@ -207,6 +217,22 @@ const CareerModal = ({ careerData, onSave, onCancel }) => {
                             </div>
                         )}
                     </div>
+
+                    {formData.careerIsCareer === '신입' && (
+                        <div className="mt-4 bg-yellow-50 p-4 rounded-lg border border-yellow-200 text-yellow-800">
+                            <div className="flex items-start">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 mt-0.5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                                </svg>
+                                <div>
+                                    <p className="font-medium">신입으로 설정 시 주의사항</p>
+                                    <p className="text-sm mt-1">
+                                        신입으로 저장하면 이전에 등록한 모든 경력 정보가 삭제됩니다.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     <div className="mt-8 flex justify-end space-x-3">
                         <button
