@@ -56,7 +56,8 @@ const ResumeBasicInfo = ({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">희망 근무지</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">희망 근무지 <span
+                        className="text-red-500">*</span></label>
                     <input
                         type="text"
                         id="resumeLocation"
@@ -71,7 +72,7 @@ const ResumeBasicInfo = ({
 
                 <SelectField
                     id="resumeJobCategory"
-                    label="희망 직종"
+                    label={<>희망 직종 <span className="text-red-500">*</span></>}
                     options={jobCategories}
                     value={(resumeData && resumeData.resumeJobCategory) || ''}
                     name="resumeJobCategory"
@@ -80,7 +81,7 @@ const ResumeBasicInfo = ({
 
                 <SelectField
                     id="resumeJobType"
-                    label="희망 고용형태"
+                    label={<>희망 고용형태 <span className="text-red-500">*</span></>}
                     options={jobTypes}
                     value={(resumeData && resumeData.resumeJobType) || ''}
                     name="resumeJobType"
@@ -89,7 +90,7 @@ const ResumeBasicInfo = ({
 
                 <SelectField
                     id="resumeJobDuration"
-                    label="희망 근무기간"
+                    label={<>희망 근무기간 <span className="text-red-500">*</span></>}
                     options={workingPeriods}
                     value={(resumeData && resumeData.resumeJobDuration) || ''}
                     name="resumeJobDuration"
@@ -98,7 +99,7 @@ const ResumeBasicInfo = ({
 
                 <SelectField
                     id="resumeWorkSchedule"
-                    label="희망 근무요일"
+                    label={<>희망 근무요일 <span className="text-red-500">*</span></>}
                     options={workSchedules}
                     value={(resumeData && resumeData.resumeWorkSchedule) || ''}
                     name="resumeWorkSchedule"
@@ -107,7 +108,7 @@ const ResumeBasicInfo = ({
 
                 <SelectField
                     id="resumeWorkTime"
-                    label="희망 근무시간"
+                    label={<>희망 근무시간 <span className="text-red-500">*</span></>}
                     options={shiftHours}
                     value={(resumeData && resumeData.resumeWorkTime) || ''}
                     name="resumeWorkTime"
