@@ -1,16 +1,36 @@
 import React from 'react';
 
+const SelectField = ({ id, label, options = [], value, name, onChange }) => (
+    <div>
+        <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">
+            {label}
+        </label>
+        <select
+            id={id}
+            name={name}
+            value={value || ''}
+            onChange={onChange}
+            className="w-full p-3 border rounded-lg shadow-sm bg-white"
+        >
+            <option value="">선택</option>
+            {Array.isArray(options) ? options.map((opt, idx) => (
+                <option key={idx} value={opt}>{opt}</option>
+            )) : null}
+        </select>
+    </div>
+);
+
 const ResumeBasicInfo = ({
                              resumeData,
                              preferredLocation,
-                             jobCategories,
-                             jobTypes,
-                             workingPeriods,
-                             workSchedules,
-                             shiftHours,
+                             jobCategories = [],
+                             jobTypes = [],
+                             workingPeriods = [],
+                             workSchedules = [],
+                             shiftHours = [],
                              onChange,
                              onAddressClick,
-                             formErrors
+                             formErrors = {}
                          }) => {
     return (
         <div className="p-6">
@@ -24,7 +44,7 @@ const ResumeBasicInfo = ({
                     type="text"
                     id="resumeTitle"
                     name="resumeTitle"
-                    value={resumeData.resumeTitle || ''}
+                    value={(resumeData && resumeData.resumeTitle) || ''}
                     onChange={onChange}
                     placeholder="이력서 제목을 입력하세요"
                     className="w-full p-3 border rounded-lg shadow-sm"
@@ -39,8 +59,9 @@ const ResumeBasicInfo = ({
                     <label className="block text-sm font-medium text-gray-700 mb-1">희망 근무지</label>
                     <input
                         type="text"
+                        id="resumeLocation"
                         name="resumeLocation"
-                        value={preferredLocation}
+                        value={resumeData && resumeData.resumeLocation || ''}
                         onClick={onAddressClick}
                         readOnly
                         className="w-full p-3 border rounded-lg shadow-sm"
@@ -48,47 +69,47 @@ const ResumeBasicInfo = ({
                     />
                 </div>
 
-                <selectField
+                <SelectField
                     id="resumeJobCategory"
                     label="희망 직종"
                     options={jobCategories}
-                    value={resumeData.resumeJobCategory}
+                    value={(resumeData && resumeData.resumeJobCategory) || ''}
                     name="resumeJobCategory"
                     onChange={onChange}
                 />
 
-                <selectField
+                <SelectField
                     id="resumeJobType"
                     label="희망 고용형태"
                     options={jobTypes}
-                    value={resumeData.resumeJobType}
+                    value={(resumeData && resumeData.resumeJobType) || ''}
                     name="resumeJobType"
                     onChange={onChange}
                 />
 
-                <selectField
+                <SelectField
                     id="resumeJobDuration"
                     label="희망 근무기간"
                     options={workingPeriods}
-                    value={resumeData.resumeJobDuration}
+                    value={(resumeData && resumeData.resumeJobDuration) || ''}
                     name="resumeJobDuration"
                     onChange={onChange}
                 />
 
-                <selectField
+                <SelectField
                     id="resumeWorkSchedule"
                     label="희망 근무요일"
                     options={workSchedules}
-                    value={resumeData.resumeWorkSchedule}
+                    value={(resumeData && resumeData.resumeWorkSchedule) || ''}
                     name="resumeWorkSchedule"
                     onChange={onChange}
                 />
 
-                <selectField
+                <SelectField
                     id="resumeWorkTime"
                     label="희망 근무시간"
                     options={shiftHours}
-                    value={resumeData.resumeWorkTime}
+                    value={(resumeData && resumeData.resumeWorkTime) || ''}
                     name="resumeWorkTime"
                     onChange={onChange}
                 />
@@ -96,25 +117,5 @@ const ResumeBasicInfo = ({
         </div>
     );
 };
-
-const selectField = ({ id, label, options, value, name, onChange }) => (
-    <div>
-        <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">
-            {label}
-        </label>
-        <select
-            id={id}
-            name={name}
-            value={value || ''}
-            onChange={onChange}
-            className="w-full p-3 border rounded-lg shadow-sm bg-white"
-        >
-            <option value="">선택</option>
-            {options.map((opt, idx) => (
-                <option key={idx} value={opt}>{opt}</option>
-            ))}
-        </select>
-    </div>
-);
 
 export default ResumeBasicInfo;
