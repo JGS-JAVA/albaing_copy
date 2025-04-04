@@ -38,7 +38,7 @@ const ScrapPage = () => {
         if (scrapedPosts.length > 0) {
             fetchCompanyInfo();
         }
-    }, [scrapedPosts]);
+    }, [scrapedPosts,companyInfo]);
 
     // 회사 정보 데이터 조회
     const fetchCompanyInfo = () => {
@@ -89,7 +89,7 @@ const ScrapPage = () => {
         if (job.companyName) {
             return {
                 companyName: job.companyName,
-                companyLogo: null
+                companyLogo: job.companyLogo || null
             };
         }
 
