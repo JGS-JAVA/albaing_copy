@@ -34,7 +34,7 @@ const ResumeBasicInfo = ({
                          }) => {
     return (
         <div className="p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6 pb-2 border-b border-gray-200">기본 정보</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-6 pb-2 border-b border-gray-200">📝 기본 정보</h2>
 
             <div className="mb-6">
                 <label htmlFor="resumeTitle" className="block text-sm font-medium text-gray-700 mb-1">
