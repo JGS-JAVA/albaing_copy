@@ -231,7 +231,7 @@ const ScrapPage = () => {
                                                         <div className="flex-1 truncate">
                                                             <Link
                                                                 to={`/jobs/${job.jobPostId}`}
-                                                                className="text-lg font-medium text-blue-600 hover:text-blue-800 truncate block"
+                                                                className="text-lg font-semibold hover:text-blue-800 hover:font-bold truncate block"
                                                             >
                                                                 {job.jobPostTitle}
                                                             </Link>
@@ -260,7 +260,7 @@ const ScrapPage = () => {
                                                     <div className="mt-4 pt-4 border-t border-gray-200">
                                                         <Link
                                                             to={`/jobs/${job.jobPostId}`}
-                                                            className="inline-flex items-center font-medium text-blue-600 hover:text-blue-800"
+                                                            className="inline-flex items-center font-medium text-blue-600 hover:text-blue-800 hover:font-bold"
                                                         >
                                                             공고 상세보기
                                                             <svg xmlns="http://www.w3.org/2000/svg" className="ml-1 h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
