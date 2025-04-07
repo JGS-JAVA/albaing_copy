@@ -32,6 +32,8 @@ export default function JobPostDetail() {
     // 지도 렌더링에 필요한 ref
     const mapContainerRef = useRef(null);
 
+
+
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [jobPostId]);
@@ -530,9 +532,12 @@ export default function JobPostDetail() {
                             <p className="text-sm text-gray-500">
                                 {jobPost.jobPostWorkPlace} 근무지 위치 (카카오 지도)
                             </p>
+                            <p>
+                                <Link to={`/jobs/${jobPostId}/map`}>지도에서 내 주소와 함께 보기</Link>
+                            </p>
                         </div>
                         <div className="p-6">
-                            {/* 지도 표시 영역 */}
+                        {/* 지도 표시 영역 */}
                             <div
                                 ref={mapContainerRef}
                                 style={{ width: '100%', height: '400px' }}
